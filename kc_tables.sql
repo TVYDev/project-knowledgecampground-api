@@ -1,3 +1,4 @@
+--Don't use this table anymore
 CREATE TABLE trash_tokens
 (
   id SERIAL PRIMARY KEY,

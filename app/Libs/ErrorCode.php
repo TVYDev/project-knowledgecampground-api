@@ -18,6 +18,7 @@ class ErrorCode
     const ERR_CODE_TOKEN_INVALID    = 'E23003';
     const ERR_CODE_TOKEN_EXPIRED    = 'E23004';
     const ERR_CODE_TOKEN_TRASHED    = 'E23005';
+    const ERR_CODE_TOKEN_BLACKLISTED= 'E23006';
 
     const ERR_CODE_EXCEPTION        = 'E23009';
 }

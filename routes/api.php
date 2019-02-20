@@ -18,11 +18,10 @@ use Illuminate\Http\Request;
 //});
 
 Route::group([
-//    'middleware' => 'kc.auth',
     'prefix' => 'auth'
     ], function() {
-        Route::post('/register', 'UserController@register')->name('user.register');
-        Route::post('/login', 'UserController@login')->name('user.login');
-        Route::post('/logout', 'UserController@logout')->name('user.logout');
-//        Route::get('/user', 'UserController@user')->name('user.user');
+        Route::post('login', 'UserController@login')->name('user.login');
+        Route::post('register', 'UserController@register')->name('user.register');
+        Route::middleware('jwt.auth')->post('/logout', 'UserController@logout')->name('user.logout');
+        Route::middleware('jwt.auth')->post('/user', 'UserController@getUser')->name('user.getUser');
 });

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Libs\JsonResponse;
-use App\TrashToken;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\JWTAuth;
 
 class UserController extends Controller
 {
@@ -90,12 +88,10 @@ class UserController extends Controller
         }
     }
 
-    public function logout (Request $request)
+    public function logout ()
     {
         try
         {
-            TrashToken::create(['token' => $request->bearerToken()]);
-
             auth()->logout();
 
             return $this->standardJsonResponse(
@@ -110,21 +106,21 @@ class UserController extends Controller
         }
     }
 
-//    public function user (Request $request) {
-//        try
-//        {
-//            $user = \JWTAuth::toUser($request->bearerToken());
-//
-//            return $this->standardJsonResponse(
-//                200,
-//                true,
-//                null,
-//                $user
-//            );
-//        }
-//        catch(\Exception $exception)
-//        {
-//            return $this->standardJsonExceptionResponse($exception);
-//        }
-//    }
+    public function getUser () {
+        try
+        {
+            $user = auth()->user();
+
+            return $this->standardJsonResponse(
+                200,
+                true,
+                null,
+                $user
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }
