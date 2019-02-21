@@ -2,11 +2,16 @@
 
 namespace App\Exceptions;
 
+use App\Libs\ErrorCode;
+use App\Libs\JsonResponse;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
+    use JsonResponse;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -46,6 +51,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if($exception instanceof UnauthorizedHttpException){
+            return $this->standardJsonResponse(
+                401,
+                false,
+                'Unauthorized Access',
+                null,
+                ErrorCode::ERR_CODE_TOKEN_BLACKLISTED
+            );
+        }
+
         return parent::render($request, $exception);
     }
 }
