@@ -69,7 +69,7 @@ class UserController extends Controller
             $token = auth()->attempt($credentials);
 
             if(!$token){
-                return $this->standardJsonUnauthorizedResponse();
+                return $this->standardLoginFailedResponse();
             }
 
             return $this->standardJsonResponse(
@@ -117,6 +117,36 @@ class UserController extends Controller
                 true,
                 null,
                 $user
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function changePassword (Request $request){
+        try
+        {
+            $validator = Validator::make($request->all(), [
+               'old_password' => 'required|string',
+               'new_password' => 'required|string|confirmed'
+            ]);
+
+            if($validator->fails())
+                return $this->standardJsonValidationErrorResponse($validator->errors()->first());
+
+            $user = User::findOrFail(auth()->user()->id);
+            $user->password = $request->new_password;
+            $user->save();
+
+            // log out after password is changed
+            auth()->logout();
+
+            return $this->standardJsonResponse(
+                200,
+                true,
+                'Password changed successfully. Please log in again.'
             );
         }
         catch(\Exception $exception)

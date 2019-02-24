@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Libs\ErrorCode;
 use App\Libs\JsonResponse;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
