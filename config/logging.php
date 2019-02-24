@@ -36,7 +36,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily','slack'],
         ],
 
         'single' => [
@@ -47,7 +47,11 @@ return [
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/knowledge_community.log'),
+            'formatter' => Monolog\Formatter\LineFormatter::class,
+            'formatter_with' => [
+                'format' => "[%datetime%] [%level_name%] %context% [%message%]\n",
+            ],
             'level' => 'debug',
             'days' => 14,
         ],
@@ -55,8 +59,8 @@ return [
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
+            'username' => 'TVY_CORE_API',
+            'emoji' => ':D',
             'level' => 'critical',
         ],
 
