@@ -9,6 +9,7 @@
 namespace App\Libs;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -19,12 +20,16 @@ trait JsonResponse
     public function standardJsonResponse(int $httpCode,bool $success, $message, $data = null, $errorCode = null){
         $path = $_SERVER['PATH_INFO'];
         $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT'];
+
+        $inputs = Input::all();
+        $filteredInputs = array_filter($inputs, function($key) {
+            return strpos($key, 'password') === false;
+        }, ARRAY_FILTER_USE_KEY);
+
         $context = [
             $path,
-            json_encode(array_filter(Input::all(), function($key) {
-                return $key !== 'password';
-            }, ARRAY_FILTER_USE_KEY)),
-            $fromRemote
+            $fromRemote,
+            count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
         ];
 
         if($success){
@@ -69,6 +74,15 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_EXPIRED
             );
         }
+        else if($exception instanceof ModelNotFoundException){
+            return $this->standardJsonResponse(
+                401,
+                false,
+                'Unauthenticated user',
+                null,
+                ErrorCode::ERR_CODE_UNAUTHENTICATED
+            );
+        }
 
         return $this->standardJsonResponse(
             500,
@@ -98,6 +112,17 @@ trait JsonResponse
             'Unauthorized Access',
             null,
             ErrorCode::ERR_CODE_UNAUTHORIZED
+        );
+    }
+
+    public function standardLoginFailedResponse ()
+    {
+        return $this->standardJsonResponse(
+            401,
+            false,
+            'Email or password is incorrect',
+            null,
+            ErrorCode::ERR_CODE_LOGIN_FAILED
         );
     }
 }

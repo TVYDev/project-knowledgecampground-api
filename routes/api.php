@@ -24,4 +24,5 @@ Route::group([
         Route::post('register', 'UserController@register')->name('user.register');
         Route::middleware('jwt.auth')->post('/logout', 'UserController@logout')->name('user.logout');
         Route::middleware('jwt.auth')->post('/user', 'UserController@getUser')->name('user.getUser');
+        Route::middleware('jwt.auth')->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
 });
