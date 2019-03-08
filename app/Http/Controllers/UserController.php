@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\User;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class UserController extends Controller
             $token = auth()->login($user);
 
             return $this->standardJsonResponse(
-                201,
+                HttpStatusCode::SUCCESS_CREATED,
                 true,
                 'User created successfully',
                 [
@@ -73,7 +74,7 @@ class UserController extends Controller
             }
 
             return $this->standardJsonResponse(
-                200,
+                HttpStatusCode::SUCCESS_OK,
                 true,
                 'User logs in successfully',
                 [
@@ -96,7 +97,7 @@ class UserController extends Controller
             auth()->logout();
 
             return $this->standardJsonResponse(
-                200,
+                HttpStatusCode::SUCCESS_OK,
                 true,
                 'User logs out successfully'
             );
@@ -113,7 +114,7 @@ class UserController extends Controller
             $user = auth()->user();
 
             return $this->standardJsonResponse(
-                200,
+                HttpStatusCode::SUCCESS_OK,
                 true,
                 null,
                 $user
@@ -144,7 +145,7 @@ class UserController extends Controller
             auth()->logout();
 
             return $this->standardJsonResponse(
-                200,
+                HttpStatusCode::SUCCESS_OK,
                 true,
                 'Password changed successfully. Please log in again.'
             );
