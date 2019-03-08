@@ -35,7 +35,7 @@ trait JsonResponse
         if($success){
             Log::info($message, $context);
         }else{
-            if($httpCode === 500)
+            if($httpCode === HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR)
                 Log::critical($errorCode.':'.$message, $context);
             else
                 Log::error($errorCode.':'.$message, $context);
@@ -57,7 +57,7 @@ trait JsonResponse
         if($exception instanceof TokenInvalidException)
         {
             return $this->standardJsonResponse(
-                400,
+                HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
                 'Invalid Token',
                 null,
@@ -67,7 +67,7 @@ trait JsonResponse
         else if($exception instanceof TokenExpiredException)
         {
             return $this->standardJsonResponse(
-                400,
+                HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
                 'Expired Token',
                 null,
@@ -76,7 +76,7 @@ trait JsonResponse
         }
         else if($exception instanceof ModelNotFoundException){
             return $this->standardJsonResponse(
-                401,
+                HttpStatusCode::ERROR_UNAUTHORIZED,
                 false,
                 'Unauthenticated user',
                 null,
@@ -85,7 +85,7 @@ trait JsonResponse
         }
 
         return $this->standardJsonResponse(
-            500,
+            HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR,
             false,
             $exception->getMessage(),
             null,
@@ -96,7 +96,7 @@ trait JsonResponse
     public function standardJsonValidationErrorResponse ($errorMessage)
     {
         return $this->standardJsonResponse(
-            422,
+            HttpStatusCode::ERROR_NOT_ACCEPTABLE,
             false,
             $errorMessage,
             null,
@@ -107,7 +107,7 @@ trait JsonResponse
     public function standardJsonUnauthorizedResponse ()
     {
         return $this->standardJsonResponse(
-            401,
+            HttpStatusCode::ERROR_UNAUTHORIZED,
             false,
             'Unauthorized Access',
             null,
@@ -118,7 +118,7 @@ trait JsonResponse
     public function standardLoginFailedResponse ()
     {
         return $this->standardJsonResponse(
-            401,
+            HttpStatusCode::ERROR_UNAUTHORIZED,
             false,
             'Email or password is incorrect',
             null,
