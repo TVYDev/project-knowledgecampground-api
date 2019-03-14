@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\User;
+use App\UserAvatar;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -32,6 +32,14 @@ class UserController extends Controller
                 'email'     => $request->email,
                 'password'  => $request->password
             ]);
+
+            // Save default userAvatar
+            $userAvatar = new UserAvatar();
+            $userAvatar['first_initial'] = strtolower(substr($user->name,0,1));
+            $userAvatar['bg_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['side_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['stroke_color_hex'] = $userAvatar->generateColorHex();
+            $user->userAvatar()->save($userAvatar);
 
             $token = auth()->login($user);
 
