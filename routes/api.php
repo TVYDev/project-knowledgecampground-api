@@ -26,3 +26,10 @@ Route::group([
         Route::middleware('jwt.auth')->post('/user', 'UserController@getUser')->name('user.getUser');
         Route::middleware('jwt.auth')->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
 });
+
+Route::group([
+    'prefix' => 'user-avatar',
+    'middleware' => 'jwt.auth'
+    ], function() {
+        Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
+});

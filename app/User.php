@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'id', 'password', 'remember_token',
     ];
 
     /**
@@ -48,5 +48,13 @@ class User extends Authenticatable implements JWTSubject
         {
             $this->attributes['password'] = bcrypt($password);
         }
+    }
+
+    /**
+     * Relation One-to-One with UserAvatar
+     */
+    public function userAvatar()
+    {
+        return $this->hasOne('App\UserAvatar','user__id');
     }
 }
