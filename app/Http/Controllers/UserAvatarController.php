@@ -16,6 +16,8 @@ class UserAvatarController extends Controller
         {
             $userAvatar = auth()->user()->userAvatar;
 
+            $userAvatar['name'] = $userAvatar->user()->pluck('name')->first();
+
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
