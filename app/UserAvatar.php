@@ -11,9 +11,10 @@ class UserAvatar extends Model
 
     protected $fillable = [
         'first_initial',
-        'bg_color_hex',
-        'side_color_hex',
-        'stroke_color_hex',
+        'middle_color_hex',
+        'side_lg_color_hex',
+        'side_sm_color_hex',
+        'border_color_hex',
         'is_active',
         'img_url'
     ];
@@ -35,5 +36,13 @@ class UserAvatar extends Model
         $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
         $color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
         return $color;
+    }
+
+    public function selectRandomAngle ()
+    {
+        // Available angle: 0, 45, 90, 135
+        $rand = [0, 45, 90, 135];
+        $angle = $rand[rand(0, count($rand)-1)];
+        return $angle;
     }
 }

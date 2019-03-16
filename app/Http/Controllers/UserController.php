@@ -36,9 +36,11 @@ class UserController extends Controller
             // Save default userAvatar
             $userAvatar = new UserAvatar();
             $userAvatar['first_initial'] = strtolower(substr($user->name,0,1));
-            $userAvatar['bg_color_hex'] = $userAvatar->generateColorHex();
-            $userAvatar['side_color_hex'] = $userAvatar->generateColorHex();
-            $userAvatar['stroke_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['middle_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['side_lg_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['side_sm_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['border_color_hex'] = $userAvatar->generateColorHex();
+            $userAvatar['angle'] = $userAvatar->selectRandomAngle();
             $user->userAvatar()->save($userAvatar);
 
             $token = auth()->login($user);
