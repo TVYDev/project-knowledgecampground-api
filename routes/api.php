@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Libs\MiddlewareConst;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,23 +14,19 @@ use Illuminate\Http\Request;
 |
 */
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
 Route::group([
     'prefix' => 'auth'
     ], function() {
         Route::post('login', 'UserController@login')->name('user.login');
         Route::post('register', 'UserController@register')->name('user.register');
-        Route::middleware('jwt.auth')->post('/logout', 'UserController@logout')->name('user.logout');
-        Route::middleware('jwt.auth')->post('/user', 'UserController@getUser')->name('user.getUser');
-        Route::middleware('jwt.auth')->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->post('/logout', 'UserController@logout')->name('user.logout');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->get('/user', 'UserController@getUser')->name('user.getUser');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
 });
 
 Route::group([
     'prefix' => 'user-avatar',
-    'middleware' => 'jwt.auth'
+    'middleware' => MiddlewareConst::JWT_AUTH
     ], function() {
         Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
 });
