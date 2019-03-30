@@ -11,16 +11,37 @@ namespace App\Libs;
 
 class ErrorCode
 {
+    /******************************************
+     * Error code of http request
+     ******************************************/
     const ERR_CODE_UNAUTHORIZED     = 'E230100';
     const ERR_CODE_UNAUTHENTICATED  = 'E230101';
     const ERR_CODE_LOGIN_FAILED     = 'E230102';
+    /******************************************/
 
+
+
+    /******************************************
+     * Error code of validation
+     ******************************************/
     const ERR_CODE_VALIDATION       = 'E230200';
+    /******************************************/
 
+
+
+    /******************************************
+     * Error code of token
+     ******************************************/
     const ERR_CODE_TOKEN_INVALID    = 'E230300';
     const ERR_CODE_TOKEN_EXPIRED    = 'E230301';
     const ERR_CODE_TOKEN_TRASHED    = 'E230302';
     const ERR_CODE_TOKEN_BLACKLISTED= 'E230303';
+    /******************************************/
 
+
+    /******************************************
+     * Error code of exception
+     ******************************************/
     const ERR_CODE_EXCEPTION        = 'E230900';
+    /******************************************/
 }
