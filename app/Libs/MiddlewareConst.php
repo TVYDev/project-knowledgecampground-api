@@ -11,5 +11,9 @@ namespace App\Libs;
 
 class MiddlewareConst
 {
+    /*****************************************
+     * JWT authentication middleware constant
+     ****************************************/
     const JWT_AUTH = 'jwt.auth';
+    /****************************************/
 }

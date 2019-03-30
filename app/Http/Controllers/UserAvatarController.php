@@ -10,12 +10,18 @@ class UserAvatarController extends Controller
 {
     use JsonResponse;
 
+    /**
+     * UserAvatar get information
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUserAvatar ()
     {
         try
         {
+            // --- get user_avatar of the user
             $userAvatar = auth()->user()->userAvatar;
-
+            // --- add name as extra information for needed use
             $userAvatar['name'] = $userAvatar->user()->pluck('name')->first();
 
             return $this->standardJsonResponse(

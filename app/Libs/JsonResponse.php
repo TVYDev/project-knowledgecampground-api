@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: vannyou.tan
+ * User: Vannyou TANG
  * Date: 19-Feb-19
  * Time: 12:40 PM
  */
@@ -17,21 +17,33 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 trait JsonResponse
 {
+    /**
+     * Generic method for returning standard JSON response
+     *
+     * @param int $httpCode
+     * @param bool $success
+     * @param $message
+     * @param null $data
+     * @param null $errorCode
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function standardJsonResponse(int $httpCode,bool $success, $message, $data = null, $errorCode = null){
-        $path = $_SERVER['PATH_INFO'];
-        $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT'];
-
-        $inputs = Input::all();
-        $filteredInputs = array_filter($inputs, function($key) {
+        // --- prepare data for using in the log
+        $path = $_SERVER['PATH_INFO']; // path of request
+        $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT']; // IP address of request
+        $inputs = Input::all(); // inputs of request
+        $filteredInputs = array_filter($inputs, function($key) { // exclude password from log data
             return strpos($key, 'password') === false;
         }, ARRAY_FILTER_USE_KEY);
 
+        // --- structure data for logging
         $context = [
             $path,
             $fromRemote,
             count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
         ];
 
+        // --- do logging according to status of request
         if($success){
             Log::info($message, $context);
         }else{
@@ -40,6 +52,8 @@ trait JsonResponse
             else
                 Log::error($errorCode.':'.$message, $context);
         }
+
+        // --- do response JSON
         return response()->json([
             'success'   => $success,
             'message'   => $message,
@@ -52,8 +66,15 @@ trait JsonResponse
         ],$httpCode);
     }
 
+    /**
+     * Standard JSON Response for Exceptions
+     *
+     * @param \Exception $exception
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function standardJsonExceptionResponse (\Exception $exception)
     {
+        // --- case when token is invalid or not found
         if($exception instanceof TokenInvalidException)
         {
             return $this->standardJsonResponse(
@@ -64,6 +85,7 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_INVALID
             );
         }
+        // --- case when token is expired
         else if($exception instanceof TokenExpiredException)
         {
             return $this->standardJsonResponse(
@@ -74,6 +96,7 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_EXPIRED
             );
         }
+        // --- case when cannot find user in the database
         else if($exception instanceof ModelNotFoundException){
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_UNAUTHORIZED,
@@ -83,27 +106,39 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_UNAUTHENTICATED
             );
         }
-
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR,
-            false,
-            $exception->getMessage(),
-            null,
-            ErrorCode::ERR_CODE_EXCEPTION
-        );
+        // --- case when server is not running
+        else{
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR,
+                false,
+                $exception->getMessage(),
+                null,
+                ErrorCode::ERR_CODE_EXCEPTION
+            );
+        }
     }
 
-    public function standardJsonValidationErrorResponse ($errorMessage)
+    /**
+     * Standard JSON Response for user login failure
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function standardLoginFailedResponse ()
     {
         return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_NOT_ACCEPTABLE,
+            HttpStatusCode::ERROR_UNAUTHORIZED,
             false,
-            $errorMessage,
+            'Email or password is incorrect',
             null,
-            ErrorCode::ERR_CODE_VALIDATION
+            ErrorCode::ERR_CODE_LOGIN_FAILED
         );
     }
 
+    /**
+     * Standard JSON Response for error when user is unauthorized to request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function standardJsonUnauthorizedResponse ()
     {
         return $this->standardJsonResponse(
@@ -115,14 +150,20 @@ trait JsonResponse
         );
     }
 
-    public function standardLoginFailedResponse ()
+    /**
+     * Standard JSON Response for error validation on inputs
+     *
+     * @param $errorMessage
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function standardJsonValidationErrorResponse ($errorMessage)
     {
         return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_UNAUTHORIZED,
+            HttpStatusCode::ERROR_NOT_ACCEPTABLE,
             false,
-            'Email or password is incorrect',
+            $errorMessage,
             null,
-            ErrorCode::ERR_CODE_LOGIN_FAILED
+            ErrorCode::ERR_CODE_VALIDATION
         );
     }
 }
