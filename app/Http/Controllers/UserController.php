@@ -7,6 +7,7 @@ use App\Libs\JsonResponse;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -27,13 +28,33 @@ class UserController extends Controller
                 'old_password' => 'required|string',
                 'new_password' => 'required|string|confirmed'
             ]);
+            $newPwd = $request->new_password;
+
+            if(strlen($newPwd) < 8){
+                return $this->standardJsonValidationErrorResponse('Password must be at least 8 characters');
+            }
+
+            if($request->old_password === $newPwd){
+                return $this->standardJsonValidationErrorResponse('Old and new password cannot be the same');
+            }
 
             if($validator->fails())
                 return $this->standardJsonValidationErrorResponse($validator->errors()->first());
 
             // --- find user and change password for the user
             $user = User::findOrFail(auth()->user()->id);
-            $user->password = $request->new_password;
+
+            if(Hash::check($newPwd, $user->password1) ||
+                Hash::check($newPwd, $user->password2) ||
+                Hash::check($newPwd, $user->password3)){
+                return $this->standardJsonValidationErrorResponse('Your new password must not be the same as your last 3 passwords');
+            }
+            else{
+                $user->password3 = $user->password2;
+                $user->password2 = $user->password1;
+                $user->password1 = $user->password;
+                $user->password = $newPwd;
+            }
             $user->save();
 
             // --- log out after password is changed
@@ -160,6 +181,9 @@ class UserController extends Controller
                 'email'     => 'required|email|unique:users,email',
                 'password'  => 'required'
             ]);
+
+            if(strlen($request->password) < 8)
+                return $this->standardJsonValidationErrorResponse('Password must be at least 8 characters');
 
             if($validator->fails()){
                 return $this->standardJsonValidationErrorResponse($validator->errors()->first());

@@ -22,3 +22,13 @@ CREATE TABLE user_avatars
   created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
+
+-- -----------------------------ACTIVITIES
+-- 06 April 2019
+ALTER TABLE users
+ADD COLUMN password1 varchar(255) NULL,
+ADD COLUMN password2 varchar(255) NULL,
+ADD COLUMN password3 varchar(255) NULL,
+ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE,
+ADD COLUMN is_blocked boolean NOT NULL DEFAULT FALSE,
+ADD COLUMN is_deleted boolean NOT NULL DEFAULT FALSE;
