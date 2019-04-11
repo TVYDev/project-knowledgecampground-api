@@ -20,7 +20,8 @@ CREATE TABLE user_avatars
   is_active BOOL NOT NULL DEFAULT true,
   img_url VARCHAR(500) NULL,
   created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
+  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  svg_string VARCHAR(20000) NOT NULL
 );
 
 -- -----------------------------ACTIVITIES
