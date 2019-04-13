@@ -2,6 +2,7 @@
 
 namespace App;
 
+use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 
 class UserAvatar extends Model
@@ -10,11 +11,8 @@ class UserAvatar extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'first_initial',
-        'middle_color_hex',
-        'side_lg_color_hex',
-        'side_sm_color_hex',
-        'border_color_hex',
+        'seed',
+        'default_avatar_url',
         'is_active',
         'img_url'
     ];
@@ -31,18 +29,37 @@ class UserAvatar extends Model
         return $this->belongsTo('App\User', 'user__id');
     }
 
-    public function generateColorHex ()
+    public function generateDefaultUserAvatar ()
     {
-        $rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
-        $color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
-        return $color;
-    }
+        $seed = random_int(1,10000000);
+        $sharedAvatarUrl = '\svg\default_avatars\shared_avatar.svg';
+        try
+        {
+            $relativeUrl = '\svg\default_avatars\\'.$seed.'.svg';
+            $svgAvatarUrl = getcwd().$relativeUrl;
 
-    public function selectRandomAngle ()
-    {
-        // Available angle: 0, 45, 90, 135
-        $rand = [0, 45, 90, 135];
-        $angle = $rand[rand(0, count($rand)-1)];
-        return $angle;
+            $url = 'https://avatars.dicebear.com/v2/jdenticon/'.$seed.'.svg';
+
+            $http = new Client();
+
+            $response = $http->request('GET', $url,[
+                'headers' => [
+                    'Content-Type' => 'image/svg+xml'
+                ],
+                'sink' => $svgAvatarUrl
+            ]);
+
+            return [
+                'seed' => $seed,
+                'avatar_url' => $relativeUrl
+            ];
+        }
+        catch(\Exception $exception)
+        {
+            return [
+                'seed' => $seed,
+                'avatar_url' => $sharedAvatarUrl
+            ];
+        }
     }
 }
