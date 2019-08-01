@@ -32,6 +32,19 @@ CREATE TABLE user_avatars
   FOREIGN KEY (user__id) REFERENCES users(id),
   UNIQUE (seed)
 );
+
+CREATE TABLE third_party_api_urls
+(
+  id SERIAL NOT NULL,
+  key VARCHAR(500) NOT NULL,
+  value VARCHAR(500) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  description VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+INSERT INTO third_party_api_urls(key,value,description) VALUES('jdenticon','https://avatars.dicebear.com/v2/jdenticon/{{PLACEHOLDER}}.svg','Open source library for generating identicons (avatar profile). Have placeholder as seed(=random string)');
 ------------------------------------------------------------------------
 
 -- -----------------------------ACTIVITIES

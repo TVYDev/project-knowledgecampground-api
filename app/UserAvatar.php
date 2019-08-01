@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserAvatar extends Model
 {
     protected $table = 'user_avatars';
-    public $timestamps = false;
 
     protected $fillable = [
         'seed',
@@ -35,7 +34,8 @@ class UserAvatar extends Model
         $this['seed'] = $seed;
         try
         {
-            $url = 'https://avatars.dicebear.com/v2/jdenticon/'.$seed.'.svg';
+            $originalUrl = (new ThirdPartyApiUrl())->getApiUrl('jdenticon');
+            $url = str_replace('{{PLACEHOLDER}}', $seed, $originalUrl);
             $relativeUrl = '\svg\default_avatars\\'.$seed.'.svg';
 
             $http = new Client();
