@@ -32,12 +32,12 @@ class UserController extends Controller
             $currentPwd = $request->current_password;
             $newPwd = $request->new_password;
             if(!Hash::check($currentPwd, $user->password)){
-                return $this->standardJsonValidationErrorResponse('Your current password is not correct');
+                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__CURRENT_PASSWORD_NOT_CORRECT');
             }
             else if(Hash::check($newPwd, $user->password1) ||
                 Hash::check($newPwd, $user->password2) ||
                 Hash::check($newPwd, $user->password3)){
-                return $this->standardJsonValidationErrorResponse('Your new password must not be the same as your last 3 passwords');
+                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE');
             }
             else{
                 $user->password3 = $user->password2;
@@ -47,13 +47,10 @@ class UserController extends Controller
             }
             $user->save();
 
-            // --- log out after password is changed
-            auth()->logout();
-
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'Password is changed successfully. Please log in again.'
+                'KC_MSG_SUCCESS__USER_CHANGE_PASSWORD'
             );
         }
         catch(\Exception $exception)
@@ -111,7 +108,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'User logs in successfully',
+                'KC_MSG_SUCCESS__USER_LOGIN',
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
@@ -140,7 +137,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'User logs out successfully'
+                'KC_MSG_SUCCESS__USER_LOGOUT'
             );
         }
         catch(\Exception $exception)
@@ -181,7 +178,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'User created successfully',
+                'KC_MSG_SUCCESS__USER_REGISTER',
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
