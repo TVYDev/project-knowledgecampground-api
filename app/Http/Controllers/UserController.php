@@ -190,4 +190,19 @@ class UserController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * We already have middleware outside to check the token whether it is valid or not
+     * if it is not valid, exception will be thrown to exception handler, pass the JSON and do not get here
+     * otherwise it gets through here and it means the token is valid.
+     */
+    public function verifyAuthentication () {
+        return $this->standardJsonResponse(
+            HttpStatusCode::SUCCESS_OK,
+            true,
+            'KC_MSG_SUCCESS__USER_IS_AUTHENTICATED'
+        );
+    }
 }

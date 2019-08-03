@@ -66,6 +66,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_CHANGE_PASSWORD','Password is changed successfully','Password is changed successfully.','ពាក្យសម្ងាត់ត្រូវបានប្តូរថ្មីដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_LOGIN','User logs in successfully','Welcome again','សូមស្វាគមន៍ជាថ្មីម្ដងទៀត','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_LOGOUT','User logs out successfully','See you next time','ជួបគ្នាលើកក្រោយទៀត','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_IS_AUTHENTICATED','User is authenticated','User is authenticated','គណនីនេះត្រឹមត្រូវ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INVALID_TOKEN','Invalid Token','Please login again','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__EXPIRED_TOKEN','Expired Token','Session expires, please login again','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
