@@ -9,6 +9,7 @@
 namespace App\Libs;
 
 
+use App\SystemMessage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
@@ -22,12 +23,12 @@ trait JsonResponse
      *
      * @param int $httpCode
      * @param bool $success
-     * @param $message
+     * @param $messageCode
      * @param null $data
      * @param null $errorCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function standardJsonResponse(int $httpCode,bool $success, $message, $data = null, $errorCode = null){
+    public function standardJsonResponse(int $httpCode,bool $success, $messageCode, $data = null, $errorCode = null){
         // --- prepare data for using in the log
         $path = $_SERVER['PATH_INFO']; // path of request
         $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT']; // IP address of request
@@ -43,23 +44,31 @@ trait JsonResponse
             count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
         ];
 
+        // --- get message from message_code
+        $arraySysMsg = (new SystemMessage())->getArrayMessageSysEnKh($messageCode);
+        $msgSys = $arraySysMsg['sys'];
+        $msgEn = $arraySysMsg['en'];
+        $msgKh = $arraySysMsg['kh'];
+
         // --- do logging according to status of request
         if($success){
-            Log::info($message, $context);
+            Log::info($msgSys, $context);
         }else{
             if($httpCode === HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR)
-                Log::critical($errorCode.':'.$message, $context);
+                Log::critical($errorCode.':'.$msgSys, $context);
             else
-                Log::error($errorCode.':'.$message, $context);
+                Log::error($errorCode.':'.$msgSys, $context);
         }
 
         // --- do response JSON
         return response()->json([
-            'success'   => $success,
-            'message'   => $message,
-            'data'      => $data,
-            'errorCode' => $errorCode,
-            'meta'      => [
+            'success'       => $success,
+            'message_sys'   => $msgSys,
+            'message_en'    => $msgEn,
+            'message_kh'    => $msgKh,
+            'data'          => $data,
+            'errorCode'     => $errorCode,
+            'meta'          => [
                 'program'   => 'KnowledgeCommunity_API',
                 'version'   => '1.0'
             ]
@@ -80,7 +89,7 @@ trait JsonResponse
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'Invalid Token',
+                'KC_MSG_ERROR__INVALID_TOKEN',
                 null,
                 ErrorCode::ERR_CODE_TOKEN_INVALID
             );
@@ -91,7 +100,7 @@ trait JsonResponse
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'Expired Token',
+                'KC_MSG_ERROR__EXPIRED_TOKEN',
                 null,
                 ErrorCode::ERR_CODE_TOKEN_EXPIRED
             );
@@ -101,7 +110,7 @@ trait JsonResponse
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_UNAUTHORIZED,
                 false,
-                'Unauthenticated user',
+                'KC_MSG_ERROR__UNAUTHENTICATED_USER',
                 null,
                 ErrorCode::ERR_CODE_UNAUTHENTICATED
             );
@@ -111,7 +120,7 @@ trait JsonResponse
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR,
                 false,
-                $exception->getMessage(),
+                'KC_MSG_ERROR__INTERNAL_SERVER_ERROR',
                 null,
                 ErrorCode::ERR_CODE_EXCEPTION
             );
@@ -128,7 +137,7 @@ trait JsonResponse
         return $this->standardJsonResponse(
             HttpStatusCode::ERROR_UNAUTHORIZED,
             false,
-            'Email or password is incorrect',
+            'KC_MSG_ERROR__EMAIL_OR_PASSWORD_INCORRECT',
             null,
             ErrorCode::ERR_CODE_LOGIN_FAILED
         );
@@ -144,7 +153,7 @@ trait JsonResponse
         return $this->standardJsonResponse(
             HttpStatusCode::ERROR_UNAUTHORIZED,
             false,
-            'Unauthorized Access',
+            'KC_MSG_ERROR__UNAUTHORIZED_ACCESS',
             null,
             ErrorCode::ERR_CODE_UNAUTHORIZED
         );
@@ -156,12 +165,12 @@ trait JsonResponse
      * @param $errorMessage
      * @return \Illuminate\Http\JsonResponse
      */
-    public function standardJsonValidationErrorResponse ($errorMessage)
+    public function standardJsonValidationErrorResponse ($messageCode)
     {
         return $this->standardJsonResponse(
             HttpStatusCode::ERROR_NOT_ACCEPTABLE,
             false,
-            $errorMessage,
+            $messageCode,
             null,
             ErrorCode::ERR_CODE_VALIDATION
         );

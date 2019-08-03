@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserAvatar extends Model
 {
     protected $table = 'user_avatars';
-    public $timestamps = false;
 
     protected $fillable = [
         'seed',
@@ -32,34 +31,29 @@ class UserAvatar extends Model
     public function generateDefaultUserAvatar ()
     {
         $seed = random_int(1,10000000);
-        $sharedAvatarUrl = '\svg\default_avatars\shared_avatar.svg';
+        $this['seed'] = $seed;
         try
         {
+            $originalUrl = (new ThirdPartyApiUrl())->getApiUrl('jdenticon');
+            $url = str_replace('{{PLACEHOLDER}}', $seed, $originalUrl);
             $relativeUrl = '\svg\default_avatars\\'.$seed.'.svg';
-            $svgAvatarUrl = getcwd().$relativeUrl;
-
-            $url = 'https://avatars.dicebear.com/v2/jdenticon/'.$seed.'.svg';
 
             $http = new Client();
-
-            $response = $http->request('GET', $url,[
+            $http->request('GET', $url,[
                 'headers' => [
                     'Content-Type' => 'image/svg+xml'
                 ],
-                'sink' => $svgAvatarUrl
+                'sink' => getcwd().$relativeUrl
             ]);
 
-            return [
-                'seed' => $seed,
-                'avatar_url' => $relativeUrl
-            ];
+            $this['default_avatar_url'] = $relativeUrl;
         }
         catch(\Exception $exception)
         {
-            return [
-                'seed' => $seed,
-                'avatar_url' => $sharedAvatarUrl
-            ];
+            $sharedAvatarUrl = '\svg\default_avatars\shared_avatar.svg';
+            $this['default_avatar_url'] = $sharedAvatarUrl;
+        }finally {
+            return $this;
         }
     }
 }
