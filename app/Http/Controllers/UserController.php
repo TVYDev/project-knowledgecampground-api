@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
+use App\Libs\KCValidate;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -24,30 +24,20 @@ class UserController extends Controller
         try
         {
             // --- validate inputs
-            $validator = Validator::make($request->all(), [
-                'old_password' => 'required|string',
-                'new_password' => 'required|string|confirmed'
-            ]);
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
+            if($result !== true) return $result;
+
+            $user = auth()->user();
+
+            $currentPwd = $request->current_password;
             $newPwd = $request->new_password;
-
-            if(strlen($newPwd) < 8){
-                return $this->standardJsonValidationErrorResponse('Password must be at least 8 characters');
+            if(!Hash::check($currentPwd, $user->password)){
+                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__CURRENT_PASSWORD_NOT_CORRECT');
             }
-
-            if($request->old_password === $newPwd){
-                return $this->standardJsonValidationErrorResponse('Old and new password cannot be the same');
-            }
-
-            if($validator->fails())
-                return $this->standardJsonValidationErrorResponse($validator->errors()->first());
-
-            // --- find user and change password for the user
-            $user = User::findOrFail(auth()->user()->id);
-
-            if(Hash::check($newPwd, $user->password1) ||
+            else if(Hash::check($newPwd, $user->password1) ||
                 Hash::check($newPwd, $user->password2) ||
                 Hash::check($newPwd, $user->password3)){
-                return $this->standardJsonValidationErrorResponse('Your new password must not be the same as your last 3 passwords');
+                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE');
             }
             else{
                 $user->password3 = $user->password2;
@@ -57,13 +47,10 @@ class UserController extends Controller
             }
             $user->save();
 
-            // --- log out after password is changed
-            auth()->logout();
-
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'Password changed successfully. Please log in again.'
+                'KC_MSG_SUCCESS__USER_CHANGE_PASSWORD'
             );
         }
         catch(\Exception $exception)
@@ -107,14 +94,8 @@ class UserController extends Controller
         try
         {
             // --- validate inputs
-            $validator = Validator::make($request->all(), [
-                'email'     => 'required|email',
-                'password'  => 'required'
-            ]);
-
-            if($validator->fails()){
-                return $this->standardJsonValidationErrorResponse($validator->errors()->first());
-            }
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_LOGIN);
+            if($result !== true) return $result;
 
             // --- do login
             $credentials = request(['email', 'password']);
@@ -127,7 +108,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'User logs in successfully',
+                'KC_MSG_SUCCESS__USER_LOGIN',
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
@@ -156,7 +137,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'User logs out successfully'
+                'KC_MSG_SUCCESS__USER_LOGOUT'
             );
         }
         catch(\Exception $exception)
@@ -176,18 +157,8 @@ class UserController extends Controller
         try
         {
             // --- validate inputs
-            $validator = Validator::make($request->all(), [
-                'name'      => 'required|string|max:50',
-                'email'     => 'required|email|unique:users,email',
-                'password'  => 'required'
-            ]);
-
-            if(strlen($request->password) < 8)
-                return $this->standardJsonValidationErrorResponse('Password must be at least 8 characters');
-
-            if($validator->fails()){
-                return $this->standardJsonValidationErrorResponse($validator->errors()->first());
-            }
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
+            if($result !== true) return $result;
 
             // --- create user
             $user = User::create([
@@ -198,10 +169,8 @@ class UserController extends Controller
 
             // --- create default user_avatar for the user
             $userAvatar = new UserAvatar();
-            $defaultAvatar = $userAvatar->generateDefaultUserAvatar();
-            $userAvatar['seed'] = $defaultAvatar['seed'];
-            $userAvatar['default_avatar_url'] = $defaultAvatar['avatar_url'];
-            $user->userAvatar()->save($userAvatar);
+            $defaultUserAvatar = $userAvatar->generateDefaultUserAvatar();
+            $user->userAvatar()->save($defaultUserAvatar);
 
             // --- get token of the user
             $token = auth()->login($user);
@@ -209,7 +178,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'User created successfully',
+                'KC_MSG_SUCCESS__USER_REGISTER',
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
@@ -220,5 +189,20 @@ class UserController extends Controller
         {
             return $this->standardJsonExceptionResponse($exception);
         }
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * We already have middleware outside to check the token whether it is valid or not
+     * if it is not valid, exception will be thrown to exception handler, pass the JSON and do not get here
+     * otherwise it gets through here and it means the token is valid.
+     */
+    public function verifyAuthentication () {
+        return $this->standardJsonResponse(
+            HttpStatusCode::SUCCESS_OK,
+            true,
+            'KC_MSG_SUCCESS__USER_IS_AUTHENTICATED'
+        );
     }
 }

@@ -32,6 +32,67 @@ CREATE TABLE user_avatars
   FOREIGN KEY (user__id) REFERENCES users(id),
   UNIQUE (seed)
 );
+
+CREATE TABLE third_party_api_urls
+(
+  id SERIAL NOT NULL,
+  key VARCHAR(500) NOT NULL,
+  value VARCHAR(500) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  description VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+INSERT INTO third_party_api_urls(key,value,description) VALUES('jdenticon','https://avatars.dicebear.com/v2/jdenticon/{{PLACEHOLDER}}.svg','Open source library for generating identicons (avatar profile). Have placeholder as seed(=random string)');
+
+CREATE TABLE system_messages
+(
+    id SERIAL NOT NULL,
+    code VARCHAR(100) NOT NULL,
+    message_sys VARCHAR(500),
+    message_en VARCHAR(500),
+    message_kh VARCHAR(500),
+    type VARCHAR(50) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    description VARCHAR(500),
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    UNIQUE (code)
+);
+---Success
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_REGISTER','User is created successfully','Welcome','សូមស្វាគមន៍','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_CHANGE_PASSWORD','Password is changed successfully','Password is changed successfully.','ពាក្យសម្ងាត់ត្រូវបានប្តូរថ្មីដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_LOGIN','User logs in successfully','Welcome again','សូមស្វាគមន៍ជាថ្មីម្ដងទៀត','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_LOGOUT','User logs out successfully','See you next time','ជួបគ្នាលើកក្រោយទៀត','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_IS_AUTHENTICATED','User is authenticated','User is authenticated','គណនីនេះត្រឹមត្រូវ','info');
+---Error
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INVALID_TOKEN','Invalid Token','Please login again','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__EXPIRED_TOKEN','Expired Token','Session expires, please login again','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__UNAUTHENTICATED_USER','Unauthenticated user','Please login again','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__UNAUTHORIZED_ACCESS','Unauthorized Access','You do not have permission to access this function','អ្នកមិនមានសិទ្ធិចូលប្រើប្រាស់មុខងារនេះទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_BLACKLISTED','Token blacklisted','You are not authenticated to access this','អ្នកមិនមានគណនីក្នុងប្រព័ន្ធកម្មវិធីនេះទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INTERNAL_SERVER_ERROR','Internal Server Error','Our server is sleeping, please try again in 5 minutes','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__EMAIL_OR_PASSWORD_INCORRECT','Email or password is incorrect','Your email or password is incorrect','អ៊ីមែល ឬពាក្យសម្ងាត់របស់អ្នកមិនត្រឹមត្រូវទេ','error');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__CURRENT_PASSWORD_NOT_CORRECT','The current password is not correct','Your current password is not correct','ពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នកមិនត្រឹមត្រូវទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE','Your new password must not be the same as your last 3 passwords','Your new password must not be the same as your last 3 passwords','ពាក្យសម្ងាត់ថ្មីមិនអាចដូចនឹងពាក្យសម្ងាត់ចាស់ពីមុន៣របស់អ្នកទេ','error');
+---Validation
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_MAX_50','Name must not exceed 50 characters','Please shorten your name to less than 50 characters','អ្នកបានចុះឈ្មោះជាមួយអ៊ីមែលនេះរួចហើយ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__EMAIL_REQUIRED','Email is required','Please provide your email','សូមបញ្ចូលអ៊ីមែលរបស់អ្នក','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__EMAIL_EMAIL','The email is not in correct format','Please enter a valid email address','សូមបញ្ចូលអ៊ីមែលឲ្យបានត្រឹមត្រូវ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__EMAIL_UNIQUE_USERS_EMAIL','The email has already existed in the system','You have already registered with this email','អ្នកបានចុះឈ្មោះជាមួយអ៊ីមែលនេះរួចហើយ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PASSWORD_REQUIRED','Password is required','Please provide a password','សូមបញ្ចូលពាក្យសម្ងាត់','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PASSWORD_MIN_8','Password must have at least 8 characters','Password must have at least 8 characters','ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច៨តួអក្សរ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__CURRENT_PASSWORD_REQUIRED','Current password is required','Please provide your current password','សូមបញ្ចូលពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នក','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NEW_PASSWORD_REQUIRED','New password is required','Please provide your new password','សូមបញ្ចូលពាក្យសម្ងាត់ថ្មីរបស់អ្នក','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NEW_PASSWORD_MIN_8','New password must have at least 8 characters','Your new password must have at least 8 characters','ពាក្យសម្ងាត់ថ្មីរបស់អ្នកត្រូវមានយ៉ាងតិច៨តួអក្សរ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NEW_PASSWORD_DIFFERENT_CURRENT_PASSWORD','Current and new password must not be the same','Your new password must not be the same as current password','ពាក្យសម្ងាត់បច្ចុប្បន្ន និងថ្មីរបស់អ្នកមិនអាចដូចគ្នាបានទេ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NEW_PASSWORD_CONFIRMED','Confirmed new password does not match','Confirmed new password does not match','ពាក្យសម្ងាត់ថ្មី និងការបញ្ជាក់ពាក្យសម្ងាត់ថ្មីមិនត្រូវគ្នាទេ','warning');
 ------------------------------------------------------------------------
 
 -- -----------------------------ACTIVITIES

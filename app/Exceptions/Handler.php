@@ -56,7 +56,7 @@ class Handler extends ExceptionHandler
             return $this->standardJsonResponse(
                 401,
                 false,
-                'Unauthorized Access',
+                'KC_MSG_ERROR__TOKEN_BLACKLISTED',
                 null,
                 ErrorCode::ERR_CODE_TOKEN_BLACKLISTED
             );
