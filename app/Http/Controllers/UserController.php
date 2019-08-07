@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use JsonResponse;
-
+    protected $i;
     /**
      * User Change Password
      *
