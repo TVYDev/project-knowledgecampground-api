@@ -27,6 +27,9 @@ class UserController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
             if($result !== true) return $result;
 
+            $i = 1;
+            $j = $i++;
+
             $user = auth()->user();
 
             $currentPwd = $request->current_password;
