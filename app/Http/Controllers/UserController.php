@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use JsonResponse;
-    protected $i;
     /**
      * User Change Password
      *
@@ -26,9 +25,6 @@ class UserController extends Controller
             // --- validate inputs
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
             if($result !== true) return $result;
-
-            $i = 1;
-            $j = $i++;
 
             $user = auth()->user();
 

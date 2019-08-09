@@ -14,6 +14,11 @@ class SystemMessage extends Model
 
     public function getArrayMessageSysEnKh($code)
     {
+        $result = [
+            'sys'=> null,
+            'en' => null,
+            'kh' => null
+        ];
         try
         {
             $msg = self::where('code', $code)
@@ -26,18 +31,13 @@ class SystemMessage extends Model
                     'en'    => is_null($msg->message_en) || empty($msg->message_en) ? null : $msg->message_en,
                     'kh'    => is_null($msg->message_kh) || empty($msg->message_kh) ? null : $msg->message_kh
                 ];
-            }else{
-                $result = [
-                    'sys'=> null,
-                    'en' => null,
-                    'kh' => null
-                ];
             }
 
             return $result;
-        }catch(\Exception $exception)
+        }
+        catch(\Exception $exception)
         {
-            throw $exception;
+            return $result;
         }
     }
 }
