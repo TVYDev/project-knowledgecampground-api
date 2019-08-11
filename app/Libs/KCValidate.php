@@ -37,6 +37,21 @@ class KCValidate
         ]
     ];
 
+    /**
+     * Example result
+     * Validation for user register
+     *
+     * array:8 [
+        "name.required" => "KC_MSG_INVALID__NAME_REQUIRED"
+        "name.string" => "KC_MSG_INVALID__NAME_STRING"
+        "name.max" => "KC_MSG_INVALID__NAME_MAX_50"
+        "email.required" => "KC_MSG_INVALID__EMAIL_REQUIRED"
+        "email.email" => "KC_MSG_INVALID__EMAIL_EMAIL"
+        "email.unique" => "KC_MSG_INVALID__EMAIL_UNIQUE_USERS_EMAIL"
+        "password.required" => "KC_MSG_INVALID__PASSWORD_REQUIRED"
+        "password.min" => "KC_MSG_INVALID__PASSWORD_MIN_8"
+        ]
+     */
     private function doGenerateArrayValidationMessageCodesFromRule($keyValidationRule)
     {
         $validationMessageCodes = [];
