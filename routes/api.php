@@ -31,3 +31,10 @@ Route::group([
     ], function() {
         Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
 });
+
+Route::group([
+    'prefix' => 'question-description',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function (){
+        Route::post('/save', 'QuestionDescriptionController@postSave')->name('description.postSave');
+});
