@@ -11,9 +11,9 @@ CREATE TABLE users (
   password1 VARCHAR(255),
   password2 VARCHAR(255),
   password3 VARCHAR(255),
-  isActive BOOLEAN,
-  isBlocked BOOLEAN,
-  isdeleted BOOLEAN,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   UNIQUE (email)
 );
@@ -31,6 +31,35 @@ CREATE TABLE user_avatars
   PRIMARY KEY (id),
   FOREIGN KEY (user__id) REFERENCES users(id),
   UNIQUE (seed)
+);
+
+CREATE TABLE questions
+(
+    id SERIAL NOT NULL,
+    title VARCHAR(1000) NOT NULL,
+    question_description__id int4 NOT NULL,
+    user__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (question_description__id) REFERENCES question_descriptions(id),
+    FOREIGN KEY (user__id) REFERENCES users(id)
+);
+
+CREATE TABLE question_descriptions
+(
+    id SERIAL NOT NULL,
+    question__id int4 NOT NULL,
+    data VARCHAR NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (question__id) REFERENCES questions(id)
 );
 
 CREATE TABLE third_party_api_urls
@@ -104,22 +133,3 @@ ADD COLUMN password3 varchar(255) NULL,
 ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE,
 ADD COLUMN is_blocked boolean NOT NULL DEFAULT FALSE,
 ADD COLUMN is_deleted boolean NOT NULL DEFAULT FALSE;
-
--- 13 April 2019
--- Change user_avatars to user_avatars_old (For not use anymore)
-ALTER TABLE user_avatars RENAME TO user_avatars_old;
--- Add new user_avatars table structure
-CREATE TABLE user_avatars
-(
-  id SERIAL NOT NULL,
-  user__id int4 NOT NULL,
-  seed int4 NOT NULL,
-  default_avatar_url VARCHAR(500) NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT true,
-  img_url VARCHAR(500) NULL,
-  created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (id),
-  FOREIGN KEY (user__id) REFERENCES users(id),
-  UNIQUE (seed)
-);
