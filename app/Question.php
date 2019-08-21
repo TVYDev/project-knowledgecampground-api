@@ -9,16 +9,18 @@ class Question extends Model
     protected $table = 'questions';
 
     protected $fillable = [
+        'public_id',
         'title',
         'is_draft',
         'is_active',
         'is_blocked',
-        'is_deleted'
+        'is_deleted',
+        'user__id',
+        'posted_at'
     ];
 
     protected $hidden = [
-        'id',
-        'user__id'
+        'id', 'user__id', 'posted_at'
     ];
 
     /**

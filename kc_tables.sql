@@ -36,16 +36,19 @@ CREATE TABLE user_avatars
 CREATE TABLE questions
 (
     id SERIAL NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
     title VARCHAR(1000) NOT NULL,
     user__id int4 NOT NULL,
     is_draft BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    posted_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id),
-    FOREIGN KEY (user__id) REFERENCES users(id)
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    UNIQUE (public_id)
 );
 
 CREATE TABLE question_descriptions
@@ -128,6 +131,11 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__TITLE_MAX_250','Title must not exceed 250 characters','Please shorten your title to less than 250 characters','សូមសម្រួលចំណងជើងនៃសំណួររបស់អ្នកឲ្យនៅតិចជាង២៥០តួអក្សរ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__DESCRIPTION_REQUIRED','Description is required','Please provide description for your question','សូមបញ្ចូលការពិព័រនានៃសំណួររបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__DESCRIPTION_STRING','Description must be a string','Description is not a valid string','ការពិព័រនាមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PUBLIC_ID_REQUIRED','public_id is required','Please provide a public id','','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PUBLIC_ID_STRING','public_id must be a string','Public id is not a valid string','','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_REQUIRED','is_draft is required','Please specify if it is a draft','','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_BOOLEAN','is_draft must be a boolean','Value to specify for a draft must be true or false','','warning');
 ------------------------------------------------------------------------
 
 -- -----------------------------ACTIVITIES

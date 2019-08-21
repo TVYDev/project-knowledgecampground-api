@@ -39,7 +39,9 @@ class KCValidate
         ],
         self::VALIDATION_QUESTION_SAVE => [
             'title'         => 'required|string|max:250',
-            'description'   => 'required|string'
+            'description'   => 'required|string',
+            'public_id'     => 'required|string',
+            'is_draft'      => 'required|boolean'
         ],
         self::VALIDATION_QUESTION_DESCRIPTION_SAVE => [
             'desc_data' => 'required'

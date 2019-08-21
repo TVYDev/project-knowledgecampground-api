@@ -45,3 +45,10 @@ Route::group([
     ], function (){
         Route::post('/save', 'QuestionDescriptionController@postSave')->name('description.postSave');
 });
+
+Route::group([
+    'prefix' => 'support',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function (){
+        Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
+});
