@@ -21,6 +21,7 @@ class UserAvatar extends Model
     ];
 
     /**
+     * Relationship One-to-One with User
      * Get the user that owns the userAvatar
      */
     public function user()

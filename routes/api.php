@@ -33,6 +33,13 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'question',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function (){
+        Route::post('/save', 'QuestionController@postSave')->name('question.postSave');
+});
+
+Route::group([
     'prefix' => 'question-description',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){
