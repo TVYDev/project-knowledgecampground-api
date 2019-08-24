@@ -21,7 +21,7 @@ class KCValidate
     const VALIDATION_USER_LOGIN = 'valid_user_login';
     const VALIDATION_USER_REGISTER = 'valid_user_register';
     const VALIDATION_QUESTION_SAVE = 'valid_question_save';
-    const VALIDATION_QUESTION_DESCRIPTION_SAVE = 'valid_question_description_save';
+    const VALIDATION_QUESTION_SAVE_DURING_EDITING = 'valid_question_save_during_editing';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -37,14 +37,15 @@ class KCValidate
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|min:8'
         ],
-        self::VALIDATION_QUESTION_SAVE => [
-            'title'         => 'required|string|max:250',
+        self::VALIDATION_QUESTION_SAVE_DURING_EDITING => [
+            'title'         => 'string|max:250',
             'description'   => 'required|string',
             'public_id'     => 'required|string',
             'is_draft'      => 'required|boolean'
         ],
-        self::VALIDATION_QUESTION_DESCRIPTION_SAVE => [
-            'desc_data' => 'required'
+        self::VALIDATION_QUESTION_SAVE => [
+            'title'         => 'required|string|max:250',
+            'is_draft'      => 'required|boolean'
         ]
     ];
 

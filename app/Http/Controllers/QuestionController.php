@@ -14,12 +14,12 @@ class QuestionController extends Controller
 {
     use JsonResponse;
 
-    public function postSave(Request $request)
+    public function postSaveDuringEditing (Request $request)
     {
         try
         {
             // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(),KCValidate::VALIDATION_QUESTION_SAVE);
+            $result = (new KCValidate())->doValidate($request->all(),KCValidate::VALIDATION_QUESTION_SAVE_DURING_EDITING);
             if($result !== true) return $result;
 
             DB::beginTransaction();
@@ -51,6 +51,33 @@ class QuestionController extends Controller
         catch(\Exception $exception)
         {
             DB::rollBack();
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function putSave (Request $request, $publicId)
+    {
+        try
+        {
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
+            if($result !== true) return $result;
+
+            $question = Question::where('public_id', $publicId)->first();
+            $question->title = $request->title;
+            $question->is_draft = $request->is_draft;
+            $question->posted_at = new \DateTime();
+            $question->save();
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                'KC_MSG_SUCCESS__QUESTION_SAVE',
+                $question
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $exception->getMessage();
             return $this->standardJsonExceptionResponse($exception);
         }
     }

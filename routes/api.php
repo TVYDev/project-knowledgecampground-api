@@ -36,14 +36,8 @@ Route::group([
     'prefix' => 'question',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){
-        Route::post('/save', 'QuestionController@postSave')->name('question.postSave');
-});
-
-Route::group([
-    'prefix' => 'question-description',
-    'middleware' => MiddlewareConst::JWT_AUTH
-    ], function (){
-        Route::post('/save', 'QuestionDescriptionController@postSave')->name('description.postSave');
+        Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');
+        Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');
 });
 
 Route::group([
