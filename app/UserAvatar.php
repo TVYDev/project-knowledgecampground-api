@@ -13,6 +13,7 @@ class UserAvatar extends Model
         'seed',
         'default_avatar_url',
         'is_active',
+        'is_deleted',
         'img_url'
     ];
 
@@ -21,6 +22,7 @@ class UserAvatar extends Model
     ];
 
     /**
+     * Relationship One-to-One with User
      * Get the user that owns the userAvatar
      */
     public function user()
