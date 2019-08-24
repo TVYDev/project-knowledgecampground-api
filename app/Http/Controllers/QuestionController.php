@@ -62,22 +62,23 @@ class QuestionController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
             if($result !== true) return $result;
 
+            $isDraft = $request->is_draft;
+
             $question = Question::where('public_id', $publicId)->first();
             $question->title = $request->title;
-            $question->is_draft = $request->is_draft;
+            $question->is_draft = $isDraft;
             $question->posted_at = new \DateTime();
             $question->save();
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'KC_MSG_SUCCESS__QUESTION_SAVE',
+                $isDraft ? 'KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT' : 'KC_MSG_SUCCESS__QUESTION_SAVE',
                 $question
             );
         }
         catch(\Exception $exception)
         {
-            return $exception->getMessage();
             return $this->standardJsonExceptionResponse($exception);
         }
     }

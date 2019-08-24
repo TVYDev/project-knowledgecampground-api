@@ -98,6 +98,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_LOGOUT','User logs out successfully','See you next time','ជួបគ្នាលើកក្រោយទៀត','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_IS_AUTHENTICATED','User is authenticated','User is authenticated','គណនីនេះត្រឹមត្រូវ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE','Question is saved successfully','Your question is posted successfully','សំណួររបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT','Question is saved as draft successfully','Your drafted question is saved successfully','ពង្រាងនៃសំណួររបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INVALID_TOKEN','Invalid Token','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__EXPIRED_TOKEN','Expired Token','Session expires, please login again','គណនីអស់សុពលភាព សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
