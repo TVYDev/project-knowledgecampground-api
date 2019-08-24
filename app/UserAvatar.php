@@ -13,6 +13,7 @@ class UserAvatar extends Model
         'seed',
         'default_avatar_url',
         'is_active',
+        'is_deleted',
         'img_url'
     ];
 

@@ -12,7 +12,6 @@ CREATE TABLE users (
   password2 VARCHAR(255),
   password3 VARCHAR(255),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   UNIQUE (email)
@@ -24,7 +23,8 @@ CREATE TABLE user_avatars
   user__id int4 NOT NULL,
   seed int4 NOT NULL,
   default_avatar_url VARCHAR(500) NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT true,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   img_url VARCHAR(500) NULL,
   created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
@@ -41,7 +41,6 @@ CREATE TABLE questions
     user__id int4 NOT NULL,
     is_draft BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     posted_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
@@ -137,13 +136,3 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_REQUIRED','is_draft is required','Please specify if it is a draft','','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_BOOLEAN','is_draft must be a boolean','Value to specify for a draft must be true or false','','warning');
 ------------------------------------------------------------------------
-
--- -----------------------------ACTIVITIES
--- 06 April 2019
-ALTER TABLE users
-ADD COLUMN password1 varchar(255) NULL,
-ADD COLUMN password2 varchar(255) NULL,
-ADD COLUMN password3 varchar(255) NULL,
-ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE,
-ADD COLUMN is_blocked boolean NOT NULL DEFAULT FALSE,
-ADD COLUMN is_deleted boolean NOT NULL DEFAULT FALSE;

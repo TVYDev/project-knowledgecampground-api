@@ -69,7 +69,7 @@ trait JsonResponse
             'data'          => $data,
             'errorCode'     => $errorCode,
             'meta'          => [
-                'program'   => 'KnowledgeCommunity_API',
+                'program'   => 'KnowledgeCampground_API',
                 'version'   => '1.0'
             ]
         ],$httpCode);

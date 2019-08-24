@@ -13,7 +13,6 @@ class Question extends Model
         'title',
         'is_draft',
         'is_active',
-        'is_blocked',
         'is_deleted',
         'user__id',
         'posted_at'
