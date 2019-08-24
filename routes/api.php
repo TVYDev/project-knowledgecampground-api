@@ -31,3 +31,18 @@ Route::group([
     ], function() {
         Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
 });
+
+Route::group([
+    'prefix' => 'question',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function (){
+        Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');
+        Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');
+});
+
+Route::group([
+    'prefix' => 'support',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function (){
+        Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
+});

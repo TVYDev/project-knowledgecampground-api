@@ -51,10 +51,20 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Relation One-to-One with UserAvatar
+     * Relationship One-to-One with UserAvatar
+     * Get user_avatar that this user owns
      */
     public function userAvatar()
     {
         return $this->hasOne('App\UserAvatar','user__id');
+    }
+
+    /**
+     * Relationship One-to-Many with Question
+     * Get questions that this user owns
+     */
+    public function questions()
+    {
+        return $this->hasMany('App\Questions', 'user__id');
     }
 }
