@@ -111,7 +111,7 @@ class UserController extends Controller
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60
+                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
                 ]
             );
         }
@@ -181,7 +181,7 @@ class UserController extends Controller
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60
+                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
                 ]);
         }
         catch(\Exception $exception)
