@@ -94,8 +94,6 @@ class QuestionController extends Controller
                         ->first();
             if($question)
             {
-                $questionDescription = $question->questionDescription()->where('is_active', true)->first();
-                $question['description'] = $questionDescription;
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
@@ -104,6 +102,40 @@ class QuestionController extends Controller
                 );
             }
 
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getDescriptionOfQuestion ($publicId)
+    {
+        try
+        {
+            $question = Question::where('public_id', $publicId)
+                ->where('is_active', true)
+                ->where('is_draft', false)
+                ->where('is_deleted', false)
+                ->first();
+
+            if($question)
+            {
+                $questionDescription = $question->questionDescription()->where('is_active', true)->first();
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    null,
+                    $questionDescription
+                );
+            }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
