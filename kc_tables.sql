@@ -23,6 +23,7 @@ CREATE TABLE user_avatars
   user__id int4 NOT NULL,
   seed int4 NOT NULL,
   default_avatar_url VARCHAR(500) NOT NULL,
+  is_using_default BOOLEAN NOT NULL DEFAULT TRUE,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   img_url VARCHAR(500) NULL,

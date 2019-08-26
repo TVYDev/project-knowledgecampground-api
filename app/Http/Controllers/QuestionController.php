@@ -2,17 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
 use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
+use App\User;
+use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
     use JsonResponse;
+
+    protected $support;
+
+    public function __construct()
+    {
+        $this->support = new Supporter();
+    }
 
     public function postSaveDuringEditing (Request $request)
     {
@@ -92,8 +102,17 @@ class QuestionController extends Controller
                         ->where('is_draft', false)
                         ->where('is_deleted', false)
                         ->first();
+
             if($question)
             {
+                $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at);
+                $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at);
+                $question['author_name'] = $question->user()->pluck('name')->first();
+                $question['author_id'] = $question->user()->pluck('id')->first();
+
+                $author = User::find($question['author_id']);
+                $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
