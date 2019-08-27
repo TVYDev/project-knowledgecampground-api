@@ -105,8 +105,8 @@ class QuestionController extends Controller
 
             if($question)
             {
-                $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at);
-                $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at);
+                $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+                $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
                 $question['author_name'] = $question->user()->pluck('name')->first();
                 $question['author_id'] = $question->user()->pluck('id')->first();
 

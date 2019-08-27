@@ -11,18 +11,38 @@ namespace App\Http\Support;
 
 class Supporter
 {
-    public function getHumanReadableActionDateAsString ($stringPostedDate)
+    /***************************************
+     * Action Constants
+     ***************************************/
+    const ASK_ACTION = 'asked';
+    const ANSWER_ACTION = 'answered';
+    const COMMENT_ACTION = 'commented';
+    const REPLY_ACTION = 'replied';
+    const DO_ACTION = 'did';
+
+    public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = self::DO_ACTION)
     {
-        $postedDate = new \DateTime($stringPostedDate);
-        $now = new \DateTime();
-        $diff = date_diff($postedDate, $now, true);
+        $postedReadablePeriod = $this->getReadablePeriodToNow($stringPostedDate);
+        $updatedReadablePeriod = null;
 
-        $d = $diff->d;
-        $h = $diff->h;
-        $i = $diff->i;
-        $s = $diff->s;
+        $humanReadableActionDate = "$typeOfAction $postedReadablePeriod";
 
-        $readableTime = null;
+        if(isset($stringUpdatedDate) && (new \DateTime($stringUpdatedDate) > new \DateTime($stringPostedDate))) {
+            $updatedReadablePeriod = $this->getReadablePeriodToNow($stringUpdatedDate);
+            $humanReadableActionDate .= " (edited $updatedReadablePeriod)";
+        }
+
+        return $humanReadableActionDate;
+    }
+
+    private function getReadablePeriodToNow (string $stringStartedDate)
+    {
+        $dateInterval = date_diff(new \DateTime($stringStartedDate), new \DateTime(), true);
+
+        $d = $dateInterval->d;
+        $h = $dateInterval->h;
+        $i = $dateInterval->i;
+        $s = $dateInterval->s;
 
         // condition --> less than a week (7 days)
         if($d < 7) {
@@ -50,7 +70,7 @@ class Supporter
         }
         // condition --> more than 1 week
         else {
-            $readableTime = date('Y M d \a\t H:i', strtotime($stringPostedDate));
+            $readableTime = date('M d, Y \a\t H:i', strtotime($stringStartedDate));;
         }
 
         return $readableTime;
