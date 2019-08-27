@@ -12,6 +12,7 @@ class UserAvatar extends Model
     protected $fillable = [
         'seed',
         'default_avatar_url',
+        'is_using_default',
         'is_active',
         'is_deleted',
         'img_url'
@@ -20,6 +21,8 @@ class UserAvatar extends Model
     protected $hidden = [
         'id', 'user__id',
     ];
+
+    protected $sharedUserAvatar = '\svg\default_avatars\shared_avatar.svg';
 
     /**
      * Relationship One-to-One with User
@@ -52,10 +55,34 @@ class UserAvatar extends Model
         }
         catch(\Exception $exception)
         {
-            $sharedAvatarUrl = '\svg\default_avatars\shared_avatar.svg';
-            $this['default_avatar_url'] = $sharedAvatarUrl;
+            $this['default_avatar_url'] = $this->getSharedAvatarUrl();
         }finally {
             return $this;
         }
+    }
+
+    public function getSharedAvatarUrl ()
+    {
+        return $this->sharedUserAvatar;
+    }
+
+    public function getActiveUserAvatarUrl ($user)
+    {
+        $avatarUrl = null;
+        if($user){
+            $avatar = $user->userAvatar()->where('is_active', true)->first();
+            if($avatar){
+                if($avatar->is_using_default){
+                    $avatarUrl = $avatar->default_avatar_url;
+                }else{
+                    $avatarUrl = $avatar->img_url;
+                }
+            }else{
+                $avatarUrl = $this->getSharedAvatarUrl();
+            }
+        }else{
+            $avatarUrl = $this->getSharedAvatarUrl();
+        }
+        return $avatarUrl;
     }
 }
