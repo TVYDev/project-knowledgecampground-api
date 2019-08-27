@@ -38,6 +38,8 @@ Route::group([
     ], function (){
         Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');
         Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');
+        Route::get('/view/{publicId}', 'QuestionController@getQuestion')->name('question.getQuestion');
+        Route::get('/description-of/{publicId}', 'QuestionController@getDescriptionOfQuestion')->name('question.getDescriptionOfQuestion');
 });
 
 Route::group([

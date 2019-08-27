@@ -14,6 +14,10 @@ class QuestionDescription extends Model
         'is_deleted'
     ];
 
+    protected $hidden = [
+        'id', 'question__id'
+    ];
+
     /**
      * Relationship One-to-One with Question
      * Get the question that own this question_description

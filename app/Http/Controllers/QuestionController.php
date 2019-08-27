@@ -2,17 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
+use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
-use App\QuestionDescription;
+use App\User;
+use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
     use JsonResponse;
+
+    protected $support;
+
+    public function __construct()
+    {
+        $this->support = new Supporter();
+    }
 
     public function postSaveDuringEditing (Request $request)
     {
@@ -75,6 +85,82 @@ class QuestionController extends Controller
                 true,
                 $isDraft ? 'KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT' : 'KC_MSG_SUCCESS__QUESTION_SAVE',
                 $question
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getQuestion($publicId)
+    {
+        try
+        {
+            $question = Question::where('public_id', $publicId)
+                        ->where('is_active', true)
+                        ->where('is_draft', false)
+                        ->where('is_deleted', false)
+                        ->first();
+
+            if($question)
+            {
+                $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+                $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+                $question['author_name'] = $question->user()->pluck('name')->first();
+                $question['author_id'] = $question->user()->pluck('id')->first();
+
+                $author = User::find($question['author_id']);
+                $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    null,
+                    $question
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getDescriptionOfQuestion ($publicId)
+    {
+        try
+        {
+            $question = Question::where('public_id', $publicId)
+                ->where('is_active', true)
+                ->where('is_draft', false)
+                ->where('is_deleted', false)
+                ->first();
+
+            if($question)
+            {
+                $questionDescription = $question->questionDescription()->where('is_active', true)->first();
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    null,
+                    $questionDescription
+                );
+            }
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }
         catch(\Exception $exception)

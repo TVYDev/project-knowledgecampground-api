@@ -19,7 +19,7 @@ class Question extends Model
     ];
 
     protected $hidden = [
-        'id', 'user__id', 'posted_at'
+        'id', 'user__id'
     ];
 
     /**
