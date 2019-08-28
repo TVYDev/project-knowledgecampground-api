@@ -43,6 +43,12 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'subject',
+    ], function () {
+        Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
+});
+
+Route::group([
     'prefix' => 'support',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){

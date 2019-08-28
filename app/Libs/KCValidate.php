@@ -39,12 +39,14 @@ class KCValidate
         ],
         self::VALIDATION_QUESTION_SAVE_DURING_EDITING => [
             'title'         => 'string|max:250',
+            'subject_public_id' => 'string|max:500',
             'description'   => 'required|string',
             'public_id'     => 'required|string',
             'is_draft'      => 'required|boolean'
         ],
         self::VALIDATION_QUESTION_SAVE => [
             'title'         => 'required|string|max:250',
+            'subject_public_id' => 'required|string|max:500',
             'is_draft'      => 'required|boolean'
         ]
     ];
