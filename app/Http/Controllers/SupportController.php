@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
+use App\Libs\KCValidate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SupportController extends Controller
 {
@@ -28,6 +30,27 @@ class SupportController extends Controller
                 true,
                 null,
                 ['public_id' => $randomString]
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function clearCacheValidationRules()
+    {
+        try
+        {
+            $rules = (new KCValidate())->getAllKeyValidationRuleNames();
+            foreach ($rules as $rule){
+                Cache::forget($rule);
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                null
             );
         }
         catch(\Exception $exception)

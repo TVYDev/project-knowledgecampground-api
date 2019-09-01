@@ -40,6 +40,7 @@ CREATE TABLE questions
     public_id VARCHAR(500) NOT NULL,
     title VARCHAR(1000) NOT NULL,
     user__id int4 NOT NULL,
+    subject__id int4 NOT NULL,
     is_draft BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -48,6 +49,7 @@ CREATE TABLE questions
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id),
     FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (subject__id) REFERENCES subjects(id),
     UNIQUE (public_id)
 );
 
@@ -63,6 +65,26 @@ CREATE TABLE question_descriptions
     PRIMARY KEY (id),
     FOREIGN KEY (question__id) REFERENCES questions(id)
 );
+
+CREATE TABLE subjects
+(
+    id SERIAL NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
+    name_en VARCHAR(500) NOT NULL,
+    name_kh VARCHAR(500) NOT NULL,
+    description_en VARCHAR(1000) NOT NULL,
+    description_kh VARCHAR(1000) NOT NULL,
+    img_url VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    UNIQUE (public_id)
+);
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('DEFAULT','Default','កខគ','Default','កខគ','\icons\subjects\subject.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('PROGRAMMING','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('KHMER_LITERATURE','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('ENGLISH_LITERATURE','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
 
 CREATE TABLE third_party_api_urls
 (
@@ -139,4 +161,8 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PUBLIC_ID_STRING','public_id must be a string','Public id is not a valid string','','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_REQUIRED','is_draft is required','Please specify if it is a draft','','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__IS_DRAFT_BOOLEAN','is_draft must be a boolean','Value to specify for a draft must be true or false','','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_REQUIRED','subject_public_id is required','Please provide public id of the subject','សូមបញ្ចូលកូដសម្គាល់របស់មុខវិជ្ជា','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_STRING','subject_public_id must be a string','Given public id of the subject is not valid','កូដសម្គាល់របស់មុខវិជ្ជាមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_MAX_500','subject_public_id must not exceed 500 characters','Public id of the subject must not exceed 500 characters','កូដសម្គាល់របស់មុខវិជ្ជាមិនត្រូវលើសពី ៥០០ តួអក្សរទេ','warning');
 ------------------------------------------------------------------------
