@@ -15,11 +15,12 @@ class Question extends Model
         'is_active',
         'is_deleted',
         'user__id',
+        'subject__id',
         'posted_at'
     ];
 
     protected $hidden = [
-        'id', 'user__id'
+        'id', 'user__id', 'subject__id'
     ];
 
     /**
@@ -38,5 +39,14 @@ class Question extends Model
     public function user()
     {
         return $this->belongsTo('App\User', 'user__id');
+    }
+
+    /**
+     * Relationship One-to-Many with Subject
+     * Get subject that owns this question
+     */
+    public function subject()
+    {
+        return $this->belongsTo('App\Subject', 'subject__id');
     }
 }

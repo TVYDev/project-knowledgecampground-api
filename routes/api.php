@@ -43,8 +43,15 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'subject',
+    ], function () {
+        Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
+});
+
+Route::group([
     'prefix' => 'support',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){
         Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
+        Route::get('/clear-cache-key-validation-rules', 'SupportController@clearCacheValidationRules')->name('support.clearCacheValidationRules');
 });
