@@ -169,6 +169,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE','Your new password must not be the same as your last 3 passwords','Your new password must not be the same as your last 3 passwords','ពាក្យសម្ងាត់ថ្មីមិនអាចដូចនឹងពាក្យសម្ងាត់ចាស់ពីមុន៣របស់អ្នកទេ','error');
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__QUESTION_NOT_EXIST','Question with this public id does not exist','Your searched question does not exist','មិនមានសំណួរដែលអ្នកកំពុងស្វែងរកទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__SUBJECT_NOT_EXIST','Subject with this public id does not exist','Your searched subject does not exist','មិនមានមុខវិជ្ជាដែលអ្នកកំពុងស្វែងរកទេ','error');
 ---Validation
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');

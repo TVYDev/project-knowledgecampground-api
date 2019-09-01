@@ -49,6 +49,12 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'tag',
+    ], function () {
+        Route::get('/all-tags-of/{subjectPublicId}', 'TagController@getAllTagsOfSubject')->name('tag.getAllTagsOfSubject');
+});
+
+Route::group([
     'prefix' => 'support',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){
