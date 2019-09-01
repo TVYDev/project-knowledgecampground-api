@@ -8,6 +8,7 @@ use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
+use App\Subject;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
@@ -34,11 +35,14 @@ class QuestionController extends Controller
 
             DB::beginTransaction();
 
+            $subject = Subject::where('public_id', 'DEFAULT')->first();
+
             $question = Question::updateOrCreate(
                 ['public_id' => $request->public_id],
                 [
                     'title' => $request->title,
                     'user__id' => auth()->user()->id,
+                    'subject__id' => $subject->id,
                     'is_draft' => $request->is_draft,
                     'posted_at' => new \DateTime()
                 ]
@@ -74,10 +78,15 @@ class QuestionController extends Controller
 
             $isDraft = $request->is_draft;
 
+            $subject = Subject::where('public_id', $request->subject_public_id)->first();
+
             $question = Question::where('public_id', $publicId)->first();
             $question->title = $request->title;
             $question->is_draft = $isDraft;
             $question->posted_at = new \DateTime();
+            if(isset($subject)){
+                $question->subject__id = $subject->id;
+            }
             $question->save();
 
             return $this->standardJsonResponse(

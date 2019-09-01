@@ -53,4 +53,5 @@ Route::group([
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function (){
         Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
+        Route::get('/clear-cache-key-validation-rules', 'SupportController@clearCacheValidationRules')->name('support.clearCacheValidationRules');
 });

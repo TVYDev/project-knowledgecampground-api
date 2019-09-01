@@ -15,7 +15,8 @@ class SubjectController extends Controller
     {
         try
         {
-            $subjects = Subject::where('is_active', true)->get();
+            $subjects = Subject::where('is_active', true)
+                ->where('public_id', '!=', 'DEFAULT')->get();
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,

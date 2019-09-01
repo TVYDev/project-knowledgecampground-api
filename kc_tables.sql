@@ -81,6 +81,7 @@ CREATE TABLE subjects
     PRIMARY KEY (id),
     UNIQUE (public_id)
 );
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('DEFAULT','Default','កខគ','Default','កខគ','\icons\subjects\subject.png');
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('PROGRAMMING','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('KHMER_LITERATURE','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('ENGLISH_LITERATURE','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
