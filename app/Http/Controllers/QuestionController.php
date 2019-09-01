@@ -122,6 +122,8 @@ class QuestionController extends Controller
                 $author = User::find($question['author_id']);
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
+                $question['subject'] = $question->subject()->where('is_active', true)->first();
+
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
