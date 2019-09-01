@@ -86,6 +86,39 @@ INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('KHMER_LITERATURE','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('ENGLISH_LITERATURE','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
 
+CREATE TABLE tags
+(
+    id SERIAL NOT NULL,
+    subject__id int4 NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
+    name_en VARCHAR(500) NOT NULL,
+    name_kh VARCHAR(500) NOT NULL,
+    description_en VARCHAR(1000) NOT NULL,
+    description_kh VARCHAR(1000) NOT NULL,
+    img_url VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (subject__id) REFERENCES subjects(id),
+    UNIQUE (public_id)
+);
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(2,'PHP','PHP','កខគ','Hypertext Preprocessor It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\php.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(2,'JAVASCRIPT','JavaScript','កខគ','JavaScript It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\javascript.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(3,'PROVERB','Proverb','កខគ','Proverb It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\proverb.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(4,'GRAMMAR','Grammar','កខគ','Grammar It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\grammar.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(4,'VOCABULARY','Vocabulary','កខគ','Vocabulary It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\vocabulary.png');
+
+CREATE TABLE question_tag_mappings
+(
+    question__id int4 NOT NULL,
+    tag__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (question__id,tag__id)
+);
+
 CREATE TABLE third_party_api_urls
 (
   id SERIAL NOT NULL,
