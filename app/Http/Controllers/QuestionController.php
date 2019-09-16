@@ -9,6 +9,7 @@ use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
 use App\Subject;
+use App\Tag;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
@@ -29,11 +30,11 @@ class QuestionController extends Controller
     {
         try
         {
+            DB::beginTransaction();
+
             // -- validate inputs
             $result = (new KCValidate())->doValidate($request->all(),KCValidate::VALIDATION_QUESTION_SAVE_DURING_EDITING);
             if($result !== true) return $result;
-
-            DB::beginTransaction();
 
             $subject = Subject::where('public_id', 'default')->first();
 
@@ -73,10 +74,14 @@ class QuestionController extends Controller
     {
         try
         {
+            DB::beginTransaction();
+
+            // -- validate inputs
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
             if($result !== true) return $result;
 
             $isDraft = $request->is_draft;
+            $tagPublicIds = $request->tag_public_ids;
 
             $subject = Subject::where('public_id', $request->subject_public_id)->first();
 
@@ -87,7 +92,16 @@ class QuestionController extends Controller
             if(isset($subject)){
                 $question->subject__id = $subject->id;
             }
+            if(isset($tagPublicIds)){
+                // TODO: validate to save only tags that are referenced to the selected subject
+                $tags = Tag::whereIn('public_id', $tagPublicIds)->get();
+                foreach($tags as $t){
+                    $question->tags()->attach($t->id);
+                }
+            }
             $question->save();
+
+            DB::commit();
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
@@ -98,6 +112,7 @@ class QuestionController extends Controller
         }
         catch(\Exception $exception)
         {
+            DB::rollBack();
             return $this->standardJsonExceptionResponse($exception);
         }
     }
