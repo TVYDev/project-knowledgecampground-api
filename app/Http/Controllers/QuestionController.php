@@ -35,7 +35,7 @@ class QuestionController extends Controller
 
             DB::beginTransaction();
 
-            $subject = Subject::where('public_id', 'DEFAULT')->first();
+            $subject = Subject::where('public_id', 'default')->first();
 
             $question = Question::updateOrCreate(
                 ['public_id' => $request->public_id],
