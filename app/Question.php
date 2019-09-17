@@ -20,7 +20,8 @@ class Question extends Model
     ];
 
     protected $hidden = [
-        'id', 'user__id', 'subject__id'
+        'id', 'user__id', 'subject__id',
+        'pivot' //exclude immediate table of many-to-many relationship
     ];
 
     /**

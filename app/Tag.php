@@ -20,7 +20,8 @@ class Tag extends Model
     ];
 
     protected $hidden = [
-        'id', 'subject__id'
+        'id', 'subject__id',
+        'pivot' //exclude immediate table of many-to-many relationship
     ];
 
     /**

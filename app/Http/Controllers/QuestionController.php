@@ -93,8 +93,7 @@ class QuestionController extends Controller
                 $question->subject__id = $subject->id;
             }
             if(isset($tagPublicIds)){
-                // TODO: validate to save only tags that are referenced to the selected subject
-                $tags = Tag::whereIn('public_id', $tagPublicIds)->get();
+                $tags = $subject->tags->whereIn('public_id', $tagPublicIds);
                 foreach($tags as $t){
                     $question->tags()->attach($t->id);
                 }
@@ -138,6 +137,7 @@ class QuestionController extends Controller
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
                 $question['subject'] = $question->subject()->where('is_active', true)->first();
+                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
