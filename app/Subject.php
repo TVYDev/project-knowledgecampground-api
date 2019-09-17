@@ -30,4 +30,13 @@ class Subject extends Model
     {
         return $this->hasMany('App\Question', 'subject__id');
     }
+
+    /**
+     * Relationship One-to-Many with Tag
+     * Get one or more tags that belong to this subject
+     */
+    public function tags ()
+    {
+        return $this->hasMany('App\Tag', 'subject__id');
+    }
 }
