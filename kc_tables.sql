@@ -82,9 +82,42 @@ CREATE TABLE subjects
     UNIQUE (public_id)
 );
 INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('DEFAULT','Default','កខគ','Default','កខគ','\icons\subjects\subject.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('PROGRAMMING','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('KHMER_LITERATURE','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('ENGLISH_LITERATURE','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('programming','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('khmer_literature','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('english_literature','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
+
+CREATE TABLE tags
+(
+    id SERIAL NOT NULL,
+    subject__id int4 NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
+    name_en VARCHAR(500) NOT NULL,
+    name_kh VARCHAR(500) NOT NULL,
+    description_en VARCHAR(1000) NOT NULL,
+    description_kh VARCHAR(1000) NOT NULL,
+    img_url VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (subject__id) REFERENCES subjects(id),
+    UNIQUE (public_id)
+);
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(2,'php','PHP','កខគ','Hypertext Preprocessor It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\php.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(2,'javascript','JavaScript','កខគ','JavaScript It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\javascript.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(3,'proverb','Proverb','កខគ','Proverb It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\proverb.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(4,'grammar','Grammar','កខគ','Grammar It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\grammar.png');
+INSERT INTO tags(subject__id,public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES(4,'vocabulary','Vocabulary','កខគ','Vocabulary It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout','កខគ','\icons\tags\vocabulary.png');
+
+CREATE TABLE question_tag_mappings
+(
+    question__id int4 NOT NULL,
+    tag__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (question__id,tag__id)
+);
 
 CREATE TABLE third_party_api_urls
 (
@@ -136,6 +169,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE','Your new password must not be the same as your last 3 passwords','Your new password must not be the same as your last 3 passwords','ពាក្យសម្ងាត់ថ្មីមិនអាចដូចនឹងពាក្យសម្ងាត់ចាស់ពីមុន៣របស់អ្នកទេ','error');
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__QUESTION_NOT_EXIST','Question with this public id does not exist','Your searched question does not exist','មិនមានសំណួរដែលអ្នកកំពុងស្វែងរកទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__SUBJECT_NOT_EXIST','Subject with this public id does not exist','Your searched subject does not exist','មិនមានមុខវិជ្ជាដែលអ្នកកំពុងស្វែងរកទេ','error');
 ---Validation
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');

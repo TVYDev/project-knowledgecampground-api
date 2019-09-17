@@ -20,7 +20,8 @@ class Question extends Model
     ];
 
     protected $hidden = [
-        'id', 'user__id', 'subject__id'
+        'id', 'user__id', 'subject__id',
+        'pivot' //exclude immediate table of many-to-many relationship
     ];
 
     /**
@@ -48,5 +49,16 @@ class Question extends Model
     public function subject()
     {
         return $this->belongsTo('App\Subject', 'subject__id');
+    }
+
+    /**
+     * Relationship Many-to-Many with Tag (Immediate table = question_tag_mappings)
+     * Get one or more tags that belong to this question
+     */
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag', 'question_tag_mappings', 'question__id', 'tag__id')
+            ->withPivot('is_active')
+            ->withTimestamps();
     }
 }
