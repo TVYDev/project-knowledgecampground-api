@@ -204,4 +204,25 @@ class UserController extends Controller
             'KC_MSG_SUCCESS__USER_IS_AUTHENTICATED'
         );
     }
+
+    public function refreshToken () {
+        try
+        {
+            $newToken = auth()->refresh();
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                null,
+                [
+                    'access_token'  => $newToken,
+                    'token_type'    => 'bearer',
+                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
+                ]
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }

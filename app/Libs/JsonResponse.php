@@ -13,6 +13,7 @@ use App\SystemMessage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
@@ -113,6 +114,15 @@ trait JsonResponse
                 'KC_MSG_ERROR__UNAUTHENTICATED_USER',
                 null,
                 ErrorCode::ERR_CODE_UNAUTHENTICATED
+            );
+        }
+        else if($exception instanceof JWTException){
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__JWT_EXCEPTION',
+                null,
+                ErrorCode::EER_CODE_JWT_EXCEPTION
             );
         }
         // --- case when server is not running

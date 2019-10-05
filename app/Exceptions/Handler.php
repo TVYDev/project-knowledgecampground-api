@@ -3,11 +3,13 @@
 namespace App\Exceptions;
 
 use App\Libs\ErrorCode;
+use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 
 class Handler extends ExceptionHandler
 {
@@ -53,13 +55,19 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if($exception instanceof UnauthorizedHttpException){
-            return $this->standardJsonResponse(
-                401,
-                false,
-                'KC_MSG_ERROR__TOKEN_BLACKLISTED',
-                null,
-                ErrorCode::ERR_CODE_TOKEN_BLACKLISTED
-            );
+            $previousException = $exception->getPrevious();
+            if(isset($previousException)){
+                return $this->standardJsonExceptionResponse($previousException);
+            }
+            else {
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    false,
+                    'KC_MSG_ERROR__TOKEN_NOT_PROVIDED',
+                    null,
+                    ErrorCode::ERR_CODE_TOKEN_NOT_PROVIDED
+                );
+            }
         }
 
         return parent::render($request, $exception);
