@@ -36,6 +36,8 @@ class ErrorCode
     const ERR_CODE_TOKEN_EXPIRED    = 'E230301';
     const ERR_CODE_TOKEN_TRASHED    = 'E230302';
     const ERR_CODE_TOKEN_BLACKLISTED= 'E230303';
+    const ERR_CODE_TOKEN_NOT_PROVIDED = 'E230304';
+    const EER_CODE_JWT_EXCEPTION    = 'E230309';
     /******************************************/
 
 
