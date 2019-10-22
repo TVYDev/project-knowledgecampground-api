@@ -54,6 +54,11 @@ class QuestionController extends Controller
                 ['data' => $request->description]
             );
 
+            if($request->hasFile('image_file_upload') && $request->has('image_file_name'))
+            {
+                $request->image_file_upload->storeAs('public/question_images', $request->image_file_name);
+            }
+
             DB::commit();
 
             return $this->standardJsonResponse(
