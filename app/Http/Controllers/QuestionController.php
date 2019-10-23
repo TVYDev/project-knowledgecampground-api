@@ -141,6 +141,8 @@ class QuestionController extends Controller
                 $author = User::find($question['author_id']);
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
+                $question['relative_path_store_images_of_question'] = '/storage/question_images/';
+
                 $question['subject'] = $question->subject()->where('is_active', true)->first();
                 $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
 
