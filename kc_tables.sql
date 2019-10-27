@@ -158,6 +158,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__UNKNOWN_CLIENT','Client credentials are not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INVALID_TOKEN','Invalid Token','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__EXPIRED_TOKEN','Expired Token','Session expires, please login again','គណនីអស់សុពលភាព សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__UNAUTHENTICATED_USER','Unauthenticated user','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');

@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
             }
             else {
                 return $this->standardJsonResponse(
-                    HttpStatusCode::SUCCESS_OK,
+                    HttpStatusCode::ERROR_BAD_REQUEST,
                     false,
                     'KC_MSG_ERROR__TOKEN_NOT_PROVIDED',
                     null,
