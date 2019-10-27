@@ -122,7 +122,7 @@ trait JsonResponse
                 false,
                 'KC_MSG_ERROR__JWT_EXCEPTION',
                 null,
-                ErrorCode::EER_CODE_JWT_EXCEPTION
+                ErrorCode::ERR_CODE_JWT_EXCEPTION
             );
         }
         // --- case when server is not running
