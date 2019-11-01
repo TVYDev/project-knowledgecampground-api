@@ -174,7 +174,6 @@ class QuestionController extends Controller
         {
             $question = Question::where('public_id', $publicId)
                 ->where('is_active', true)
-                ->where('is_draft', false)
                 ->where('is_deleted', false)
                 ->first();
 
