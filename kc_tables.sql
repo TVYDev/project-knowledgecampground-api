@@ -155,6 +155,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_IS_AUTHENTICATED','User is authenticated','User is authenticated','គណនីនេះត្រឹមត្រូវ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE','Question is saved successfully','Your question is posted successfully','សំណួររបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT','Question is saved as draft successfully','Your drafted question is saved successfully','ពង្រាងនៃសំណួររបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE','Answer is saved successfully','Your answer is posted successfully','ចម្លើយរបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -202,6 +203,10 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_REQUIRED','subject_public_id is required','Please provide public id of the subject','សូមបញ្ចូលកូដសម្គាល់របស់មុខវិជ្ជា','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_STRING','subject_public_id must be a string','Given public id of the subject is not valid','កូដសម្គាល់របស់មុខវិជ្ជាមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_MAX_500','subject_public_id must not exceed 500 characters','Public id of the subject must not exceed 500 characters','កូដសម្គាល់របស់មុខវិជ្ជាមិនត្រូវលើសពី ៥០០ តួអក្សរទេ','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_REQUIRED','question_public_id is required','Please provide public id of the question','សូមបញ្ចូលកូដសម្គាល់របស់សំណួរ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_STRING','question_public_id must be a string','Given public id of the question is not valid','កូដសម្គាល់របស់សំណួរមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_MAX_500','question_public_id must not exceed 500 characters','Public id of the question must not exceed 500 characters','កូដសម្គាល់របស់សំណួរមិនត្រូវលើសពី ៥០០ តួអក្សរទេ','warning');
 
 CREATE TABLE answers
 (

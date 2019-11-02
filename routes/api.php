@@ -44,6 +44,13 @@ Route::group([
 });
 
 Route::group([
+   'prefix' => 'answer',
+   'middleware' => MiddlewareConst::JWT_AUTH
+    ], function() {
+        Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
+});
+
+Route::group([
     'prefix' => 'subject',
     ], function () {
         Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
