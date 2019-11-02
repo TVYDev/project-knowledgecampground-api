@@ -65,6 +65,15 @@ class User extends Authenticatable implements JWTSubject
      */
     public function questions()
     {
-        return $this->hasMany('App\Questions', 'user__id');
+        return $this->hasMany('App\Question', 'user__id');
+    }
+
+    /**
+     * Relationship One-to-Many with Answer
+     * Get answers that this user owns
+     */
+    public function answers()
+    {
+        return $this->hasMany('App\Answer', 'user__id');
     }
 }
