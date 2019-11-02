@@ -22,6 +22,7 @@ class KCValidate
     const VALIDATION_USER_REGISTER = 'valid_user_register';
     const VALIDATION_QUESTION_SAVE = 'valid_question_save';
     const VALIDATION_QUESTION_SAVE_DURING_EDITING = 'valid_question_save_during_editing';
+    const VALIDATION_ANSWER_SAVE = 'valid_answer_save';
     const VALIDATION_ANSWER_SAVE_DURING_EDITING = 'valid_answer_save_during_editing';
 
     private $validationRules = [
@@ -54,6 +55,9 @@ class KCValidate
             'public_id'         => 'required|string',
             'is_draft'          => 'required|boolean',
             'question_public_id'=> 'required|string|max:500'
+        ],
+        self::VALIDATION_ANSWER_SAVE => [
+            'is_draft' => 'required|boolean'
         ]
     ];
 

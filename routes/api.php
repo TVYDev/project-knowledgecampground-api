@@ -48,6 +48,7 @@ Route::group([
    'middleware' => MiddlewareConst::JWT_AUTH
     ], function() {
         Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
+        Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
 });
 
 Route::group([

@@ -156,6 +156,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE','Question is saved successfully','Your question is posted successfully','សំណួររបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT','Question is saved as draft successfully','Your drafted question is saved successfully','ពង្រាងនៃសំណួររបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE','Answer is saved successfully','Your answer is posted successfully','ចម្លើយរបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT','Answer is saved as draft successfully','Your drafted answer is saved successfully','ពង្រាងនៃចម្លើយរបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');

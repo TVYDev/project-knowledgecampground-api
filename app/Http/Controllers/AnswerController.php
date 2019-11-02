@@ -61,4 +61,32 @@ class AnswerController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    public function putSave (Request $request, $publicId)
+    {
+        try
+        {
+            // -- validate inputs
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE);
+            if($result !== true) return $result;
+
+            $isDraft = $request->is_draft;
+
+            $answer = Answer::where('public_id', $publicId)->first();
+            $answer->is_draft = $isDraft;
+            $answer->posted_at = new \DateTime();
+            $answer->save();
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                $isDraft ? 'KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT' : 'KC_MSG_SUCCESS__ANSWER_SAVE',
+                $answer
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }
