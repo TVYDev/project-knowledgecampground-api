@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Answer;
+use App\Http\Support\Supporter;
+use App\Libs\DirectoryStore;
+use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
+use App\User;
+use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
 {
     use JsonResponse;
+
+    protected $support;
+
+    public function __construct()
+    {
+        $this->support = new Supporter();
+    }
 
     public function postSaveDuringEditing (Request $request)
     {
@@ -82,6 +94,84 @@ class AnswerController extends Controller
                 true,
                 $isDraft ? 'KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT' : 'KC_MSG_SUCCESS__ANSWER_SAVE',
                 $answer
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getAnswer ($publicId)
+    {
+        try
+        {
+            $answer = Answer::where('public_id', $publicId)
+                        ->where('is_active', true)
+                        ->where('is_draft', false)
+                        ->where('is_deleted', false)
+                        ->first();
+
+            if($answer)
+            {
+                $answer['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($answer->posted_at, $answer->updated_at, Supporter::ANSWER_ACTION);
+                $answer['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($answer->posted_at, $answer->updated_at, Supporter::ANSWER_ACTION);
+                $answer['author_name'] = $answer->user()->pluck('name')->first();
+                $answer['author_id'] = $answer->user()->pluck('id')->first();
+
+                $author = User::find($answer['author_id']);
+                $answer['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+
+                $answer['relative_path_store_images_of_answer'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    null,
+                    $answer
+                );
+            }
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__ANSWER_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch (\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getDescriptionOfAnswer ($publicId)
+    {
+        try
+        {
+            $answer = Answer::where('public_id', $publicId)
+                        ->where('is_active', true)
+                        ->where('is_deleted', false)
+                        ->first();
+
+            if($answer)
+            {
+                $answerDescription = $answer->answerDescription()->where('is_active', true)->first();
+                $answerDescription['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    null,
+                    $answerDescription
+                );
+            }
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__ANSWER_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }
         catch(\Exception $exception)

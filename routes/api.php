@@ -49,6 +49,8 @@ Route::group([
     ], function() {
         Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
         Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
+        Route::get('/view/{publicId}', 'AnswerController@getAnswer')->name('answer.getAnswer');
+        Route::get('/description-of/{publicId}', 'AnswerController@getDescriptionOfAnswer')->name('answer.getDescriptionOfAnswer');
 });
 
 Route::group([
