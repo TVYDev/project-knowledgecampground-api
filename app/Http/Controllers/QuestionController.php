@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Support\Supporter;
+use App\Libs\DirectoryStore;
 use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
@@ -141,7 +142,7 @@ class QuestionController extends Controller
                 $author = User::find($question['author_id']);
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
-                $question['relative_path_store_images_of_question'] = '/storage/question_images/';
+                $question['relative_path_store_images_of_question'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
 
                 $question['subject'] = $question->subject()->where('is_active', true)->first();
                 $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
@@ -174,13 +175,13 @@ class QuestionController extends Controller
         {
             $question = Question::where('public_id', $publicId)
                 ->where('is_active', true)
-                ->where('is_draft', false)
                 ->where('is_deleted', false)
                 ->first();
 
             if($question)
             {
                 $questionDescription = $question->questionDescription()->where('is_active', true)->first();
+                $questionDescription['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
