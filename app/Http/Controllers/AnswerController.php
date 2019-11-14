@@ -108,7 +108,6 @@ class AnswerController extends Controller
         {
             $answer = Answer::where('public_id', $publicId)
                         ->where('is_active', true)
-                        ->where('is_draft', false)
                         ->where('is_deleted', false)
                         ->first();
 
@@ -122,7 +121,10 @@ class AnswerController extends Controller
                 $author = User::find($answer['author_id']);
                 $answer['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
-                $answer['relative_path_store_images_of_answer'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+                // Get description of the answer
+                $description = $answer->answerDescription()->where('is_active', true)->first();
+                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+                $answer['description'] = $description;
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
@@ -170,6 +172,44 @@ class AnswerController extends Controller
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
                 'KC_MSG_ERROR__ANSWER_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getListPostedAnswersOfQuestion ($questionPublicId, $sortedType)
+    {
+        try
+        {
+            $question = Question::where('public_id', $questionPublicId)
+                            ->where('is_draft', false)
+                            ->where('is_active', true)
+                            ->where('is_deleted', false)
+                            ->first();
+
+            if($question) {
+                $answer = Answer::where('question__id', $question->id)
+                    ->where('is_draft', false)
+                    ->where('is_active', true)
+                    ->where('is_deleted', false)
+                    ->get();
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    '',
+                    $answer
+                );
+            }
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
