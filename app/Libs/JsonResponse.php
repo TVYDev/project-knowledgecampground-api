@@ -68,10 +68,10 @@ trait JsonResponse
             'message_en'    => $msgEn,
             'message_kh'    => $msgKh,
             'data'          => $data,
-            'errorCode'     => $errorCode,
+            'error_code'     => $errorCode,
             'meta'          => [
                 'program'   => 'KnowledgeCampground_API',
-                'version'   => '1.0'
+                'version'   => '1.0.0'
             ]
         ],$httpCode);
     }

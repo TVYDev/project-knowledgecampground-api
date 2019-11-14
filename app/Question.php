@@ -26,7 +26,7 @@ class Question extends Model
 
     /**
      * Relationship One-to-One with QuestionDescription
-     * Get question_description the this question owns
+     * Get question_description that this question owns
      */
     public function questionDescription()
     {
