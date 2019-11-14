@@ -57,7 +57,7 @@ CREATE TABLE question_descriptions
 (
     id SERIAL NOT NULL,
     question__id int4 NOT NULL,
-    data VARCHAR NOT NULL,
+    data TEXT NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
@@ -155,6 +155,8 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__USER_IS_AUTHENTICATED','User is authenticated','User is authenticated','គណនីនេះត្រឹមត្រូវ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE','Question is saved successfully','Your question is posted successfully','សំណួររបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT','Question is saved as draft successfully','Your drafted question is saved successfully','ពង្រាងនៃសំណួររបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE','Answer is saved successfully','Your answer is posted successfully','ចម្លើយរបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT','Answer is saved as draft successfully','Your drafted answer is saved successfully','ពង្រាងនៃចម្លើយរបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -173,6 +175,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__QUESTION_NOT_EXIST','Question with this public id does not exist','Your searched question does not exist','មិនមានសំណួរដែលអ្នកកំពុងស្វែងរកទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__SUBJECT_NOT_EXIST','Subject with this public id does not exist','Your searched subject does not exist','មិនមានមុខវិជ្ជាដែលអ្នកកំពុងស្វែងរកទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__ANSWER_NOT_EXIST','Answer with this public id does not exist','Your searched answer does not exist','មិនមានចម្លើយដែលអ្នកកំពុងស្វែងរកទេ','error');
 ---Validation
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');
@@ -202,4 +205,40 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_REQUIRED','subject_public_id is required','Please provide public id of the subject','សូមបញ្ចូលកូដសម្គាល់របស់មុខវិជ្ជា','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_STRING','subject_public_id must be a string','Given public id of the subject is not valid','កូដសម្គាល់របស់មុខវិជ្ជាមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__SUBJECT_PUBLIC_ID_MAX_500','subject_public_id must not exceed 500 characters','Public id of the subject must not exceed 500 characters','កូដសម្គាល់របស់មុខវិជ្ជាមិនត្រូវលើសពី ៥០០ តួអក្សរទេ','warning');
-------------------------------------------------------------------------
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_REQUIRED','question_public_id is required','Please provide public id of the question','សូមបញ្ចូលកូដសម្គាល់របស់សំណួរ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_STRING','question_public_id must be a string','Given public id of the question is not valid','កូដសម្គាល់របស់សំណួរមានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__QUESTION_PUBLIC_ID_MAX_500','question_public_id must not exceed 500 characters','Public id of the question must not exceed 500 characters','កូដសម្គាល់របស់សំណួរមិនត្រូវលើសពី ៥០០ តួអក្សរទេ','warning');
+
+CREATE TABLE answers
+(
+    id SERIAL NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
+    user__id int4 NOT NULL,
+    question__id int4 NOT NULL,
+    is_draft BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    is_accepted BOOLEAN NOT NULL DEFAULT FALSE,
+    accepted_at TIMESTAMP(0) NULL,
+    posted_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (question__id) REFERENCES questions(id),
+    UNIQUE (public_id)
+);
+
+CREATE TABLE answer_descriptions
+(
+    id SERIAL NOT NULL,
+    answer__id int4 NOT NULL,
+    data TEXT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (answer__id) REFERENCES answers(id)
+);

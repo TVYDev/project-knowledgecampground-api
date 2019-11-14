@@ -128,7 +128,6 @@ class QuestionController extends Controller
         {
             $question = Question::where('public_id', $publicId)
                         ->where('is_active', true)
-                        ->where('is_draft', false)
                         ->where('is_deleted', false)
                         ->first();
 
@@ -142,7 +141,10 @@ class QuestionController extends Controller
                 $author = User::find($question['author_id']);
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
-                $question['relative_path_store_images_of_question'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
+                // Get description of the question
+                $description = $question->questionDescription()->where('is_active', true)->first();
+                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
+                $question['description'] = $description;
 
                 $question['subject'] = $question->subject()->where('is_active', true)->first();
                 $question['tags'] = $question->tags()->where('tags.is_active', true)->get();

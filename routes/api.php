@@ -44,6 +44,17 @@ Route::group([
 });
 
 Route::group([
+   'prefix' => 'answer',
+   'middleware' => MiddlewareConst::JWT_AUTH
+    ], function() {
+        Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
+        Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
+        Route::get('/view/{publicId}', 'AnswerController@getAnswer')->name('answer.getAnswer');
+        Route::get('/description-of/{publicId}', 'AnswerController@getDescriptionOfAnswer')->name('answer.getDescriptionOfAnswer');
+        Route::get('/list-posted-answers-of/{questionPublicId}/{sortedType}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
+});
+
+Route::group([
     'prefix' => 'subject',
     ], function () {
         Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
