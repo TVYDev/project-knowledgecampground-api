@@ -76,4 +76,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany('App\Answer', 'user__id');
     }
+
+    /**
+     * Relationship One-to-Many with Comment
+     * Get comments that this user owns
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\Comment', 'user__id');
+    }
 }

@@ -61,4 +61,14 @@ class Question extends Model
             ->withPivot('is_active')
             ->withTimestamps();
     }
+
+    /**
+     * Polymorphic One-to-Many relationship with Comment
+     *
+     * Get all of the question's comments
+     */
+    public function comments()
+    {
+        return $this->morphMany('App\Comment', 'commentable');
+    }
 }

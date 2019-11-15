@@ -41,4 +41,14 @@ class Answer extends Model
     {
         return $this->hasOne('App\AnswerDescription', 'answer__id');
     }
+
+    /**
+     * Polymorphic One-to-Many relationship with Comment
+     *
+     * Get all of the answer's comments
+     */
+    public function comments()
+    {
+        return $this->morphMany('App\Comment', 'commentable');
+    }
 }

@@ -242,3 +242,19 @@ CREATE TABLE answer_descriptions
     PRIMARY KEY (id),
     FOREIGN KEY (answer__id) REFERENCES answers(id)
 );
+
+CREATE TABLE comments
+(
+    id SERIAL NOT NULL,
+    public_id VARCHAR(50) NOT NULL,
+    body text NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    user__id int4 NOT NULL,
+    commentable_id int4 NOT NULL,
+    commentable_type VARCHAR(50),
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user__id) REFERENCES users(id)
+);
