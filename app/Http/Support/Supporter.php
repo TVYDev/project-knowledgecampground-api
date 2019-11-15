@@ -18,14 +18,14 @@ class Supporter
     const ANSWER_ACTION = 'answered';
     const COMMENT_ACTION = 'commented';
     const REPLY_ACTION = 'replied';
-    const DO_ACTION = 'did';
 
-    public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = self::DO_ACTION)
+    public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = null)
     {
         $postedReadablePeriod = $this->getReadablePeriodToNow($stringPostedDate);
         $updatedReadablePeriod = null;
 
-        $humanReadableActionDate = "$typeOfAction $postedReadablePeriod";
+        $typeOfAction = isset($typeOfAction) ? "$typeOfAction " : '';
+        $humanReadableActionDate = $typeOfAction.$postedReadablePeriod;
 
         if(isset($stringUpdatedDate) && (new \DateTime($stringUpdatedDate) > new \DateTime($stringPostedDate))) {
             $updatedReadablePeriod = $this->getReadablePeriodToNow($stringUpdatedDate);
