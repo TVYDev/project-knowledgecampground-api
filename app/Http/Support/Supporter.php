@@ -75,4 +75,18 @@ class Supporter
 
         return $readableTime;
     }
+
+    public function generatePublicId ()
+    {
+        $availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        $randomString = '';
+        $randomStringLength = 10;
+
+        for ($i=0; $i<$randomStringLength; $i++){
+            $randomIndex = rand(0, strlen($availableChars) - 1);
+            $randomString .= $availableChars[$randomIndex];
+        }
+
+        return $randomString;
+    }
 }
