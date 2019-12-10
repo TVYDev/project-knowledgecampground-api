@@ -39,4 +39,13 @@ class Comment extends Model
     {
         return $this->morphTo();
     }
+
+    /**
+     * Relationship One-to-Many with Reply
+     * Get all replies of this comment
+     */
+    public function replies()
+    {
+        return $this->hasMany('App\Comment', 'comment__id');
+    }
 }

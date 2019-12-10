@@ -58,7 +58,12 @@ class Supporter
 
                     // condition --> less than a minute
                     if($i == 0) {
-                        $readableTime = "$s second" . ($s <= 1 ? '' : 's');
+                        if($s >= 10) {
+                            $readableTime = "$s seconds";
+                        }
+                        else {
+                            $readableTime = 'few seconds';
+                        }
                     }
                 }
             }
