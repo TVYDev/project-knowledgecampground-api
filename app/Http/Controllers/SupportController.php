@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
@@ -12,18 +13,18 @@ class SupportController extends Controller
 {
     use JsonResponse;
 
+    protected $supporter;
+
+    public function __construct()
+    {
+        $this->supporter = new Supporter();
+    }
+
     public function getGeneratePublicId()
     {
         try
         {
-            $availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            $randomString = '';
-            $randomStringLength = 10;
-
-            for ($i=0; $i<$randomStringLength; $i++){
-                $randomIndex = rand(0, strlen($availableChars) - 1);
-                $randomString .= $availableChars[$randomIndex];
-            }
+            $randomString = $this->supporter->generatePublicId();
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,

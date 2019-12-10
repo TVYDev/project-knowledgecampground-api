@@ -18,14 +18,14 @@ class Supporter
     const ANSWER_ACTION = 'answered';
     const COMMENT_ACTION = 'commented';
     const REPLY_ACTION = 'replied';
-    const DO_ACTION = 'did';
 
-    public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = self::DO_ACTION)
+    public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = null)
     {
         $postedReadablePeriod = $this->getReadablePeriodToNow($stringPostedDate);
         $updatedReadablePeriod = null;
 
-        $humanReadableActionDate = "$typeOfAction $postedReadablePeriod";
+        $typeOfAction = isset($typeOfAction) ? "$typeOfAction " : '';
+        $humanReadableActionDate = $typeOfAction.$postedReadablePeriod;
 
         if(isset($stringUpdatedDate) && (new \DateTime($stringUpdatedDate) > new \DateTime($stringPostedDate))) {
             $updatedReadablePeriod = $this->getReadablePeriodToNow($stringUpdatedDate);
@@ -58,7 +58,7 @@ class Supporter
 
                     // condition --> less than a minute
                     if($i == 0) {
-                        $readableTime = "$s second" . ($s == 1 ? '' : 's');
+                        $readableTime = "$s second" . ($s <= 1 ? '' : 's');
                     }
                 }
             }
@@ -74,5 +74,19 @@ class Supporter
         }
 
         return $readableTime;
+    }
+
+    public function generatePublicId ()
+    {
+        $availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        $randomString = '';
+        $randomStringLength = 10;
+
+        for ($i=0; $i<$randomStringLength; $i++){
+            $randomIndex = rand(0, strlen($availableChars) - 1);
+            $randomString .= $availableChars[$randomIndex];
+        }
+
+        return $randomString;
     }
 }
