@@ -24,6 +24,7 @@ class KCValidate
     const VALIDATION_QUESTION_SAVE_DURING_EDITING = 'valid_question_save_during_editing';
     const VALIDATION_ANSWER_SAVE = 'valid_answer_save';
     const VALIDATION_ANSWER_SAVE_DURING_EDITING = 'valid_answer_save_during_editing';
+    const VALIDATION_COMMENT_SAVE = 'valid_comment_save';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -58,6 +59,11 @@ class KCValidate
         ],
         self::VALIDATION_ANSWER_SAVE => [
             'is_draft' => 'required|boolean'
+        ],
+        self::VALIDATION_COMMENT_SAVE => [
+            'commentable_public_id' => 'required|string',
+            'commentable_type' => 'required|string',
+            'body'  => 'required|string'
         ]
     ];
 

@@ -55,6 +55,15 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'comment',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function() {
+        Route::post('/save', 'CommentController@postSave')->name('comment.postSave');
+        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
+            ->name('comment.getListPostedCommentsOfCommentableModel');
+});
+
+Route::group([
     'prefix' => 'subject',
     ], function () {
         Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
