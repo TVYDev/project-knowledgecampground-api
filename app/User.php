@@ -85,4 +85,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany('App\Comment', 'user__id');
     }
+
+    /**
+     * Relationship One-to-Many with Reply
+     * Get replies that this user owns
+     */
+    public function replies ()
+    {
+        return $this->hasMany('App\Reply', 'user__id');
+    }
 }

@@ -10,6 +10,7 @@ use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Question;
+use App\Reply;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
@@ -116,6 +117,8 @@ class CommentController extends Controller
 
                     $author = User::find($comment['author_id']);
                     $comment['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+
+                    $comment['replies'] = (new Reply())->getListPostedRepliesOfComment($comment->public_id);
                 }
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,

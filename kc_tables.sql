@@ -34,6 +34,26 @@ CREATE TABLE user_avatars
   UNIQUE (seed)
 );
 
+CREATE TABLE subjects
+(
+    id SERIAL NOT NULL,
+    public_id VARCHAR(500) NOT NULL,
+    name_en VARCHAR(500) NOT NULL,
+    name_kh VARCHAR(500) NOT NULL,
+    description_en VARCHAR(1000) NOT NULL,
+    description_kh VARCHAR(1000) NOT NULL,
+    img_url VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    UNIQUE (public_id)
+);
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('default','Default','កខគ','Default','កខគ','\icons\subjects\subject.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('programming','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('khmer_literature','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
+INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('english_literature','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
+
 CREATE TABLE questions
 (
     id SERIAL NOT NULL,
@@ -65,26 +85,6 @@ CREATE TABLE question_descriptions
     PRIMARY KEY (id),
     FOREIGN KEY (question__id) REFERENCES questions(id)
 );
-
-CREATE TABLE subjects
-(
-    id SERIAL NOT NULL,
-    public_id VARCHAR(500) NOT NULL,
-    name_en VARCHAR(500) NOT NULL,
-    name_kh VARCHAR(500) NOT NULL,
-    description_en VARCHAR(1000) NOT NULL,
-    description_kh VARCHAR(1000) NOT NULL,
-    img_url VARCHAR(500) NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (id),
-    UNIQUE (public_id)
-);
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('DEFAULT','Default','កខគ','Default','កខគ','\icons\subjects\subject.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('programming','Programming','កខគ','A creative process that instructs a computer on how to do a task','កខគ','\icons\subjects\programming.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('khmer_literature','Khmer Literature','កខគ','The study of Khmer language','កខគ','\icons\subjects\english.png');
-INSERT INTO subjects(public_id,name_en,name_kh,description_en,description_kh,img_url) VALUES('english_literature','English Literature','កខគ','The study of English language','កខគ','\icons\subjects\khmer.png');
 
 CREATE TABLE tags
 (
@@ -158,6 +158,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE','Answer is saved successfully','Your answer is posted successfully','ចម្លើយរបស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT','Answer is saved as draft successfully','Your drafted answer is saved successfully','ពង្រាងនៃចម្លើយរបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__COMMENT_SAVE','Comment is saved successfully','Your comment is posted successfully','មតិយោបល់របស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__REPLY_SAVE','Reply is saved successfully','Your reply to the comment is posted successfully','ការឆ្លើយតបរបស់អ្នកទៅនឹងមតិយោបល់បានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -178,6 +179,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__SUBJECT_NOT_EXIST','Subject with this public id does not exist','Your searched subject does not exist','មិនមានមុខវិជ្ជាដែលអ្នកកំពុងស្វែងរកទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__ANSWER_NOT_EXIST','Answer with this public id does not exist','Your searched answer does not exist','មិនមានចម្លើយដែលអ្នកកំពុងស្វែងរកទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST','Commentable model with this public id does not exist','Your searched commentable model does not exist','មិនមានម៉ូដែលត្រូវបានផ្ដល់យោបល់ទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__COMMENT_NOT_EXIST','Comment with this public id does not exist','Your searched comment does not exist','មិនមានមតិយោបល់ដែលអ្នកកំពុងស្វែងរកទេ','error');
 ---Validation
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');
@@ -218,6 +220,9 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENTABLE_TYPE_STRING','commentable_type must be a string','Give commentable type is not valid','ប្រភេទរបស់ម៉ូដែលត្រូវបានផ្ដល់យោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__BODY_REQUIRED','body is required','Please provide body of the comment','សូមបញ្ចូលមតិយោបល់','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__BODY_STRING','body must be a string','Given body of the comment is not valid','មតិយោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_REQUIRED','comment_public_id is required','Please provide public id of the comment','សូមបញ្ចូលកូដសម្គាល់របស់មតិយោបល់','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_STRING','comment_public_id must be a string','Given public id of the comment is not valid','កូដសម្គាល់របស់មតិយោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
 
 CREATE TABLE answers
 (
@@ -265,5 +270,23 @@ CREATE TABLE comments
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id),
-    FOREIGN KEY (user__id) REFERENCES users(id)
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    UNIQUE (public_id)
+);
+
+CREATE TABLE replies
+(
+    id SERIAL NOT NULL,
+    public_id VARCHAR(50) NOT NULL,
+    body text NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    user__id int4 NOT NULL,
+    comment__id int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (comment__id) REFERENCES comments(id),
+    UNIQUE (public_id)
 );
