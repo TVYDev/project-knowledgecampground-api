@@ -64,6 +64,13 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'reply',
+    'middleware' => MiddlewareConst::JWT_AUTH
+    ], function() {
+        Route::post('/save', 'ReplyController@postSave')->name('reply.postSave');
+});
+
+Route::group([
     'prefix' => 'subject',
     ], function () {
         Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
