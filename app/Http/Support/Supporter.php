@@ -94,4 +94,9 @@ class Supporter
 
         return $randomString;
     }
+
+    public function getFileUrl ($filename, $relativePath = null)
+    {
+        return url('/').$relativePath.$filename;
+    }
 }
