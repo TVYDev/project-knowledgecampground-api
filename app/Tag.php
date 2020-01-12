@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Support\Supporter;
 use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
@@ -42,5 +43,13 @@ class Tag extends Model
         return $this->belongsToMany('App\Question', 'question_tag_mappings','tag__id','question__id')
             ->withPivot('is_active')
             ->withTimestamps();
+    }
+
+    /**
+     * Mutators
+     */
+    public function getImgUrlAttribute ($value)
+    {
+        return (new Supporter())->getFileUrl($value);
     }
 }

@@ -41,6 +41,7 @@ Route::group([
         Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');
         Route::get('/view/{publicId}', 'QuestionController@getQuestion')->name('question.getQuestion');
         Route::get('/description-of/{publicId}', 'QuestionController@getDescriptionOfQuestion')->name('question.getDescriptionOfQuestion');
+        Route::get('/list', 'QuestionController@getList')->name('question.getList');
 });
 
 Route::group([

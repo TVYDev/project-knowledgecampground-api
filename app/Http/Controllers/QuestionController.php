@@ -204,4 +204,41 @@ class QuestionController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    public function getList ()
+    {
+        try
+        {
+            $questions = Question::where('is_active', true)
+                            ->where('is_draft', false)
+                            ->where('is_deleted', false)
+                            ->orderBy('posted_at', 'desc')
+                            ->get();
+
+            foreach ($questions as $question) {
+                $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+                $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+
+                $question['subject'] = $question->subject()->where('is_active', true)->first();
+                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
+
+                $author['name'] = $question->user()->pluck('name')->first();
+                $author['id'] = $question->user()->pluck('id')->first();
+                $user = User::find($author['id']);
+                $author['avatar_url'] = $this->support->getFileUrl((new UserAvatar())->getActiveUserAvatarUrl($user));
+                $question['author'] = $author;
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                '',
+                $questions
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }
