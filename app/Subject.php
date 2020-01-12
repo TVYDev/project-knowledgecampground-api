@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Support\Supporter;
 use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
@@ -38,5 +39,12 @@ class Subject extends Model
     public function tags ()
     {
         return $this->hasMany('App\Tag', 'subject__id');
+    }
+
+    /**
+     * Mutators
+     */
+    public function getImgUrlAttribute ($value) {
+        return (new Supporter())->getFileUrl($value);
     }
 }
