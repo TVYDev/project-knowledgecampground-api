@@ -8,6 +8,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MiddlewareConst;
 use App\Question;
 use App\Subject;
 use App\Tag;
@@ -15,6 +16,7 @@ use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class QuestionController extends Controller
 {
@@ -24,6 +26,7 @@ class QuestionController extends Controller
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH, ['except' => ['getList']]);
         $this->support = new Supporter();
     }
 
@@ -205,13 +208,22 @@ class QuestionController extends Controller
         }
     }
 
-    public function getList ()
+    public function getList (Request $request)
     {
         try
         {
+            $keywords = explode(' ', $request->search);
+
             $questions = Question::where('is_active', true)
                             ->where('is_draft', false)
                             ->where('is_deleted', false)
+                            ->where(function($q) use($keywords){
+                                foreach ($keywords as $keyword) {
+                                    if(!empty($keyword)) {
+                                        $q->orWhere('title', 'ilike', '%'.trim($keyword).'%');
+                                    }
+                                }
+                            })
                             ->orderBy('posted_at', 'desc')
                             ->get();
 
