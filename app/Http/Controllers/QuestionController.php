@@ -212,21 +212,34 @@ class QuestionController extends Controller
     {
         try
         {
-            $keywords = explode(' ', $request->search);
-
-            $questions = Question::where('is_active', true)
+            $questionsSql = Question::where('is_active', true)
                             ->where('is_draft', false)
-                            ->where('is_deleted', false)
-                            ->where(function($q) use($keywords){
-                                foreach ($keywords as $keyword) {
-                                    if(!empty($keyword)) {
-                                        $q->orWhere('title', 'ilike', '%'.trim($keyword).'%');
-                                    }
-                                }
-                            })
-                            ->orderBy('posted_at', 'desc')
-                            ->get();
+                            ->where('is_deleted', false);
 
+            if($request->has('search')) {
+                $keywords = explode(' ', $request->search);
+                $questionsSql->where(function($q) use($keywords){
+                    foreach ($keywords as $keyword) {
+                        if(!empty($keyword)) {
+                            $q->orWhere('title', 'ilike', '%'.trim($keyword).'%');
+                        }
+                    }
+                });
+            }
+
+            $questionsSql->orderBy('posted_at', 'desc');
+
+            $perPage = 10;
+            $page = 1;
+            if($request->has('page')) {
+                $perPage = $request->per_page;
+                $page = $request->page;
+
+                $offset = $perPage * ($page - 1);
+                $questionsSql->offset($offset)->limit($perPage);
+            }
+
+            $questions = $questionsSql->select(DB::raw('*, COUNT(*) OVER() AS total'))->get();
             foreach ($questions as $question) {
                 $question['readable_time_en'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
                 $question['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
@@ -241,15 +254,23 @@ class QuestionController extends Controller
                 $question['author'] = $author;
             }
 
+            $total = 0;
+            if(!empty($questions) && count($questions) > 0) {
+                $total = intval($questions[0]->total);
+            }
+
+            $dataResponse = $this->support->getArrayResponseListPagination($questions, $total, $perPage, $page);
+
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
                 '',
-                $questions
+                $dataResponse
             );
         }
         catch(\Exception $exception)
         {
+            dd($exception->getMessage());
             return $this->standardJsonExceptionResponse($exception);
         }
     }
