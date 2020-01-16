@@ -34,8 +34,7 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'question',
-    'middleware' => MiddlewareConst::JWT_AUTH
+    'prefix' => 'question'
     ], function (){
         Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');
         Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');

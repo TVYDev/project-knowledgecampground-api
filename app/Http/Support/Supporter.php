@@ -99,4 +99,16 @@ class Supporter
     {
         return url('/').$relativePath.$filename;
     }
+
+    public function getArrayResponseListPagination ($data, $total, $perPage, $page) {
+        return [
+            'data' => $data,
+            'pagination' => [
+                'total_records' => $total,
+                'num_records' => empty($data) ? 0 : count($data),
+                'per_page' => $perPage,
+                'page' => $page
+            ]
+        ];
+    }
 }
