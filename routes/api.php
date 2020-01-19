@@ -27,6 +27,12 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'user-profile'
+    ], function() {
+        Route::middleware(MiddlewareConst::JWT_AUTH)->put('update', 'UserProfileController@postUpdate')->name('userProfile.postUpdate');
+});
+
+Route::group([
     'prefix' => 'user-avatar',
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function() {

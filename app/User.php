@@ -60,6 +60,15 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Relationship One-to-One with UserProfile
+     * Get user_profile that this use owns
+     */
+    public function userProfile()
+    {
+        return $this->hasOne('App\UserProfile', 'user__id');
+    }
+
+    /**
      * Relationship One-to-Many with Question
      * Get questions that this user owns
      */
