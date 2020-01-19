@@ -43,6 +43,16 @@ class UserProfileController extends Controller
                     'country__id'   => $countryId
                 ]);
 
+                if($request->hasFile('img_upload') && $request->has('img_file_name'))
+                {
+                    $request->img_upload->storeAs('public/user_images', $request->img_file_name);
+
+                    $userAvatar = $user->userAvatar;
+                    $userAvatar['is_using_default'] = false;
+                    $userAvatar['img_url'] = $request->img_file_name;
+                    $userAvatar->save();
+                }
+
                 DB::commit();
 
                 return $this->standardJsonResponse(
