@@ -66,4 +66,35 @@ class UserProfileController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    public function getView ()
+    {
+        try
+        {
+            $user = User::find(auth()->user()->id);
+            $userProfile = $user->userProfile()->where('is_active', true)->where('is_deleted', false)->first();
+            $userProfile->country;
+
+            if(isset($userProfile)) {
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    '',
+                    $userProfile
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                '',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }

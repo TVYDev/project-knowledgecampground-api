@@ -47,6 +47,15 @@ CREATE TABLE countries
     UNIQUE (code)
 );
 INSERT INTO countries(code, name_en, name_kh) VALUES ('kh','Cambodia','កម្ពុជា');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('th','Thailand','ថៃ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('vn','Vietnam','វៀតណាម');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('ph','Philippines','ភីលីពីន');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('la','Laos','ឡាវ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('sg','Singapore','សិង្ហបុរី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('my','Malaysia','ម៉ាឡេស៊ី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('bn','Brunei','ព្រុយនេ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('id','Indonesia','ឥណ្ឌូនេស៊ី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('mm','Burma','មីយ៉ាន់ម៉ា');
 
 CREATE TABLE user_profiles
 (

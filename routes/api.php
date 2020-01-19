@@ -30,6 +30,7 @@ Route::group([
     'prefix' => 'user-profile'
     ], function() {
         Route::middleware(MiddlewareConst::JWT_AUTH)->put('update', 'UserProfileController@postUpdate')->name('userProfile.postUpdate');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->get('view', 'UserProfileController@getView')->name('userProfile.getView');
 });
 
 Route::group([
