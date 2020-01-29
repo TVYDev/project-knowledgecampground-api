@@ -48,6 +48,7 @@ Route::group([
         Route::get('/view/{publicId}', 'QuestionController@getQuestion')->name('question.getQuestion');
         Route::get('/description-of/{publicId}', 'QuestionController@getDescriptionOfQuestion')->name('question.getDescriptionOfQuestion');
         Route::get('/list', 'QuestionController@getList')->name('question.getList');
+        Route::get('/get-subject-tags-of/{publicId}', 'QuestionController@getSubjectTagsOfQuestion')->name('question.getSubjectTagsOfQuestion');
 });
 
 Route::group([

@@ -26,7 +26,13 @@ class QuestionController extends Controller
 
     public function __construct()
     {
-        $this->middleware(MiddlewareConst::JWT_AUTH, ['except' => ['getList']]);
+        $this->middleware(MiddlewareConst::JWT_AUTH, [
+            'except' => [
+                'getList',
+                'getSubjectTagsOfQuestion'
+            ]
+        ]);
+
         $this->support = new Supporter();
     }
 
@@ -171,6 +177,42 @@ class QuestionController extends Controller
         catch(\Exception $exception)
         {
             return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getSubjectTagsOfQuestion ($publicId)
+    {
+        try
+        {
+            $question = Question::where('public_id', $publicId)
+                ->where('is_active', true)
+                ->where('is_deleted', false)
+                ->first();
+
+            if(isset($question))
+            {
+                $question['subject'] = $question->subject()->where('is_active', true)->first();
+                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    '',
+                    $question
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse();
         }
     }
 
