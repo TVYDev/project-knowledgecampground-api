@@ -29,7 +29,8 @@ class QuestionController extends Controller
         $this->middleware(MiddlewareConst::JWT_AUTH, [
             'except' => [
                 'getList',
-                'getSubjectTagsOfQuestion'
+                'getSubjectTagsOfQuestion',
+                'getQuestion'
             ]
         ]);
 
@@ -152,11 +153,8 @@ class QuestionController extends Controller
 
                 // Get description of the question
                 $description = $question->questionDescription()->where('is_active', true)->first();
-                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
+                $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE);
                 $question['description'] = $description;
-
-                $question['subject'] = $question->subject()->where('is_active', true)->first();
-                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,

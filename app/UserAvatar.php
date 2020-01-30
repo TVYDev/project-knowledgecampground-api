@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Support\Supporter;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,7 +42,7 @@ class UserAvatar extends Model
         {
             $originalUrl = (new ThirdPartyApiUrl())->getApiUrl('jdenticon');
             $url = str_replace('{{PLACEHOLDER}}', $seed, $originalUrl);
-            $relativeUrl = '\svg\default_avatars\\'.$seed.'.svg';
+            $relativeUrl = '/svg/default_avatars/'.$seed.'.svg';
 
             $http = new Client();
             $http->request('GET', $url,[
@@ -63,7 +64,7 @@ class UserAvatar extends Model
 
     public function getSharedAvatarUrl ()
     {
-        return $this->sharedUserAvatar;
+        return (new Supporter())->getFileUrl($this->sharedUserAvatar);
     }
 
     public function getActiveUserAvatarUrl ($user)
@@ -73,9 +74,9 @@ class UserAvatar extends Model
             $avatar = $user->userAvatar()->where('is_active', true)->first();
             if($avatar){
                 if($avatar->is_using_default){
-                    $avatarUrl = $avatar->default_avatar_url;
+                    $avatarUrl = (new Supporter())->getFileUrl($avatar->default_avatar_url);
                 }else{
-                    $avatarUrl = $avatar->img_url;
+                    $avatarUrl = (new Supporter())->getFileUrl($avatar->img_url);
                 }
             }else{
                 $avatarUrl = $this->getSharedAvatarUrl();
