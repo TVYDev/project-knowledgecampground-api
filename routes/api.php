@@ -52,14 +52,13 @@ Route::group([
 });
 
 Route::group([
-   'prefix' => 'answer',
-   'middleware' => MiddlewareConst::JWT_AUTH
+   'prefix' => 'answer'
     ], function() {
         Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
         Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
         Route::get('/view/{publicId}', 'AnswerController@getAnswer')->name('answer.getAnswer');
         Route::get('/description-of/{publicId}', 'AnswerController@getDescriptionOfAnswer')->name('answer.getDescriptionOfAnswer');
-        Route::get('/list-posted-answers-of/{questionPublicId}/{sortedType}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
+        Route::get('/list-posted-answers-of/{questionPublicId}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
 });
 
 Route::group([
@@ -67,8 +66,8 @@ Route::group([
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function() {
         Route::post('/save', 'CommentController@postSave')->name('comment.postSave');
-        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
-            ->name('comment.getListPostedCommentsOfCommentableModel');
+//        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
+//            ->name('comment.getListPostedCommentsOfCommentableModel');
 });
 
 Route::group([

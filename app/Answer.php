@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Support\Supporter;
 use Illuminate\Database\Eloquent\Model;
 
 class Answer extends Model
@@ -50,5 +51,28 @@ class Answer extends Model
     public function comments()
     {
         return $this->morphMany('App\Comment', 'commentable');
+    }
+
+    /**
+     * Helpers
+     */
+    public static function getAnswerInfo ($answer)
+    {
+        try
+        {
+            $supporter = new Supporter();
+            $answer['readable_time_en'] = $supporter->getHumanReadableActionDateAsString($answer->posted_at, $answer->updated_at, Supporter::ANSWER_ACTION);
+            $answer['readable_time_kh'] = $supporter->getHumanReadableActionDateAsString($answer->posted_at, $answer->updated_at, Supporter::ANSWER_ACTION);
+            $answer['author_name'] = $answer->user()->pluck('name')->first();
+            $answer['author_id'] = $answer->user()->pluck('id')->first();
+
+            $author = User::find($answer['author_id']);
+            $answer['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+        }
+        catch(\Exception $exception)
+        {
+            // TODO: Add log
+        }
+        return $answer;
     }
 }

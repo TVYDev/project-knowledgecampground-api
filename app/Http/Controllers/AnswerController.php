@@ -9,6 +9,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MiddlewareConst;
 use App\Question;
 use App\User;
 use App\UserAvatar;
@@ -23,6 +24,12 @@ class AnswerController extends Controller
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH, [
+            'except' => [
+                'getListPostedAnswersOfQuestion'
+            ]
+        ]);
+
         $this->support = new Supporter();
     }
 
@@ -182,7 +189,7 @@ class AnswerController extends Controller
         }
     }
 
-    public function getListPostedAnswersOfQuestion ($questionPublicId, $sortedType)
+    public function getListPostedAnswersOfQuestion ($questionPublicId)
     {
         try
         {
@@ -193,7 +200,7 @@ class AnswerController extends Controller
                             ->first();
 
             if($question) {
-                $answer = Answer::where('question__id', $question->id)
+                $answers = Answer::where('question__id', $question->id)
                     ->where('is_draft', false)
                     ->where('is_active', true)
                     ->where('is_deleted', false)
@@ -203,7 +210,7 @@ class AnswerController extends Controller
                     HttpStatusCode::SUCCESS_OK,
                     true,
                     '',
-                    $answer
+                    $answers
                 );
             }
             return $this->standardJsonResponse(

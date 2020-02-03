@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Http\Support\Supporter;
 use App\Libs\DirectoryStore;
 use App\Libs\ErrorCode;
@@ -155,6 +156,9 @@ class QuestionController extends Controller
                 $description = $question->questionDescription()->where('is_active', true)->first();
                 $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE);
                 $question['description'] = $description;
+
+                // Get comments of the question
+                $question['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_QUESTION, $publicId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
