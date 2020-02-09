@@ -7,6 +7,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\User;
+use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -82,16 +83,19 @@ class UserProfileController extends Controller
         try
         {
             $user = User::find(auth()->user()->id);
-            $userProfile = $user->userProfile()->where('is_active', true)->where('is_deleted', false)->first();
-            $userProfile->country;
-
-            if(isset($userProfile)) {
-                return $this->standardJsonResponse(
-                    HttpStatusCode::SUCCESS_OK,
-                    true,
-                    '',
-                    $userProfile
-                );
+            if(isset($user)) {
+                $userProfile = $user->userProfile()->where('is_active', true)->where('is_deleted', false)->first();
+                if(isset($userProfile)) {
+                    $userProfile->country;
+                    $userProfile['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($user);
+                    $userProfile['username'] = $userProfile->user()->pluck('name')->first();
+                    return $this->standardJsonResponse(
+                        HttpStatusCode::SUCCESS_OK,
+                        true,
+                        '',
+                        $userProfile
+                    );
+                }
             }
 
             return $this->standardJsonResponse(

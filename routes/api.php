@@ -34,13 +34,6 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'user-avatar',
-    'middleware' => MiddlewareConst::JWT_AUTH
-    ], function() {
-        Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
-});
-
-Route::group([
     'prefix' => 'question'
     ], function (){
         Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');

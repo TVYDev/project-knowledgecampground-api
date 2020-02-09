@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Support\Supporter;
+use App\Libs\DirectoryStore;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 
@@ -76,7 +77,7 @@ class UserAvatar extends Model
                 if($avatar->is_using_default){
                     $avatarUrl = (new Supporter())->getFileUrl($avatar->default_avatar_url);
                 }else{
-                    $avatarUrl = (new Supporter())->getFileUrl($avatar->img_url);
+                    $avatarUrl = (new Supporter())->getFileUrl($avatar->img_url, DirectoryStore::RELATIVE_PATH_STORE_AVATAR_IMAGE);
                 }
             }else{
                 $avatarUrl = $this->getSharedAvatarUrl();
