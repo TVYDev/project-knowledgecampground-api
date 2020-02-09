@@ -132,7 +132,7 @@ class AnswerController extends Controller
 
                 // Get description of the answer
                 $description = $answer->answerDescription()->where('is_active', true)->first();
-                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+                $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE);
                 $answer['description'] = $description;
 
                 // Get comments of the question
