@@ -68,13 +68,13 @@ class UserAvatar extends Model
         return (new Supporter())->getFileUrl($this->sharedUserAvatar);
     }
 
-    public function getActiveUserAvatarUrl ($user)
+    public function getActiveUserAvatarUrl ($user, $isJdenticonOnly = false)
     {
         $avatarUrl = null;
         if($user){
             $avatar = $user->userAvatar()->where('is_active', true)->first();
             if($avatar){
-                if($avatar->is_using_default){
+                if($isJdenticonOnly || $avatar->is_using_default){
                     $avatarUrl = (new Supporter())->getFileUrl($avatar->default_avatar_url);
                 }else{
                     $avatarUrl = (new Supporter())->getFileUrl($avatar->img_url, DirectoryStore::RELATIVE_PATH_STORE_AVATAR_IMAGE);

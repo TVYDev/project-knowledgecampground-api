@@ -44,13 +44,23 @@ class UserProfileController extends Controller
                     'country__id'   => $countryId
                 ]);
 
-                if($request->hasFile('img_upload') && $request->has('img_file_name'))
-                {
-                    $request->img_upload->storeAs('public/user_images', $request->img_file_name);
-
+                if($request->has('avatar_type')) {
                     $userAvatar = $user->userAvatar;
-                    $userAvatar['is_using_default'] = false;
-                    $userAvatar['img_url'] = $request->img_file_name;
+                    if($request->avatar_type == 'image') {
+                        if($request->hasFile('img_upload') && $request->has('img_file_name'))
+                        {
+                            $request->img_upload->storeAs('public/user_images', $request->img_file_name);
+
+                            $userAvatar['is_using_default'] = false;
+                            $userAvatar['img_url'] = $request->img_file_name;
+                        }
+                        else {
+                            $userAvatar['is_using_default'] = true;
+                        }
+                    }
+                    else {
+                        $userAvatar['is_using_default'] = true;
+                    }
                     $userAvatar->save();
                 }
 
@@ -87,7 +97,9 @@ class UserProfileController extends Controller
                 $userProfile = $user->userProfile()->where('is_active', true)->where('is_deleted', false)->first();
                 if(isset($userProfile)) {
                     $userProfile->country;
-                    $userProfile['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($user);
+                    $userAvatar = new UserAvatar();
+                    $userProfile['avatar_url'] = $userAvatar->getActiveUserAvatarUrl($user);
+                    $userProfile['avatar_url_jdenticon'] = $userAvatar->getActiveUserAvatarUrl($user, true);
                     $userProfile['username'] = $userProfile->user()->pluck('name')->first();
                     return $this->standardJsonResponse(
                         HttpStatusCode::SUCCESS_OK,
