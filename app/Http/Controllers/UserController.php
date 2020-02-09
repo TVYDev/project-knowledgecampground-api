@@ -7,7 +7,9 @@ use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\User;
 use App\UserAvatar;
+use App\UserProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -159,6 +161,8 @@ class UserController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
             if($result !== true) return $result;
 
+            DB::beginTransaction();
+
             // --- create user
             $user = User::create([
                 'name'      => $request->name,
@@ -170,6 +174,12 @@ class UserController extends Controller
             $userAvatar = new UserAvatar();
             $defaultUserAvatar = $userAvatar->generateDefaultUserAvatar();
             $user->userAvatar()->save($defaultUserAvatar);
+
+            // --- create profile
+            $userProfile = new UserProfile();
+            $user->userProfile()->save($userProfile);
+
+            DB::commit();
 
             // --- get token of the user
             $token = auth()->login($user);
@@ -186,6 +196,7 @@ class UserController extends Controller
         }
         catch(\Exception $exception)
         {
+            DB::rollBack();
             return $this->standardJsonExceptionResponse($exception);
         }
     }

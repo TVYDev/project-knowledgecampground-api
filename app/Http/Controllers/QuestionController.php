@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Http\Support\Supporter;
 use App\Libs\DirectoryStore;
 use App\Libs\ErrorCode;
@@ -26,7 +27,14 @@ class QuestionController extends Controller
 
     public function __construct()
     {
-        $this->middleware(MiddlewareConst::JWT_AUTH, ['except' => ['getList']]);
+        $this->middleware(MiddlewareConst::JWT_AUTH, [
+            'except' => [
+                'getList',
+                'getSubjectTagsOfQuestion',
+                'getQuestion'
+            ]
+        ]);
+
         $this->support = new Supporter();
     }
 
@@ -146,11 +154,11 @@ class QuestionController extends Controller
 
                 // Get description of the question
                 $description = $question->questionDescription()->where('is_active', true)->first();
-                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
+                $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE);
                 $question['description'] = $description;
 
-                $question['subject'] = $question->subject()->where('is_active', true)->first();
-                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
+                // Get comments of the question
+                $question['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_QUESTION, $publicId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
@@ -171,6 +179,42 @@ class QuestionController extends Controller
         catch(\Exception $exception)
         {
             return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getSubjectTagsOfQuestion ($publicId)
+    {
+        try
+        {
+            $question = Question::where('public_id', $publicId)
+                ->where('is_active', true)
+                ->where('is_deleted', false)
+                ->first();
+
+            if(isset($question))
+            {
+                $question['subject'] = $question->subject()->where('is_active', true)->first();
+                $question['tags'] = $question->tags()->where('tags.is_active', true)->get();
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    '',
+                    $question
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse();
         }
     }
 
