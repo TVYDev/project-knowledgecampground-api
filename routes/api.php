@@ -27,10 +27,10 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'user-avatar',
-    'middleware' => MiddlewareConst::JWT_AUTH
+    'prefix' => 'user-profile'
     ], function() {
-        Route::get('/user-avatar', 'UserAvatarController@getUserAvatar')->name('userAvatar.getUserAvatar');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->post('update', 'UserProfileController@postUpdate')->name('userProfile.postUpdate');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->get('view', 'UserProfileController@getView')->name('userProfile.getView');
 });
 
 Route::group([
@@ -41,17 +41,17 @@ Route::group([
         Route::get('/view/{publicId}', 'QuestionController@getQuestion')->name('question.getQuestion');
         Route::get('/description-of/{publicId}', 'QuestionController@getDescriptionOfQuestion')->name('question.getDescriptionOfQuestion');
         Route::get('/list', 'QuestionController@getList')->name('question.getList');
+        Route::get('/get-subject-tags-of/{publicId}', 'QuestionController@getSubjectTagsOfQuestion')->name('question.getSubjectTagsOfQuestion');
 });
 
 Route::group([
-   'prefix' => 'answer',
-   'middleware' => MiddlewareConst::JWT_AUTH
+   'prefix' => 'answer'
     ], function() {
         Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
         Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
         Route::get('/view/{publicId}', 'AnswerController@getAnswer')->name('answer.getAnswer');
         Route::get('/description-of/{publicId}', 'AnswerController@getDescriptionOfAnswer')->name('answer.getDescriptionOfAnswer');
-        Route::get('/list-posted-answers-of/{questionPublicId}/{sortedType}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
+        Route::get('/list-posted-answers-of/{questionPublicId}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
 });
 
 Route::group([
@@ -59,8 +59,8 @@ Route::group([
     'middleware' => MiddlewareConst::JWT_AUTH
     ], function() {
         Route::post('/save', 'CommentController@postSave')->name('comment.postSave');
-        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
-            ->name('comment.getListPostedCommentsOfCommentableModel');
+//        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
+//            ->name('comment.getListPostedCommentsOfCommentableModel');
 });
 
 Route::group([
@@ -83,8 +83,7 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'support',
-    'middleware' => MiddlewareConst::JWT_AUTH
+    'prefix' => 'support'
     ], function (){
         Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
         Route::get('/clear-cache-key-validation-rules', 'SupportController@clearCacheValidationRules')->name('support.clearCacheValidationRules');

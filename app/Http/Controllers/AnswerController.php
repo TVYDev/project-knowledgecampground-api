@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Answer;
+use App\Comment;
 use App\Http\Support\Supporter;
 use App\Libs\DirectoryStore;
 use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MiddlewareConst;
 use App\Question;
 use App\User;
 use App\UserAvatar;
@@ -23,6 +25,13 @@ class AnswerController extends Controller
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH, [
+            'except' => [
+                'getListPostedAnswersOfQuestion',
+                'getAnswer'
+            ]
+        ]);
+
         $this->support = new Supporter();
     }
 
@@ -123,8 +132,11 @@ class AnswerController extends Controller
 
                 // Get description of the answer
                 $description = $answer->answerDescription()->where('is_active', true)->first();
-                $description['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+                $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE);
                 $answer['description'] = $description;
+
+                // Get comments of the question
+                $answer['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_ANSWER, $publicId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
@@ -182,7 +194,7 @@ class AnswerController extends Controller
         }
     }
 
-    public function getListPostedAnswersOfQuestion ($questionPublicId, $sortedType)
+    public function getListPostedAnswersOfQuestion ($questionPublicId)
     {
         try
         {
@@ -193,7 +205,7 @@ class AnswerController extends Controller
                             ->first();
 
             if($question) {
-                $answer = Answer::where('question__id', $question->id)
+                $answers = Answer::where('question__id', $question->id)
                     ->where('is_draft', false)
                     ->where('is_active', true)
                     ->where('is_deleted', false)
@@ -203,7 +215,7 @@ class AnswerController extends Controller
                     HttpStatusCode::SUCCESS_OK,
                     true,
                     '',
-                    $answer
+                    $answers
                 );
             }
             return $this->standardJsonResponse(

@@ -91,56 +91,56 @@ class CommentController extends Controller
         }
     }
 
-    public function getListPostedCommentsOfCommentableModel ($commentableType, $commentPublicId)
-    {
-        try
-        {
-            $commentable = null;
-            if($commentableType == 'question')
-            {
-                $commentable = Question::where('public_id', $commentPublicId)->first();
-            }
-            elseif ($commentableType == 'answer')
-            {
-                $commentable = Answer::where('public_id', $commentPublicId)->first();
-            }
-
-            if(isset($commentable))
-            {
-                $comments = $commentable->comments;
-                foreach ($comments as $comment)
-                {
-                    $comment['readable_time_en'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
-                    $comment['readable_time_kh'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
-                    $comment['author_name'] = $comment->user()->pluck('name')->first();
-                    $comment['author_id'] = $comment->user()->pluck('id')->first();
-
-                    $author = User::find($comment['author_id']);
-                    $comment['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
-
-                    $comment['replies'] = (new Reply())->getListPostedRepliesOfComment($comment->public_id);
-                }
-                return $this->standardJsonResponse(
-                    HttpStatusCode::SUCCESS_OK,
-                    true,
-                    '',
-                    $comments
-                );
-            }
-            else
-            {
-                return $this->standardJsonResponse(
-                    HttpStatusCode::ERROR_BAD_REQUEST,
-                    false,
-                    'KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST',
-                    null,
-                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
-                );
-            }
-        }
-        catch(\Exception $exception)
-        {
-            return $this->standardJsonExceptionResponse($exception);
-        }
-    }
+//    public function getListPostedCommentsOfCommentableModel ($commentableType, $commentPublicId)
+//    {
+//        try
+//        {
+//            $commentable = null;
+//            if($commentableType == 'question')
+//            {
+//                $commentable = Question::where('public_id', $commentPublicId)->first();
+//            }
+//            elseif ($commentableType == 'answer')
+//            {
+//                $commentable = Answer::where('public_id', $commentPublicId)->first();
+//            }
+//
+//            if(isset($commentable))
+//            {
+//                $comments = $commentable->comments;
+//                foreach ($comments as $comment)
+//                {
+//                    $comment['readable_time_en'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
+//                    $comment['readable_time_kh'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
+//                    $comment['author_name'] = $comment->user()->pluck('name')->first();
+//                    $comment['author_id'] = $comment->user()->pluck('id')->first();
+//
+//                    $author = User::find($comment['author_id']);
+//                    $comment['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+//
+//                    $comment['replies'] = (new Reply())->getListPostedRepliesOfComment($comment->public_id);
+//                }
+//                return $this->standardJsonResponse(
+//                    HttpStatusCode::SUCCESS_OK,
+//                    true,
+//                    '',
+//                    $comments
+//                );
+//            }
+//            else
+//            {
+//                return $this->standardJsonResponse(
+//                    HttpStatusCode::ERROR_BAD_REQUEST,
+//                    false,
+//                    'KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST',
+//                    null,
+//                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
+//                );
+//            }
+//        }
+//        catch(\Exception $exception)
+//        {
+//            return $this->standardJsonExceptionResponse($exception);
+//        }
+//    }
 }

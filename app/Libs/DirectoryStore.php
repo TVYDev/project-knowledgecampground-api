@@ -11,4 +11,6 @@ class DirectoryStore
 
     const RELATIVE_PATH_STORE_SUBJECT_ICON = '/icons/subjects/';
     const RELATIVE_PATH_STORE_TAG_ICON = '/icons/tags';
+
+    const RELATIVE_PATH_STORE_AVATAR_IMAGE = '/storage/user_images/';
 }

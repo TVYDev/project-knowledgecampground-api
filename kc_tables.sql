@@ -34,6 +34,51 @@ CREATE TABLE user_avatars
   UNIQUE (seed)
 );
 
+CREATE TABLE countries
+(
+    id SERIAL NOT NULL,
+    code VARCHAR(10) NOT NULL,
+    name_en VARCHAR(500) NOT NULL,
+    name_kh VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    UNIQUE (code)
+);
+INSERT INTO countries(code, name_en, name_kh) VALUES ('kh','Cambodia','កម្ពុជា');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('th','Thailand','ថៃ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('vn','Vietnam','វៀតណាម');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('ph','Philippines','ភីលីពីន');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('la','Laos','ឡាវ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('sg','Singapore','សិង្ហបុរី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('my','Malaysia','ម៉ាឡេស៊ី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('bn','Brunei','ព្រុយនេ');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('id','Indonesia','ឥណ្ឌូនេស៊ី');
+INSERT INTO countries(code, name_en, name_kh) VALUES ('mm','Burma','មីយ៉ាន់ម៉ា');
+
+CREATE TABLE user_profiles
+(
+    id SERIAL NOT NULL,
+    user__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    full_name VARCHAR(500) NULL,
+    country__id int4 NULL,
+    location VARCHAR(500) NULL,
+    position VARCHAR(500) NULL,
+    about_me VARCHAR(1000) NULL,
+    website_link VARCHAR(500) NULL,
+    facebook_link VARCHAR(500) NULL,
+    twitter_link VARCHAR(500) NULL,
+    telegram_link VARCHAR(500) NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (country__id) REFERENCES countries(id)
+);
+
 CREATE TABLE subjects
 (
     id SERIAL NOT NULL,
