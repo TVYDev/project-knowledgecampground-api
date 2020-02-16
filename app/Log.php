@@ -64,6 +64,9 @@ class Log extends Model
             // TODO: Write log to file instead
         }
     }
+    public function error($message, $loc, $file = null, $trace = null) {
+        $this->write(self::LEVEL_ERROR, $message, $loc, $file, $trace);
+    }
 
     public function critical($message, $loc, $file = null, $trace = null) {
         $this->write(self::LEVEL_CRITICAL, $message, $loc, $file, $trace);
