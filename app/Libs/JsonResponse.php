@@ -13,6 +13,7 @@ use App\SystemMessage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
+use App\Log AS DBLog;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -84,6 +85,9 @@ trait JsonResponse
      */
     public function standardJsonExceptionResponse (\Exception $exception)
     {
+        // Write log to database for all types of exception, level critical
+        (new DBLog())->critical($exception->getMessage(), $exception->getLine(), $exception->getFile(), $exception->getTraceAsString());
+
         // --- case when token is invalid or not found
         if($exception instanceof TokenInvalidException)
         {
