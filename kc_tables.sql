@@ -335,3 +335,29 @@ CREATE TABLE replies
     FOREIGN KEY (comment__id) REFERENCES comments(id),
     UNIQUE (public_id)
 );
+
+CREATE TABLE logs
+(
+    id SERIAL NOT NULL,
+    log_level VARCHAR(10) NOT NULL,
+    error_code VARCHAR(20),
+    request_id VARCHAR(50),
+    request_type VARCHAR(50),
+    message TEXT,
+    controller VARCHAR(100),
+    method VARCHAR(100),
+    loc int4,
+    file VARCHAR(500),
+    url TEXT,
+    input_data TEXT,
+    old_data TEXT,
+    new_data TEXT,
+    trace TEXT,
+    is_resolved BOOLEAN NOT NULL DEFAULT FALSE,
+    is_concerned BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by int4 NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
