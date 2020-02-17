@@ -73,7 +73,7 @@ class KCValidate
         ],
         self::VALIDATION_GOOGLE_LOGIN => [
             'name'      => 'required|string|max:50',
-            'email'     => 'required|email|unique:users,email',
+            'email'     => 'required|email',
             'picture'   => 'required',
             'google_id' => 'required'
         ]
