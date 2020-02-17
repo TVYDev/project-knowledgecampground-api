@@ -27,6 +27,12 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'social-auth'
+    ], function() {
+        Route::post('/google/login', 'SocialAuthController@postGoogleLogin')->name('socialAuth.googleLogin');
+});
+
+Route::group([
     'prefix' => 'user-profile'
     ], function() {
         Route::middleware(MiddlewareConst::JWT_AUTH)->post('update', 'UserProfileController@postUpdate')->name('userProfile.postUpdate');

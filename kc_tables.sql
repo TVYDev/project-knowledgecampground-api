@@ -4,7 +4,7 @@ CREATE TABLE users (
   name VARCHAR(20) NOT NULL,
   email VARCHAR(30) NOT NULL,
   email_verified_at TIMESTAMP(0),
-  password VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
   remember_token VARCHAR(100),
   created_at TIMESTAMP(0),
   updated_at TIMESTAMP(0),
@@ -13,6 +13,8 @@ CREATE TABLE users (
   password3 VARCHAR(255),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  public_id VARCHAR(500),
+  google_id VARCHAR(500),
   PRIMARY KEY (id),
   UNIQUE (email)
 );
@@ -21,7 +23,7 @@ CREATE TABLE user_avatars
 (
   id SERIAL NOT NULL,
   user__id int4 NOT NULL,
-  seed int4 NOT NULL,
+  seed int4,
   default_avatar_url VARCHAR(500) NOT NULL,
   is_using_default BOOLEAN NOT NULL DEFAULT TRUE,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -268,6 +270,9 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_REQUIRED','comment_public_id is required','Please provide public id of the comment','សូមបញ្ចូលកូដសម្គាល់របស់មតិយោបល់','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_STRING','comment_public_id must be a string','Given public id of the comment is not valid','កូដសម្គាល់របស់មតិយោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PICTURE_REQUIRED','picture is required','Please provide picture of Google profile','សូមបញ្ចូលតំណរូបភាពរបស់គណនីGoogle','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__GOOGLE_ID_REQUIRED','google_id is required','Please provide Google ID','សូមបញ្ចូលលេខសម្គាល់របស់គណនីGoogle','warning');
 
 CREATE TABLE answers
 (
