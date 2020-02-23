@@ -27,6 +27,8 @@ class KCValidate
     const VALIDATION_COMMENT_SAVE = 'valid_comment_save';
     const VALIDATION_REPLY_SAVE = 'valid_reply_save';
     const VALIDATION_GOOGLE_LOGIN = 'valid_google_login';
+    const VALIDATION_ROLE = 'valid_role';
+    const VALIDATION_ROLE_ASSIGN = 'valid_role_assign';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -76,6 +78,13 @@ class KCValidate
             'email'     => 'required|email',
             'picture'   => 'required',
             'google_id' => 'required'
+        ],
+        self::VALIDATION_ROLE => [
+            'name'  => 'required|string|max:50|unique:roles,name'
+        ],
+        self::VALIDATION_ROLE_ASSIGN => [
+            'role_id' => 'required',
+            'user_id' => 'required'
         ]
     ];
 

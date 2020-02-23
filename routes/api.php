@@ -27,6 +27,16 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'role'
+    ], function() {
+        Route::post('create-role', 'RoleController@postCreateRole')->name('role.postCreateRole');
+        Route::get('available-roles', 'RoleController@getAvailableRoles')->name('role.getAvailableRoles');
+        Route::get('view/{roleId}', 'RoleController@getViewRole')->name('role.getViewRole');
+        Route::post('assign-role-to-user', 'RoleController@postAssignRoleToUser')->name('role.postAssignRoleToUser');
+        Route::post('remove-role-from-user', 'RoleController@postRemoveRoleFromUser')->name('role.postRemoveRoleFromUser');
+});
+
+Route::group([
     'prefix' => 'social-auth'
     ], function() {
         Route::post('/google/login', 'SocialAuthController@postGoogleLogin')->name('socialAuth.googleLogin');
