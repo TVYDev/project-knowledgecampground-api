@@ -37,6 +37,16 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'permission'
+    ], function() {
+        Route::post('create-permission', 'PermissionController@postCreatePermission')->name('permission.postCreatePermission');
+        Route::get('available-permissions', 'PermissionController@getAvailablePermissions')->name('permission.getAvailablePermissions');
+        Route::get('view/{permissionId}', 'PermissionController@getViewPermission')->name('permission.getViewPermission');
+        Route::post('assign-permissions-to-role', 'PermissionController@postAssignPermissionsToRole')->name('permission.postAssignPermissionsToRole');
+        Route::post('remove-permissions-from-role', 'PermissionController@postRemovePermissionsFromRole')->name('permission.postRemovePermissionsFromRole');
+});
+
+Route::group([
     'prefix' => 'social-auth'
     ], function() {
         Route::post('/google/login', 'SocialAuthController@postGoogleLogin')->name('socialAuth.googleLogin');

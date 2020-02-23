@@ -207,6 +207,7 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__COMMENT_SAVE','Comment is saved successfully','Your comment is posted successfully','មតិយោបល់របស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__REPLY_SAVE','Reply is saved successfully','Your reply to the comment is posted successfully','ការឆ្លើយតបរបស់អ្នកទៅនឹងមតិយោបល់បានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ROLE_SAVE','Role is saved successfully','Role is saved successfully','តួនាទីបានបង្កើតដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__PERMISSION_SAVE','Permission is saved successfully','Permission is saved successfully','សិទ្ធិអនុញ្ញាតបានបង្កើតដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -277,6 +278,11 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_UNIQUE_ROLES_NAME','The role name is already existed in the system','This role name is already existed in the system','ឈ្មោះតួនាទីនេះមាននៅក្នុងប្រព័ន្ធរួចហើយ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__ROLE_ID_REQUIRED','role_id is required','Please provide role ID','សូមបញ្ចូលលេខសម្គាល់របស់តួនាទី','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_UNIQUE_PERMISSIONS_NAME','The permission name is already existed in the system','This permission name is already existed in the system','ឈ្មោះសិទ្ធិអនុញ្ញាតនេះមាននៅក្នុងប្រព័ន្ធរួចហើយ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STARTS_WITH_CAN_','The permission name must starts with CAN_','The permission name must starts with CAN_','ឈ្មោះសិទ្ធិអនុញ្ញាតត្រូវផ្ដើមជាមួយពាក្យ CAN_','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PERMISSION_IDS_REQUIRED','Array of permission_id are required','Please provide list of permission_id','សូមបញ្ចូលបណ្ដុំនៃសិទ្ធិអនុញ្ញាត','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PERMISSION_IDS_ARRAY','permission_ids must be an array','Please provide permission_ids as array','សូមបញ្ចូលសិទ្ធិអនុញ្ញាតជាបណ្ដុំ','warning');
 
 CREATE TABLE answers
 (
