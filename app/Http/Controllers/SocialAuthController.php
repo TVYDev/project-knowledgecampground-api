@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Role;
 use App\User;
 use App\UserAvatar;
 use App\UserProfile;
@@ -42,6 +43,10 @@ class SocialAuthController extends Controller
                 // --- create profile
                 $userProfile = new UserProfile();
                 $user->userProfile()->save($userProfile);
+
+                // --- assign to role Normal User
+                $normalRole = Role::where('name', 'Social User')->first();
+                $normalRole->users()->attach($user->id, ['created_by' => $user->id]);
             }
             else {
                 $user = $existingUser;

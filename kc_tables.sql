@@ -2,12 +2,12 @@
 CREATE TABLE users (
   id SERIAL NOT NULL,
   name VARCHAR(20) NOT NULL,
-  email VARCHAR(30) NOT NULL,
+  email VARCHAR(100) NOT NULL,
   email_verified_at TIMESTAMP(0),
   password VARCHAR(255),
   remember_token VARCHAR(100),
-  created_at TIMESTAMP(0),
-  updated_at TIMESTAMP(0),
+  created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
   password1 VARCHAR(255),
   password2 VARCHAR(255),
   password3 VARCHAR(255),
@@ -15,9 +15,11 @@ CREATE TABLE users (
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   public_id VARCHAR(500),
   google_id VARCHAR(500),
+  is_internal BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   UNIQUE (email)
 );
+INSERT INTO users("name", "email","password", "is_internal") VALUES ('admin', 'admin23@knowledgecampground.com', '$2y$10$QqIxdG.hoADef92At7GPuuKoydw4cXOSo9v8.jB2pZlcx2Z6adxqW', true);
 
 CREATE TABLE user_avatars
 (

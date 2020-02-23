@@ -99,6 +99,11 @@ class UserController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_LOGIN);
             if($result !== true) return $result;
 
+            $user = User::where('email', $request->email)->first();
+            if($user->is_internal === true) {
+                return $this->standardLoginFailedResponse();
+            }
+
             // --- do login
             $credentials = request(['email', 'password']);
             $token = auth()->attempt($credentials);
@@ -179,6 +184,10 @@ class UserController extends Controller
             // --- create profile
             $userProfile = new UserProfile();
             $user->userProfile()->save($userProfile);
+
+            // --- assign to role Normal User
+            $normalRole = Role::where('name', 'Normal User')->first();
+            $normalRole->users()->attach($user->id, ['created_by' => $user->id]);
 
             DB::commit();
 
