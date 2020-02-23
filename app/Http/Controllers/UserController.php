@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Role;
 use App\User;
 use App\UserAvatar;
 use App\UserProfile;
@@ -233,6 +234,40 @@ class UserController extends Controller
         }
         catch(\Exception $exception)
         {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function getUserPermissions ()
+    {
+        try {
+            $permissions = DB::table('permissions AS p')
+                ->select(DB::raw('DISTINCT p.*'))
+                ->join('role_permission_mappings AS rpm', 'rpm.permission__id', '=', 'p.id')
+                ->join('roles AS r', 'r.id', '=', 'rpm.role__id')
+                ->join('user_role_mappings AS urm', 'urm.role__id', '=', 'r.id')
+                ->join('users AS u', 'u.id', '=', 'urm.user__id')
+                ->where('p.is_active', '=', true)
+                ->where('p.is_deleted', '=', false)
+                ->where('rpm.is_active', '=', true)
+                ->where('rpm.is_deleted', '=', false)
+                ->where('r.is_active', '=', true)
+                ->where('r.is_deleted', '=', false)
+                ->where('urm.is_active', '=', true)
+                ->where('urm.is_deleted', '=', false)
+                ->where('u.is_active', '=', true)
+                ->where('u.is_deleted', '=', false)
+                ->where('u.id', '=', auth()->user()->id)
+                ->get();
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::SUCCESS_OK,
+                true,
+                '',
+                $permissions
+            );
+        }
+        catch(\Exception $exception) {
             return $this->standardJsonExceptionResponse($exception);
         }
     }
