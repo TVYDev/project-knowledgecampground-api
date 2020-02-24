@@ -2,26 +2,30 @@
 CREATE TABLE users (
   id SERIAL NOT NULL,
   name VARCHAR(20) NOT NULL,
-  email VARCHAR(30) NOT NULL,
+  email VARCHAR(100) NOT NULL,
   email_verified_at TIMESTAMP(0),
-  password VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
   remember_token VARCHAR(100),
-  created_at TIMESTAMP(0),
-  updated_at TIMESTAMP(0),
+  created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
   password1 VARCHAR(255),
   password2 VARCHAR(255),
   password3 VARCHAR(255),
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  public_id VARCHAR(500),
+  google_id VARCHAR(500),
+  is_internal BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   UNIQUE (email)
 );
+INSERT INTO users("name", "email","password", "is_internal") VALUES ('admin', 'admin23@knowledgecampground.com', '$2y$10$QqIxdG.hoADef92At7GPuuKoydw4cXOSo9v8.jB2pZlcx2Z6adxqW', true);
 
 CREATE TABLE user_avatars
 (
   id SERIAL NOT NULL,
   user__id int4 NOT NULL,
-  seed int4 NOT NULL,
+  seed int4,
   default_avatar_url VARCHAR(500) NOT NULL,
   is_using_default BOOLEAN NOT NULL DEFAULT TRUE,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -204,6 +208,8 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT','Answer is saved as draft successfully','Your drafted answer is saved successfully','ពង្រាងនៃចម្លើយរបស់អ្នកបានរក្សាទុកដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__COMMENT_SAVE','Comment is saved successfully','Your comment is posted successfully','មតិយោបល់របស់អ្នកបានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__REPLY_SAVE','Reply is saved successfully','Your reply to the comment is posted successfully','ការឆ្លើយតបរបស់អ្នកទៅនឹងមតិយោបល់បានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ROLE_SAVE','Role is saved successfully','Role is saved successfully','តួនាទីបានបង្កើតដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__PERMISSION_SAVE','Permission is saved successfully','Permission is saved successfully','សិទ្ធិអនុញ្ញាតបានបង្កើតដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -268,6 +274,17 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_REQUIRED','comment_public_id is required','Please provide public id of the comment','សូមបញ្ចូលកូដសម្គាល់របស់មតិយោបល់','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_STRING','comment_public_id must be a string','Given public id of the comment is not valid','កូដសម្គាល់របស់មតិយោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PICTURE_REQUIRED','picture is required','Please provide picture of Google profile','សូមបញ្ចូលតំណរូបភាពរបស់គណនីGoogle','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__GOOGLE_ID_REQUIRED','google_id is required','Please provide Google ID','សូមបញ្ចូលលេខសម្គាល់របស់គណនីGoogle','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_UNIQUE_ROLES_NAME','The role name is already existed in the system','This role name is already existed in the system','ឈ្មោះតួនាទីនេះមាននៅក្នុងប្រព័ន្ធរួចហើយ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__ROLE_ID_REQUIRED','role_id is required','Please provide role ID','សូមបញ្ចូលលេខសម្គាល់របស់តួនាទី','warning');
+
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_UNIQUE_PERMISSIONS_NAME','The permission name is already existed in the system','This permission name is already existed in the system','ឈ្មោះសិទ្ធិអនុញ្ញាតនេះមាននៅក្នុងប្រព័ន្ធរួចហើយ','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STARTS_WITH_CAN_','The permission name must starts with CAN_','The permission name must starts with CAN_','ឈ្មោះសិទ្ធិអនុញ្ញាតត្រូវផ្ដើមជាមួយពាក្យ CAN_','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PERMISSION_IDS_REQUIRED','Array of permission_id are required','Please provide list of permission_id','សូមបញ្ចូលបណ្ដុំនៃសិទ្ធិអនុញ្ញាត','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PERMISSION_IDS_ARRAY','permission_ids must be an array','Please provide permission_ids as array','សូមបញ្ចូលសិទ្ធិអនុញ្ញាតជាបណ្ដុំ','warning');
 
 CREATE TABLE answers
 (
@@ -360,4 +377,62 @@ CREATE TABLE logs
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id),
     FOREIGN KEY (created_by) REFERENCES users(id)
+);
+CREATE TABLE roles (
+    id SERIAL NOT NULL,
+    name VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id),
+    UNIQUE(name)
+);
+CREATE TABLE user_role_mappings (
+    user__id int4 NOT NULL,
+    role__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user__id, role__id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (role__id) REFERENCES roles(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+);
+CREATE TABLE permissions (
+    id SERIAL NOT NULL,
+    name VARCHAR(500) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id),
+    UNIQUE(name)
+);
+CREATE TABLE role_permission_mappings (
+    role__id int4 NOT NULL,
+    permission__id int4 NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (role__id, permission__id),
+    FOREIGN KEY (role__id) REFERENCES roles(id),
+    FOREIGN KEY (permission__id) REFERENCES permissions(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
 );

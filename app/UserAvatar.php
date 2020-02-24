@@ -76,7 +76,12 @@ class UserAvatar extends Model
             $avatar = $user->userAvatar()->where('is_active', true)->first();
             if($avatar){
                 if($isJdenticonOnly || $avatar->is_using_default){
-                    $avatarUrl = (new Supporter())->getFileUrl($avatar->default_avatar_url);
+                    if(strpos($avatar->default_avatar_url, 'http') !== false) {
+                        $avatarUrl = $avatar->default_avatar_url;
+                    }
+                    else {
+                        $avatarUrl = (new Supporter())->getFileUrl($avatar->default_avatar_url);
+                    }
                 }else{
                     $avatarUrl = (new Supporter())->getFileUrl($avatar->img_url, DirectoryStore::RELATIVE_PATH_STORE_AVATAR_IMAGE);
                 }
