@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'public_id', 'google_id'
     ];
 
     /**
@@ -102,5 +102,16 @@ class User extends Authenticatable implements JWTSubject
     public function replies ()
     {
         return $this->hasMany('App\Reply', 'user__id');
+    }
+
+    /**
+     * Relationship Many-to-Many with Role (Immediate table = user_role_mappings)
+     * Get one or more roles that belong to this user
+     */
+    public function roles()
+    {
+        return $this->belongsToMany('App\Role', 'user_role_mappings', 'user__id', 'role__id')
+            ->withPivot('is_active', 'is_deleted', 'created_by', 'updated_by')
+            ->withTimestamps();
     }
 }

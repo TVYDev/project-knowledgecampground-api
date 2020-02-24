@@ -24,6 +24,33 @@ Route::group([
         Route::middleware(MiddlewareConst::JWT_AUTH)->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
         Route::middleware(MiddlewareConst::JWT_AUTH)->get('/verify-authentication', 'UserController@verifyAuthentication')->name('user.verifyAuthentication');
         Route::post('/refresh-token', 'UserController@refreshToken')->name('user.refreshToken');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->get('/user-permissions', 'UserController@getUserPermissions')->name('user.getUserPermissions');
+});
+
+Route::group([
+    'prefix' => 'role'
+    ], function() {
+        Route::post('create-role', 'RoleController@postCreateRole')->name('role.postCreateRole');
+        Route::get('available-roles', 'RoleController@getAvailableRoles')->name('role.getAvailableRoles');
+        Route::get('view/{roleId}', 'RoleController@getViewRole')->name('role.getViewRole');
+        Route::post('assign-role-to-user', 'RoleController@postAssignRoleToUser')->name('role.postAssignRoleToUser');
+        Route::post('remove-role-from-user', 'RoleController@postRemoveRoleFromUser')->name('role.postRemoveRoleFromUser');
+});
+
+Route::group([
+    'prefix' => 'permission'
+    ], function() {
+        Route::post('create-permission', 'PermissionController@postCreatePermission')->name('permission.postCreatePermission');
+        Route::get('available-permissions', 'PermissionController@getAvailablePermissions')->name('permission.getAvailablePermissions');
+        Route::get('view/{permissionId}', 'PermissionController@getViewPermission')->name('permission.getViewPermission');
+        Route::post('assign-permissions-to-role', 'PermissionController@postAssignPermissionsToRole')->name('permission.postAssignPermissionsToRole');
+        Route::post('remove-permissions-from-role', 'PermissionController@postRemovePermissionsFromRole')->name('permission.postRemovePermissionsFromRole');
+});
+
+Route::group([
+    'prefix' => 'social-auth'
+    ], function() {
+        Route::post('/google/login', 'SocialAuthController@postGoogleLogin')->name('socialAuth.googleLogin');
 });
 
 Route::group([

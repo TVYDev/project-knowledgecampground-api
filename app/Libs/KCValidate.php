@@ -26,6 +26,11 @@ class KCValidate
     const VALIDATION_ANSWER_SAVE_DURING_EDITING = 'valid_answer_save_during_editing';
     const VALIDATION_COMMENT_SAVE = 'valid_comment_save';
     const VALIDATION_REPLY_SAVE = 'valid_reply_save';
+    const VALIDATION_GOOGLE_LOGIN = 'valid_google_login';
+    const VALIDATION_ROLE = 'valid_role';
+    const VALIDATION_ROLE_ASSIGN = 'valid_role_assign';
+    const VALIDATION_PERMISSION = 'valid_permission';
+    const VALIDATION_PERMISSION_ASSIGN = 'valid_permission_assign';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -69,6 +74,26 @@ class KCValidate
         self::VALIDATION_REPLY_SAVE => [
             'comment_public_id' => 'required|string',
             'body' => 'required|string'
+        ],
+        self::VALIDATION_GOOGLE_LOGIN => [
+            'name'      => 'required|string|max:50',
+            'email'     => 'required|email',
+            'picture'   => 'required',
+            'google_id' => 'required'
+        ],
+        self::VALIDATION_ROLE => [
+            'name'  => 'required|string|max:50|unique:roles,name'
+        ],
+        self::VALIDATION_ROLE_ASSIGN => [
+            'role_id' => 'required',
+            'user_id' => 'required'
+        ],
+        self::VALIDATION_PERMISSION => [
+            'name'  => 'required|string|max:50|unique:permissions,name|starts_with:CAN_'
+        ],
+        self::VALIDATION_PERMISSION_ASSIGN => [
+            'role_id' => 'required',
+            'permission_ids' => 'required|array'
         ]
     ];
 

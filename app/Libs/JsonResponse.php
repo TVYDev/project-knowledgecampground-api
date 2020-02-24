@@ -53,14 +53,15 @@ trait JsonResponse
         $msgKh = $arraySysMsg['kh'];
 
         // --- do logging according to status of request
-        if($success){
-            Log::info($msgSys, $context);
-        }else{
-            if($httpCode === HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR)
-                Log::critical($errorCode.':'.$msgSys, $context);
-            else
-                Log::error($errorCode.':'.$msgSys, $context);
-        }
+        // TODO: Update log
+//        if($success){
+//            Log::info($msgSys, $context);
+//        }else{
+//            if($httpCode === HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR)
+//                Log::critical($errorCode.':'.$msgSys, $context);
+//            else
+//                Log::error($errorCode.':'.$msgSys, $context);
+//        }
 
         // --- do response JSON
         return response()->json([
