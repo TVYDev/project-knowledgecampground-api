@@ -26,7 +26,7 @@ class KCValidate
     const VALIDATION_ANSWER_SAVE_DURING_EDITING = 'valid_answer_save_during_editing';
     const VALIDATION_COMMENT_SAVE = 'valid_comment_save';
     const VALIDATION_REPLY_SAVE = 'valid_reply_save';
-    const VALIDATION_GOOGLE_LOGIN = 'valid_google_login';
+    const VALIDATION_SOCIAL_PROVIDER_LOGIN = 'valid_social_provider_login';
     const VALIDATION_ROLE = 'valid_role';
     const VALIDATION_ROLE_ASSIGN = 'valid_role_assign';
     const VALIDATION_PERMISSION = 'valid_permission';
@@ -75,11 +75,12 @@ class KCValidate
             'comment_public_id' => 'required|string',
             'body' => 'required|string'
         ],
-        self::VALIDATION_GOOGLE_LOGIN => [
+        self::VALIDATION_SOCIAL_PROVIDER_LOGIN => [
             'name'      => 'required|string|max:50',
             'email'     => 'required|email',
             'picture'   => 'required',
-            'google_id' => 'required'
+            'provider'  => 'required',
+            'provider_user_id' => 'required'
         ],
         self::VALIDATION_ROLE => [
             'name'  => 'required|string|max:50|unique:roles,name'

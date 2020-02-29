@@ -16,12 +16,12 @@ class SocialAuthController extends Controller
 {
     use JsonResponse;
 
-    public function postGoogleLogin(Request $request) {
+    public function postLogin(Request $request) {
         try {
             DB::beginTransaction();
 
             // --- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_GOOGLE_LOGIN);
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_SOCIAL_PROVIDER_LOGIN);
             if($result !== true) return $result;
 
             $existingUser = User::where('email', $request->email)->first();
@@ -32,7 +32,8 @@ class SocialAuthController extends Controller
                 $user = User::create([
                     'name'      => $request->name,
                     'email'     => $request->email,
-                    'google_id' => $request->google_id
+                    'provider'  => $request->provider,
+                    'provider_user_id' => $request->provider_user_id
                 ]);
 
                 // --- create default user_avatar for the user
