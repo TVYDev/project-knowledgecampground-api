@@ -24,7 +24,9 @@ class SocialAuthController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_SOCIAL_PROVIDER_LOGIN);
             if($result !== true) return $result;
 
-            $existingUser = User::where('email', $request->email)->first();
+            $existingUser = User::where('email', $request->email)
+                ->where('provider', $request->provider)
+                ->first();
 
             $user = null;
             if(!isset($existingUser)) {
