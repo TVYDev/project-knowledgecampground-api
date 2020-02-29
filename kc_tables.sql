@@ -14,7 +14,8 @@ CREATE TABLE users (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
   public_id VARCHAR(500),
-  google_id VARCHAR(500),
+  provider VARCHAR(500),
+  provider_user_id VARCHAR(500),
   is_internal BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (id),
   UNIQUE (email)
@@ -276,7 +277,8 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__COMMENT_PUBLIC_ID_STRING','comment_public_id must be a string','Given public id of the comment is not valid','កូដសម្គាល់របស់មតិយោបល់មានទម្រង់មិនត្រឹមត្រូវទេ','warning');
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PICTURE_REQUIRED','picture is required','Please provide picture of Google profile','សូមបញ្ចូលតំណរូបភាពរបស់គណនីGoogle','warning');
-INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__GOOGLE_ID_REQUIRED','google_id is required','Please provide Google ID','សូមបញ្ចូលលេខសម្គាល់របស់គណនីGoogle','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PROVIDER_REQUIRED','provider is required','Please provide social provider','សូមបញ្ចូលឈ្មោះ Social Provider','warning');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__PROVIDER_USER_ID_REQUIRED','provider_user_id is required','Please provide user ID of the provider','សូមបញ្ចូលលេខសម្គាល់គណនីនៃអ្នកប្រើប្រាស់នៃ Social Provider នេះ','warning');
 
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_UNIQUE_ROLES_NAME','The role name is already existed in the system','This role name is already existed in the system','ឈ្មោះតួនាទីនេះមាននៅក្នុងប្រព័ន្ធរួចហើយ','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__ROLE_ID_REQUIRED','role_id is required','Please provide role ID','សូមបញ្ចូលលេខសម្គាល់របស់តួនាទី','warning');
