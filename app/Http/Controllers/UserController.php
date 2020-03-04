@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
@@ -12,6 +13,7 @@ use App\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -278,6 +280,15 @@ class UserController extends Controller
         }
         catch(\Exception $exception) {
             return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function postSendEmail () {
+        try {
+            (new Supporter())->sendEmailResetPassword('tangvannyou@gmail.com');
+        }
+        catch(\Exception $exception) {
+            dd($exception->getMessage());
         }
     }
 }

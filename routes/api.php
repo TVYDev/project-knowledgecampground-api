@@ -25,6 +25,7 @@ Route::group([
         Route::middleware(MiddlewareConst::JWT_AUTH)->get('/verify-authentication', 'UserController@verifyAuthentication')->name('user.verifyAuthentication');
         Route::post('/refresh-token', 'UserController@refreshToken')->name('user.refreshToken');
         Route::middleware(MiddlewareConst::JWT_AUTH)->get('/user-permissions', 'UserController@getUserPermissions')->name('user.getUserPermissions');
+        Route::middleware(MiddlewareConst::JWT_AUTH)->post('/send-email', 'UserController@postSendEmail')->name('user.postSendEmail');
 });
 
 Route::group([

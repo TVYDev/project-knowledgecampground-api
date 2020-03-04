@@ -9,6 +9,8 @@
 namespace App\Http\Support;
 
 
+use Illuminate\Support\Facades\Mail;
+
 class Supporter
 {
     /***************************************
@@ -110,5 +112,20 @@ class Supporter
                 'page' => $page
             ]
         ];
+    }
+
+    public function sendEmailResetPassword ($emailTo, $resetLink) {
+        try {
+            $data = array('link' => $resetLink);
+
+            Mail::send('emails.mail', $data, function($message) use ($emailTo) {
+                $message->to($emailTo)
+                    ->subject('Reset Password');
+                $message->from('noreply.knowledgecampground@gmail.com','KnowledgeCampground');
+            });
+        }
+        catch(\Exception $exception) {
+            // TODO: Add log
+        }
     }
 }
