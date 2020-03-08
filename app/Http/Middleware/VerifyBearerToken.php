@@ -25,13 +25,18 @@ class VerifyBearerToken
         try {
             $payloads = auth()->payload();
             $access = $payloads[User::KEY_JWT_CLAIM_ACCESS];
+            $routes = [
+                RouteConst::USER_POST_RESET_PASSWORD,
+                RouteConst::USER_VERIFY_AUTHENTICATION
+            ];
+
             if(isset($access)) {
                 if($access === User::JWT_CLAIM_ACCESS_GENERAL) {
                     return $next($request);
                 }
                 elseif ($access === User::JWT_CLAIM_ACCESS_RESET) {
                     $incomingRouteName = $request->route()->getName();
-                    if($incomingRouteName === RouteConst::USER_POST_RESET_PASSWORD) {
+                    if(in_array($incomingRouteName, $routes)) {
                         return $next($request);
                     }
                 }
