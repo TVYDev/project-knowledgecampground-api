@@ -11,6 +11,10 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
+    const KEY_JWT_CLAIM_ACCESS = 'access';
+    const JWT_CLAIM_ACCESS_GENERAL = 'general_2306';
+    const JWT_CLAIM_ACCESS_RESET = 'reset_2306';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -39,7 +43,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        return [];
+        return [self::KEY_JWT_CLAIM_ACCESS => self::JWT_CLAIM_ACCESS_GENERAL];
     }
 
     public function setPasswordAttribute ($password)

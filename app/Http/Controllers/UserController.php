@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
+use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
+use App\PasswordReset;
 use App\Role;
 use App\User;
 use App\UserAvatar;
@@ -274,6 +278,96 @@ class UserController extends Controller
                 true,
                 '',
                 $permissions
+            );
+        }
+        catch(\Exception $exception) {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function postSendResetEmail (Request $request) {
+        try {
+            $email = $request->email;
+            $route = $request->route;
+
+            $user = User::where('email', $email)
+                ->where('is_internal', false)
+                ->whereNull('provider')
+                ->first();
+
+            if(isset($user)) {
+                $token = auth()->claims([User::KEY_JWT_CLAIM_ACCESS => User::JWT_CLAIM_ACCESS_RESET])
+                    ->setTTL(1440)
+                    ->tokenById($user->id);
+
+                $linkTobeSent = $route . '?token=' . $token;
+
+                $result = (new Supporter())->sendEmailResetPassword($email, $linkTobeSent);
+                if ($result === true) {
+                    PasswordReset::create([
+                        'email' => $email,
+                        'token' => $token
+                    ]);
+
+                    return $this->standardJsonResponse(
+                        HttpStatusCode::SUCCESS_OK,
+                        true,
+                        MessageCode::msgSuccess('reset_mail_sent')
+                    );
+                }
+                return $this->standardJsonResponse(
+                    HttpStatusCode::ERROR_REQUEST_TIMEOUT,
+                    false,
+                    MessageCode::msgError('reset_mail_sent'),
+                    ErrorCode::ERR_CODE_SEND_MAIL_FAILED
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                MessageCode::msgError('user_not_exist'),
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
+        }
+        catch(\Exception $exception) {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
+
+    public function postResetPassword (Request $request)
+    {
+        try {
+            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_RESET_PASSWORD);
+            if($result !== true) return $result;
+
+            $userId = auth()->user()->id;
+            $bearerToken = Supporter::getBearerToken($request->header('Authorization'));
+            $user = User::find($userId);
+
+            $passwordReset = PasswordReset::where('email', $user->email)->where('token', $bearerToken)->first();
+
+            if(isset($passwordReset)) {
+                $user->password = $request->new_password;
+                $user->save();
+
+                (new Supporter())->sendEmailSuccessfulResetPassword($user->email);
+
+                auth()->logout();
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    MessageCode::msgSuccess('password_reset')
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                MessageCode::msgError('invalid_link'),
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }
         catch(\Exception $exception) {

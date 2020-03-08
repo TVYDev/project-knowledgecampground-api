@@ -29,6 +29,7 @@ class HttpStatusCode
     const ERROR_FORBIDDEN       = 403;
     const ERROR_NOT_FOUND       = 404;
     const ERROR_NOT_ACCEPTABLE  = 406;
+    const ERROR_REQUEST_TIMEOUT = 408;
     /********************************/
 
 

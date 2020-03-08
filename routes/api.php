@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Libs\MiddlewareConst;
+use App\Libs\RouteConst;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,14 +18,18 @@ use App\Libs\MiddlewareConst;
 Route::group([
     'prefix' => 'auth'
     ], function() {
-        Route::post('login', 'UserController@login')->name('user.login');
-        Route::post('register', 'UserController@register')->name('user.register');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->post('/logout', 'UserController@logout')->name('user.logout');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->get('/user', 'UserController@getUser')->name('user.getUser');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->post('/change-password', 'UserController@changePassword')->name('user.changePassword');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->get('/verify-authentication', 'UserController@verifyAuthentication')->name('user.verifyAuthentication');
-        Route::post('/refresh-token', 'UserController@refreshToken')->name('user.refreshToken');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->get('/user-permissions', 'UserController@getUserPermissions')->name('user.getUserPermissions');
+        Route::post('login', 'UserController@login')->name(RouteConst::USER_LOGIN);
+        Route::post('register', 'UserController@register')->name(RouteConst::USER_REGISTER);
+        Route::post('refresh-token', 'UserController@refreshToken')->name(RouteConst::USER_REFRESH_TOKEN);
+        Route::post('send-reset-email', 'UserController@postSendResetEmail')->name(RouteConst::USER_POST_SEND_RESET_EMAIL);
+
+        Route::get('user', 'UserController@getUser')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_GET_USER);
+        Route::get('verify-authentication', 'UserController@verifyAuthentication')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_VERIFY_AUTHENTICATION);
+        Route::get('user-permissions', 'UserController@getUserPermissions')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_GET_USER_PERMISSIONS);
+
+        Route::post('logout', 'UserController@logout')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_LOGOUT);
+        Route::post('change-password', 'UserController@changePassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_CHANGE_PASSWORD);
+        Route::post('/reset-password', 'UserController@postResetPassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_POST_RESET_PASSWORD);
 });
 
 Route::group([
