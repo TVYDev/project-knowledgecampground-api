@@ -31,7 +31,7 @@ class VerifyBearerToken
                 }
                 elseif ($access === User::JWT_CLAIM_ACCESS_RESET) {
                     $incomingRouteName = $request->route()->getName();
-                    if($incomingRouteName === RouteConst::USER_POST_SEND_RESET_EMAIL) {
+                    if($incomingRouteName === RouteConst::USER_POST_RESET_PASSWORD) {
                         return $next($request);
                     }
                 }

@@ -211,6 +211,8 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__REPLY_SAVE','Reply is saved successfully','Your reply to the comment is posted successfully','ការឆ្លើយតបរបស់អ្នកទៅនឹងមតិយោបល់បានបង្ហោះជាសាធារណៈដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__ROLE_SAVE','Role is saved successfully','Role is saved successfully','តួនាទីបានបង្កើតដោយជោគជ័យ','info');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__PERMISSION_SAVE','Permission is saved successfully','Permission is saved successfully','សិទ្ធិអនុញ្ញាតបានបង្កើតដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__PASSWORD_RESET','Password is reset successfully','Your password is reset successfully','លេខសម្ងាត់របស់អ្នកត្រូវបានកែប្រែដោយជោគជ័យ','info');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_SUCCESS__RESET_MAIL_SENT','Reset mail is sent successfully','Password reset link has been sent successfully to your email','តំណកែប្រែលេខសម្ងាត់ត្រូវបានផ្ញើទៅកាន់អ៊ីមែលរបស់អ្នកដោយជោគជ័យ','info');
 ---Error
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__JWT_EXCEPTION','Token could not be parsed from the request','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__TOKEN_NOT_PROVIDED','Token not provided','Please login again','សូមចូលភ្ជាប់គណនីម្ដងទៀត','error');
@@ -232,6 +234,9 @@ INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES(
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__ANSWER_NOT_EXIST','Answer with this public id does not exist','Your searched answer does not exist','មិនមានចម្លើយដែលអ្នកកំពុងស្វែងរកទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST','Commentable model with this public id does not exist','Your searched commentable model does not exist','មិនមានម៉ូដែលត្រូវបានផ្ដល់យោបល់ទេ','error');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__COMMENT_NOT_EXIST','Comment with this public id does not exist','Your searched comment does not exist','មិនមានមតិយោបល់ដែលអ្នកកំពុងស្វែងរកទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__INVALID_LINK','No password reset record found','Link requested is invalid','តំណនេះមិនត្រឹមត្រូវទេ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__RESET_MAIL_SENT','Reset mail is fail to send','Password reset link is failed to send','តំណកែប្រែលេខសម្ងាត់មានបញ្ហាក្នុងការផ្ញើចេញ','error');
+INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_ERROR__USER_NOT_EXIST','user is not found','Cannot find account with this email','គ្មានគណនីជាមួយអ៊ីមែលនេះទេ','error');
 ---Validation
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_REQUIRED','Name is required','Please provide your name','សូមបញ្ចូលឈ្មោះរបស់អ្នក','warning');
 INSERT INTO system_messages(code,message_sys,message_en,message_kh,type) VALUES('KC_MSG_INVALID__NAME_STRING','Name must be a string','Please enter a valid name','សូមបញ្ចូលឈ្មោះឲ្យបានត្រឹមត្រូវ','warning');

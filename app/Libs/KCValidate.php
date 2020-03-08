@@ -31,6 +31,7 @@ class KCValidate
     const VALIDATION_ROLE_ASSIGN = 'valid_role_assign';
     const VALIDATION_PERMISSION = 'valid_permission';
     const VALIDATION_PERMISSION_ASSIGN = 'valid_permission_assign';
+    const VALIDATION_RESET_PASSWORD = 'valid_reset_password';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -95,6 +96,9 @@ class KCValidate
         self::VALIDATION_PERMISSION_ASSIGN => [
             'role_id' => 'required',
             'permission_ids' => 'required|array'
+        ],
+        self::VALIDATION_RESET_PASSWORD => [
+            'new_password' => 'required|min:8|confirmed'
         ]
     ];
 

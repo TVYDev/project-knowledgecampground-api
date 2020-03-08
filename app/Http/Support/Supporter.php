@@ -114,21 +114,53 @@ class Supporter
         ];
     }
 
-    public function sendEmailResetPassword ($emailTo, $resetLink) {
+    public function sendMailFromKC ($emailTo, $view, $data, $subject)
+    {
+        Mail::send($view, $data, function($message) use ($emailTo, $subject) {
+            $message->to($emailTo)
+                ->subject($subject);
+            $message->from(env('MAIL_FROM_EMAIL'), env('MAIL_FROM_NAME'));
+        });
+    }
+
+    public function sendEmailResetPassword ($emailTo, $resetLink)
+    {
         try {
             $data = array('link' => $resetLink);
-
-            Mail::send('emails.mail', $data, function($message) use ($emailTo) {
-                $message->to($emailTo)
-                    ->subject('Reset Password');
-                $message->from(env('MAIL_FROM_EMAIL'), env('MAIL_FROM_NAME'));
-            });
-
+            self::sendMailFromKC($emailTo, 'emails.mail', $data, 'Reset Password');
             return true;
         }
         catch(\Exception $exception) {
             return false;
             // TODO: Add log
         }
+    }
+
+    public function sendEmailSuccessfulResetPassword ($emailTo)
+    {
+        try {
+            self::sendMailFromKC($emailTo, 'emails.successful_reset_password', [], 'Successfully Reset Password');
+            return true;
+        }
+        catch(\Exception $exception) {
+            return false;
+            // TODO: Add log
+        }
+    }
+
+    public static function getBearerToken ($token)
+    {
+        try {
+            if(isset($token)) {
+                $t = explode(' ', $token);
+                if(count($t) == 2) {
+                    return $t[1];
+                }
+            }
+        }
+        catch(\Exception $exception) {
+            // TODO: Add log
+        }
+        return null;
     }
 }

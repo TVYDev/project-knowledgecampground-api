@@ -18,4 +18,5 @@ class RouteConst
     const USER_GET_USER_PERMISSIONS = 'user.getUserPermissions';
     const USER_LOGOUT = 'user.logout';
     const USER_CHANGE_PASSWORD = 'user.changePassword';
+    const USER_POST_RESET_PASSWORD = 'user.postResetPassword';
 }

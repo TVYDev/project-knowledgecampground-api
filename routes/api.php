@@ -29,6 +29,7 @@ Route::group([
 
         Route::post('logout', 'UserController@logout')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_LOGOUT);
         Route::post('change-password', 'UserController@changePassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_CHANGE_PASSWORD);
+        Route::post('/reset-password', 'UserController@postResetPassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_POST_RESET_PASSWORD);
 });
 
 Route::group([
