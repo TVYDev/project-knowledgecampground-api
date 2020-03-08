@@ -121,10 +121,13 @@ class Supporter
             Mail::send('emails.mail', $data, function($message) use ($emailTo) {
                 $message->to($emailTo)
                     ->subject('Reset Password');
-                $message->from('noreply.knowledgecampground@gmail.com','KnowledgeCampground');
+                $message->from(env('MAIL_FROM_EMAIL'), env('MAIL_FROM_NAME'));
             });
+
+            return true;
         }
         catch(\Exception $exception) {
+            return false;
             // TODO: Add log
         }
     }

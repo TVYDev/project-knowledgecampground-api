@@ -438,3 +438,11 @@ CREATE TABLE role_permission_mappings (
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (updated_by) REFERENCES users(id)
 );
+CREATE TABLE password_resets (
+    id SERIAL NOT NULL,
+    email VARCHAR(100),
+    token VARCHAR(1000),
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id)
+);

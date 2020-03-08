@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Support\Supporter;
+use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\PasswordReset;
 use App\Role;
 use App\User;
 use App\UserAvatar;
@@ -13,7 +15,6 @@ use App\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -283,12 +284,54 @@ class UserController extends Controller
         }
     }
 
-    public function postSendEmail () {
+    public function postSendResetEmail (Request $request) {
         try {
-            (new Supporter())->sendEmailResetPassword('tangvannyou@gmail.com');
+            $email = $request->email;
+            $route = $request->route;
+
+            $user = User::where('email', $email)
+                ->where('is_internal', false)
+                ->whereNull('provider')
+                ->first();
+
+            if(isset($user)) {
+                $token = auth()->claims([User::KEY_JWT_CLAIM_ACCESS => User::JWT_CLAIM_ACCESS_RESET])
+                    ->setTTL(1440)
+                    ->tokenById($user->id);
+
+                $linkTobeSent = $route . '?token=' . $token;
+
+                $result = (new Supporter())->sendEmailResetPassword($email, $linkTobeSent);
+                if ($result === true) {
+                    PasswordReset::create([
+                        'email' => $email,
+                        'token' => $token
+                    ]);
+
+                    return $this->standardJsonResponse(
+                        HttpStatusCode::SUCCESS_OK,
+                        true,
+                        ''
+                    );
+                }
+                return $this->standardJsonResponse(
+                    HttpStatusCode::ERROR_REQUEST_TIMEOUT,
+                    false,
+                    '',
+                    ErrorCode::ERR_CODE_SEND_MAIL_FAILED
+                );
+            }
+
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                '',
+                null,
+                ErrorCode::ERR_CODE_DATA_NOT_EXIST
+            );
         }
         catch(\Exception $exception) {
-            dd($exception->getMessage());
+            return $this->standardJsonExceptionResponse($exception);
         }
     }
 }

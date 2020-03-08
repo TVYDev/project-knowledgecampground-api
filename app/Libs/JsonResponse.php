@@ -32,19 +32,19 @@ trait JsonResponse
      */
     public function standardJsonResponse(int $httpCode,bool $success, $messageCode, $data = null, $errorCode = null){
         // --- prepare data for using in the log
-        $path = $_SERVER['PATH_INFO']; // path of request
-        $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT']; // IP address of request
-        $inputs = Input::all(); // inputs of request
-        $filteredInputs = array_filter($inputs, function($key) { // exclude password from log data
-            return strpos($key, 'password') === false;
-        }, ARRAY_FILTER_USE_KEY);
-
-        // --- structure data for logging
-        $context = [
-            $path,
-            $fromRemote,
-            count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
-        ];
+//        $path = $_SERVER['PATH_INFO']; // path of request
+//        $fromRemote = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT']; // IP address of request
+//        $inputs = Input::all(); // inputs of request
+//        $filteredInputs = array_filter($inputs, function($key) { // exclude password from log data
+//            return strpos($key, 'password') === false;
+//        }, ARRAY_FILTER_USE_KEY);
+//
+//        // --- structure data for logging
+//        $context = [
+//            $path,
+//            $fromRemote,
+//            count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
+//        ];
 
         // --- get message from message_code
         $arraySysMsg = (new SystemMessage())->getArrayMessageSysEnKh($messageCode);
