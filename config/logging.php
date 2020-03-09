@@ -48,18 +48,14 @@ return [
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/kc_api.log'),
-            'formatter' => Monolog\Formatter\LineFormatter::class,
-            'formatter_with' => [
-                'format' => "[%datetime%] [%level_name%] %context% [%message%]\n",
-            ],
-            'level' => 'debug',
-            'days' => 14,
+            'tap' => [App\Logging\KCFormatter::class],
+            'level' => 'debug'
         ],
 
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'chormnes_api',
+            'username' => 'KnowledgeCampground',
             'emoji' => ':boom:',
             'level' => 'critical',
         ],
