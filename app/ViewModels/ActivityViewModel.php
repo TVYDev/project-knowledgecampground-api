@@ -7,6 +7,7 @@ namespace App\ViewModels;
 use App\Http\Support\Supporter;
 use App\Log;
 use App\Subject;
+use App\Tag;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -30,8 +31,10 @@ class ActivityViewModel
                     'q.public_id AS question_public_id',
                     DB::raw('null AS "answer_public_id"'),
                     'q.title',
-                    'q.posted_at',
-                    'q.updated_at',
+                    'q.posted_at AS question_posted_at',
+                    'q.updated_at AS question_updated_at',
+                    DB::raw('null AS "answer_posted_at"'),
+                    DB::raw('null AS "answer_updated_at"'),
                     'q.subject__id',
                     'q.id')
                 ->where('q.user__id', '=', $authorId)
@@ -46,8 +49,10 @@ class ActivityViewModel
                     'q1.public_id AS question_public_id',
                     'a.public_id AS answer_public_id',
                     'q1.title',
-                    'q1.posted_at',
-                    'q1.updated_at',
+                    'q1.posted_at AS question_posted_at',
+                    'q1.updated_at AS question_updated_at',
+                    'a.posted_at AS answer_posted_at',
+                    'a.updated_at AS answer_updated_at',
                     'q1.subject__id',
                     'q1.id')
                 ->join('answers AS a', 'a.question__id', '=', 'q1.id')
@@ -64,7 +69,7 @@ class ActivityViewModel
 
             //** SQL sort union queries. It is not an elegant way in Laravel, but it's what I can do now. */
             $querySql = $allQuestionsSql->toSql();
-            $allQuestionsSql = DB::table(DB::raw("($querySql order by posted_at asc) as a"))->mergeBindings($allQuestionsSql);
+            $allQuestionsSql = DB::table(DB::raw("($querySql order by question_posted_at, answer_posted_at desc) as a"))->mergeBindings($allQuestionsSql);
 
             return $allQuestionsSql;
         }
@@ -75,18 +80,20 @@ class ActivityViewModel
         }
     }
 
-    public function doManipulateDataMyPosts (Collection $questions)
+    public function doManipulateDataMyPosts (Collection $questions) : Collection
     {
         try
         {
             foreach ($questions as $question) {
-                $question->readable_time_en = $this->supporter->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
-                $question->readable_time_kh = $this->supporter->getHumanReadableActionDateAsString($question->posted_at, $question->updated_at, Supporter::ASK_ACTION);
+                $question->question_readable_time_en = $this->supporter->getHumanReadableActionDateAsString($question->question_posted_at, $question->question_updated_at, Supporter::ASK_ACTION);
+                $question->question_readable_time_kh = $this->supporter->getHumanReadableActionDateAsString($question->question_posted_at, $question->question_updated_at, Supporter::ASK_ACTION);
+
+                $question->answer_readable_time_en = $this->supporter->getHumanReadableActionDateAsString($question->answer_posted_at, $question->answer_updated_at, Supporter::ANSWER_ACTION);
+                $question->answer_readable_time_kh = $this->supporter->getHumanReadableActionDateAsString($question->answer_posted_at, $question->answer_updated_at, Supporter::ANSWER_ACTION);
 
                 $question->subject = Subject::where('id', $question->subject__id)->where('is_active', true)->first();
-                $question->tags = DB::table('tags AS t')
-                    ->join('question_tag_mappings AS qtm', 'qtm.tag__id', '=', 't.id')
-                    ->where('t.is_active', true)
+                $question->tags = Tag::join('question_tag_mappings AS qtm', 'qtm.tag__id', '=', 'tags.id')
+                    ->where('tags.is_active', true)
                     ->where('qtm.question__id', '=', $question->id)
                     ->get();
             }
@@ -96,7 +103,7 @@ class ActivityViewModel
         catch(\Exception $exception)
         {
             Log::error($exception);
-            return null;
+            return new Collection();
         }
     }
 }

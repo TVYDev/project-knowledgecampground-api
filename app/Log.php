@@ -55,7 +55,7 @@ class Log extends Model
             $message = $exception->getMessage();
             $loc = $exception->getLine();
             $file = $exception->getFile();
-            $trace = $exception->getTrace();
+            $trace = $exception->getTraceAsString();
 
             Log::create([
                 'log_level' => $logLevel,
@@ -66,7 +66,7 @@ class Log extends Model
             ]);
         }
         catch(\Exception $exception) {
-            // TODO: Write log to file instead
+            dd($exception->getMessage());
         }
     }
     public static function error(\Exception $exception) {

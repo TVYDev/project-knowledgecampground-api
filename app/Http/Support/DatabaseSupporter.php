@@ -31,6 +31,7 @@ class DatabaseSupporter
         {
             Log::error($exception);
             return null;
+//            return new Collection();
         }
     }
 }

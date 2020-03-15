@@ -25,18 +25,28 @@ class Supporter
 
     public function getHumanReadableActionDateAsString ($stringPostedDate, $stringUpdatedDate = null, $typeOfAction = null)
     {
-        $postedReadablePeriod = $this->getReadablePeriodToNow($stringPostedDate);
-        $updatedReadablePeriod = null;
+        try {
+            if(!isset($stringPostedDate)) {
+                throw new \UnexpectedValueException('Given posted date is null');
+            }
+            $postedReadablePeriod = $this->getReadablePeriodToNow($stringPostedDate);
+            $updatedReadablePeriod = null;
 
-        $typeOfAction = isset($typeOfAction) ? "$typeOfAction " : '';
-        $humanReadableActionDate = $typeOfAction.$postedReadablePeriod;
+            $typeOfAction = isset($typeOfAction) ? "$typeOfAction " : '';
+            $humanReadableActionDate = $typeOfAction.$postedReadablePeriod;
 
-        if(isset($stringUpdatedDate) && (new \DateTime($stringUpdatedDate) > new \DateTime($stringPostedDate))) {
-            $updatedReadablePeriod = $this->getReadablePeriodToNow($stringUpdatedDate);
-            $humanReadableActionDate .= " (edited $updatedReadablePeriod)";
+            if(isset($stringUpdatedDate) && (new \DateTime($stringUpdatedDate) > new \DateTime($stringPostedDate))) {
+                $updatedReadablePeriod = $this->getReadablePeriodToNow($stringUpdatedDate);
+                $humanReadableActionDate .= " (edited $updatedReadablePeriod)";
+            }
+
+            return $humanReadableActionDate;
         }
-
-        return $humanReadableActionDate;
+        catch(\Exception $exception)
+        {
+            Log::error($exception);
+            return null;
+        }
     }
 
     private function getReadablePeriodToNow (string $stringStartedDate)

@@ -303,7 +303,7 @@ class QuestionController extends Controller
                 $total = intval($questions[0]->total);
             }
 
-            $dataResponse = $this->support->getArrayResponseListPagination($questions, $total, $perPage, $page);
+            $dataResponse = $this->support->getArrayResponseListPagination($questions, $request);
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
