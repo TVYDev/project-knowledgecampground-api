@@ -19,4 +19,9 @@ class RouteConst
     const USER_LOGOUT = 'user.logout';
     const USER_CHANGE_PASSWORD = 'user.changePassword';
     const USER_POST_RESET_PASSWORD = 'user.postResetPassword';
+
+    /**
+     * "activity" routes
+     */
+    const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';
 }

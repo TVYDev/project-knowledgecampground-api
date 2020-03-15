@@ -57,7 +57,7 @@ class UserAvatar extends Model
         }
         catch(\Exception $exception)
         {
-            (new Log())->error($exception->getMessage(), $exception->getLine(), $exception->getFile(), $exception->getTraceAsString());
+            Log::error($exception);
             $this['default_avatar_url'] = $this->getSharedAvatarUrl();
         }finally {
             return $this;

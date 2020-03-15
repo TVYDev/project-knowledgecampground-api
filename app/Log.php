@@ -50,8 +50,13 @@ class Log extends Model
     /*
      * Helpers
      */
-    protected function write($logLevel, $message, $loc, $file, $trace) {
+    protected static function write($logLevel, \Exception $exception) {
         try {
+            $message = $exception->getMessage();
+            $loc = $exception->getLine();
+            $file = $exception->getFile();
+            $trace = $exception->getTrace();
+
             Log::create([
                 'log_level' => $logLevel,
                 'message'   => $message,
@@ -64,11 +69,11 @@ class Log extends Model
             // TODO: Write log to file instead
         }
     }
-    public function error($message, $loc, $file = null, $trace = null) {
-        $this->write(self::LEVEL_ERROR, $message, $loc, $file, $trace);
+    public static function error(\Exception $exception) {
+        self::write(self::LEVEL_ERROR, $exception);
     }
 
-    public function critical($message, $loc, $file = null, $trace = null) {
-        $this->write(self::LEVEL_CRITICAL, $message, $loc, $file, $trace);
+    public static function critical(\Exception $exception) {
+        self::write(self::LEVEL_CRITICAL, $exception);
     }
 }

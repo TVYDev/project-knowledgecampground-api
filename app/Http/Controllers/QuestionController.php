@@ -314,7 +314,6 @@ class QuestionController extends Controller
         }
         catch(\Exception $exception)
         {
-            dd($exception->getMessage());
             return $this->standardJsonExceptionResponse($exception);
         }
     }

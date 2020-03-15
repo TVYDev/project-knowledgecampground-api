@@ -9,6 +9,8 @@
 namespace App\Http\Support;
 
 
+use App\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class Supporter
@@ -102,16 +104,32 @@ class Supporter
         return url('/').$relativePath.$filename;
     }
 
-    public function getArrayResponseListPagination ($data, $total, $perPage, $page) {
-        return [
-            'data' => $data,
-            'pagination' => [
-                'total_records' => $total,
-                'num_records' => empty($data) ? 0 : count($data),
-                'per_page' => $perPage,
-                'page' => $page
-            ]
-        ];
+    public function getArrayResponseListPagination ($data, Request $request)
+    {
+        try {
+            $total = 0;
+            if(!empty($data) && count($data) > 0) {
+                $total = intval($data[0]->total);
+            }
+
+            $perPage = $request->has('per_page') ? $request->per_page : 10;
+            $page = $request->has('page') ? $request->page : 1;
+
+            return [
+                'data' => $data,
+                'pagination' => [
+                    'total_records' => $total,
+                    'num_records' => empty($data) ? 0 : count($data),
+                    'per_page' => $perPage,
+                    'page' => $page
+                ]
+            ];
+        }
+        catch(\Exception $exception)
+        {
+            Log::error($exception);
+            return null;
+        }
     }
 
     public function sendMailFromKC ($emailTo, $view, $data, $subject)

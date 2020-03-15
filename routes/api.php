@@ -120,3 +120,10 @@ Route::group([
         Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
         Route::get('/clear-cache-key-validation-rules', 'SupportController@clearCacheValidationRules')->name('support.clearCacheValidationRules');
 });
+
+Route::group([
+    'prefix' => 'activity',
+    'middleware' => [MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS]
+    ], function (){
+        Route::get('/my-posts', 'ActivityController@getMyPosts')->name(RouteConst::ACTIVITY_GET_MY_POSTS);
+});
