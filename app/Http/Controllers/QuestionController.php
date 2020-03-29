@@ -31,7 +31,8 @@ class QuestionController extends Controller
             'except' => [
                 'getList',
                 'getSubjectTagsOfQuestion',
-                'getQuestion'
+                'getQuestion',
+                'getDescriptionOfQuestion'
             ]
         ]);
 
@@ -138,7 +139,6 @@ class QuestionController extends Controller
         try
         {
             $question = Question::where('public_id', $publicId)
-                        ->where('is_active', true)
                         ->where('is_deleted', false)
                         ->first();
 
@@ -230,7 +230,7 @@ class QuestionController extends Controller
             if($question)
             {
                 $questionDescription = $question->questionDescription()->where('is_active', true)->first();
-                $questionDescription['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE;
+                $questionDescription['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE);
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
