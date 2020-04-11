@@ -49,22 +49,27 @@ class QuestionController extends Controller
             $result = (new KCValidate())->doValidate($request->all(),KCValidate::VALIDATION_QUESTION_SAVE_DURING_EDITING);
             if($result !== true) return $result;
 
-            $subject = Subject::where('public_id', 'default')->first();
+            $isDraft = ($request->is_draft === 'true' || $request->is_draft === true ) ? true : false;
+
+            $dataToUpdate = [
+                'title' => $request->title,
+                'user__id' => auth()->user()->id,
+                'is_draft' => $isDraft
+            ];
+
+            if($isDraft === true) {
+                $subject = Subject::where('public_id', 'default')->first();
+                $dataToUpdate['subject__id'] = $subject->id;
+            }
 
             $question = Question::updateOrCreate(
                 ['public_id' => $request->public_id],
-                [
-                    'title' => $request->title,
-                    'user__id' => auth()->user()->id,
-                    'subject__id' => $subject->id,
-                    'is_draft' => $request->is_draft,
-                    'posted_at' => new \DateTime()
-                ]
+                $dataToUpdate
             );
 
             $question->questionDescription()->updateOrCreate(
                 ['question__id' => $question->id],
-                ['data' => $request->description]
+                ['tmp_data' => $request->description]
             );
 
             if($request->hasFile('image_file_upload') && $request->has('image_file_name'))
@@ -98,25 +103,42 @@ class QuestionController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
             if($result !== true) return $result;
 
+            $originalIsDraft = false;
             $isDraft = $request->is_draft;
             $tagPublicIds = $request->tag_public_ids;
 
             $subject = Subject::where('public_id', $request->subject_public_id)->first();
 
             $question = Question::where('public_id', $publicId)->first();
+            $originalIsDraft = $question->is_draft;
             $question->title = $request->title;
             $question->is_draft = $isDraft;
-            $question->posted_at = new \DateTime();
+            if($originalIsDraft == true) {
+                $question->posted_at = new \DateTime();
+            }
+            else {
+                $question->updated_at = new \DateTime();
+            }
             if(isset($subject)){
                 $question->subject__id = $subject->id;
             }
             if(isset($tagPublicIds)){
+                $question->tags()->detach();
                 $tags = $subject->tags->whereIn('public_id', $tagPublicIds);
                 foreach($tags as $t){
                     $question->tags()->attach($t->id);
                 }
             }
+
             $question->save();
+
+            if($isDraft == false) {
+                $questionDesc = $question->questionDescription()->where('is_active', true)->first();
+                $question->questionDescription()->where('question__id', $question->id)->update([
+                    'data' => $questionDesc->tmp_data,
+                    'tmp_data' => null
+                ]);
+            }
 
             DB::commit();
 
