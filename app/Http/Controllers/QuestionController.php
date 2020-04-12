@@ -103,7 +103,6 @@ class QuestionController extends Controller
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
             if($result !== true) return $result;
 
-            $originalIsDraft = false;
             $isDraft = $request->is_draft;
             $tagPublicIds = $request->tag_public_ids;
 
