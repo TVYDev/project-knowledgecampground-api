@@ -45,9 +45,6 @@ trait JsonResponse
         // --- get message from message_code
         $arraySysMsg = (new SystemMessage())->getArrayMessageSysEnKh($messageCode);
         $msgSys = $arraySysMsg['sys'];
-        if(!isset($msgSys)) {
-            $msgSys = $messageCode;
-        }
         $msgEn = $arraySysMsg['en'];
         $msgKh = $arraySysMsg['kh'];
 
@@ -64,6 +61,7 @@ trait JsonResponse
         // --- do response JSON
         return response()->json([
             'success'       => $success,
+            'message_code'  => $messageCode,
             'message_sys'   => $msgSys,
             'message_en'    => $msgEn,
             'message_kh'    => $msgKh,
@@ -84,16 +82,10 @@ trait JsonResponse
      */
     public function standardJsonExceptionResponse (\Exception $exception)
     {
-        // Write log to database for all types of exception, level critical
-        $message = $exception->getMessage();
-        $loc = $exception->getLine();
-        $file = $exception->getFile();
-        $trace = $exception->getTraceAsString();
-
         // --- case when token is invalid or not found
         if($exception instanceof TokenInvalidException)
         {
-            (new DBLog())->error($message, $loc, $file, $trace);
+            DBLog::error($exception);
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
@@ -105,7 +97,7 @@ trait JsonResponse
         // --- case when token is expired
         else if($exception instanceof TokenExpiredException)
         {
-            (new DBLog())->error($message, $loc, $file, $trace);
+            DBLog::error($exception);
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
@@ -117,7 +109,7 @@ trait JsonResponse
         // --- case when cannot find user in the database
         else if($exception instanceof ModelNotFoundException)
         {
-            (new DBLog())->error($message, $loc, $file, $trace);
+            DBLog::error($exception);
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_UNAUTHORIZED,
                 false,
@@ -128,7 +120,7 @@ trait JsonResponse
         }
         else if($exception instanceof JWTException)
         {
-            (new DBLog())->error($message, $loc, $file, $trace);
+            DBLog::error($exception);
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
@@ -138,11 +130,11 @@ trait JsonResponse
             );
         }
         else{
-            (new DBLog())->critical($message, $loc, $file, $trace);
+            DBLog::critical($exception);
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR,
                 false,
-                $message,
+                $exception->getMessage(),
                 null,
                 ErrorCode::ERR_CODE_EXCEPTION
             );

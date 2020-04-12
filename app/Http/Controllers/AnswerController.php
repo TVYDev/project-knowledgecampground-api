@@ -28,7 +28,8 @@ class AnswerController extends Controller
         $this->middleware(MiddlewareConst::JWT_AUTH, [
             'except' => [
                 'getListPostedAnswersOfQuestion',
-                'getAnswer'
+                'getAnswer',
+                'getDescriptionOfAnswer'
             ]
         ]);
 
@@ -47,19 +48,20 @@ class AnswerController extends Controller
 
             $question = Question::where('public_id', $request->question_public_id)->first();
 
+            $isDraft = ($request->is_draft === 'true' || $request->is_draft === true ) ? true : false;
+
             $answer = Answer::updateOrCreate(
                 ['public_id' => $request->public_id],
                 [
                     'user__id' => auth()->user()->id,
                     'question__id' => $question->id,
-                    'is_draft' => $request->is_draft,
-                    'posted_at' => new \DateTime()
+                    'is_draft' => $isDraft,
                 ]
             );
 
             $answer->answerDescription()->updateOrCreate(
                 ['answer__id' => $answer->id],
-                ['data' => $request->description]
+                ['tmp_data' => $request->description]
             );
 
             if($request->hasFile('image_file_upload') && $request->has('image_file_name'))
@@ -87,6 +89,8 @@ class AnswerController extends Controller
     {
         try
         {
+            DB::beginTransaction();
+
             // -- validate inputs
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE);
             if($result !== true) return $result;
@@ -94,9 +98,25 @@ class AnswerController extends Controller
             $isDraft = $request->is_draft;
 
             $answer = Answer::where('public_id', $publicId)->first();
+            $originalIsDraft = $answer->is_draft;
             $answer->is_draft = $isDraft;
-            $answer->posted_at = new \DateTime();
+            if($originalIsDraft == true) {
+                $answer->posted_at = new \DateTime();
+            }
+            else {
+                $answer->updated_at = new \DateTime();
+            }
             $answer->save();
+
+            if($isDraft == false) {
+                $answerDesc = $answer->answerDescription()->where('is_active', true)->first();
+                $answer->answerDescription()->where('answer__id', $answer->id)->update([
+                    'data' => $answerDesc->tmp_data,
+                    'tmp_data' => null
+                ]);
+            }
+
+            DB::commit();
 
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
@@ -107,6 +127,7 @@ class AnswerController extends Controller
         }
         catch(\Exception $exception)
         {
+            DB::rollBack();
             return $this->standardJsonExceptionResponse($exception);
         }
     }
@@ -171,7 +192,7 @@ class AnswerController extends Controller
             if($answer)
             {
                 $answerDescription = $answer->answerDescription()->where('is_active', true)->first();
-                $answerDescription['relative_path_store_images'] = DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE;
+                $answerDescription['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
