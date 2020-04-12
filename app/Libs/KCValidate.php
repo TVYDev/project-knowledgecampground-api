@@ -51,7 +51,7 @@ class KCValidate
             'title'             => 'string|max:250',
             'description'       => 'required|string',
             'public_id'         => 'required|string',
-            'is_draft'          => 'required|boolean'
+            'is_draft'          => 'required'
         ],
         self::VALIDATION_QUESTION_SAVE => [
             'title'         => 'required|string|max:250',
@@ -61,7 +61,7 @@ class KCValidate
         self::VALIDATION_ANSWER_SAVE_DURING_EDITING => [
             'description'       => 'required|string',
             'public_id'         => 'required|string',
-            'is_draft'          => 'required|boolean',
+            'is_draft'          => 'required',
             'question_public_id'=> 'required|string|max:500'
         ],
         self::VALIDATION_ANSWER_SAVE => [

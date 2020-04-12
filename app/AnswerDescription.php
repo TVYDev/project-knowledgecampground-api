@@ -10,6 +10,7 @@ class AnswerDescription extends Model
 
     protected $fillable = [
         'data',
+        'tmp_data',
         'is_active',
         'is_deleted'
     ];

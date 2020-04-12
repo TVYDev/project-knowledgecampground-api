@@ -127,7 +127,8 @@ CREATE TABLE question_descriptions
 (
     id SERIAL NOT NULL,
     question__id int4 NOT NULL,
-    data TEXT NOT NULL,
+    data TEXT NULL,
+    tmp_data TEXT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
@@ -317,7 +318,8 @@ CREATE TABLE answer_descriptions
 (
     id SERIAL NOT NULL,
     answer__id int4 NOT NULL,
-    data TEXT NOT NULL,
+    data TEXT NULL,
+    tmp_data TEXT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
