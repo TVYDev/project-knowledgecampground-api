@@ -18,18 +18,26 @@ use App\Libs\RouteConst;
 Route::group([
     'prefix' => 'auth'
     ], function() {
-        Route::post('login', 'UserController@login')->name(RouteConst::USER_LOGIN);
-        Route::post('register', 'UserController@register')->name(RouteConst::USER_REGISTER);
-        Route::post('refresh-token', 'UserController@refreshToken')->name(RouteConst::USER_REFRESH_TOKEN);
-        Route::post('send-reset-email', 'UserController@postSendResetEmail')->name(RouteConst::USER_POST_SEND_RESET_EMAIL);
-
-        Route::get('user', 'UserController@getUser')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_GET_USER);
-        Route::get('verify-authentication', 'UserController@verifyAuthentication')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_VERIFY_AUTHENTICATION);
-        Route::get('user-permissions', 'UserController@getUserPermissions')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_GET_USER_PERMISSIONS);
-
-        Route::post('logout', 'UserController@logout')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_LOGOUT);
-        Route::post('change-password', 'UserController@changePassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_CHANGE_PASSWORD);
-        Route::post('/reset-password', 'UserController@postResetPassword')->middleware(MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS)->name(RouteConst::USER_POST_RESET_PASSWORD);
+        Route::post('login', 'UserController@postLoginUser')
+            ->name(RouteConst::USER_POST_LOGIN_USER);
+        Route::post('register', 'UserController@postRegisterUser')
+            ->name(RouteConst::USER_POST_REGISTER_USER);
+        Route::post('refresh-token', 'UserController@postRefreshAccessToken')
+            ->name(RouteConst::USER_POST_REFRESH_ACCESS_TOKEN);
+        Route::post('send-reset-email', 'UserController@postSendMailLinkResetUserPassword')
+            ->name(RouteConst::USER_POST_SEND_MAIL_LINK_RESET_USER_PASSWORD);
+        Route::get('user', 'UserController@getRetrieveAuthenticatedUser')
+            ->name(RouteConst::USER_GET_RETRIEVE_AUTHENTICATED_USER);
+        Route::get('verify-authentication', 'UserController@getVerifyUserAuthentication')
+            ->name(RouteConst::USER_GET_VERIFY_USER_AUTHENTICATION);
+        Route::get('user-permissions', 'UserController@getRetrieveUserPermissions')
+            ->name(RouteConst::USER_GET_RETRIEVE_USER_PERMISSIONS);
+        Route::post('logout', 'UserController@postLogoutUser')
+            ->name(RouteConst::USER_POST_LOGOUT_USER);
+        Route::post('change-password', 'UserController@postChangeUserPassword')
+            ->name(RouteConst::USER_POST_CHANGE_USER_PASSWORD);
+        Route::post('/reset-password', 'UserController@postResetUserPassword')
+            ->name(RouteConst::USER_POST_RESET_USER_PASSWORD);
 });
 
 Route::group([

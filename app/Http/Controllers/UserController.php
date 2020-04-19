@@ -8,6 +8,7 @@ use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Libs\MessageCode;
+use App\Libs\MiddlewareConst;
 use App\PasswordReset;
 use App\Role;
 use App\User;
@@ -20,16 +21,34 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use JsonResponse;
+
+    public function __construct()
+    {
+        $this->middleware(MiddlewareConst::JWT_AUTH, ['except' => [
+            'postLoginUser',
+            'postRegisterUser',
+            'postRefreshAccessToken',
+            'postSendMailLinkResetUserPassword'
+        ]]);
+
+        $this->middleware(MiddlewareConst::JWT_CLAIMS, ['except' => [
+            'postLoginUser',
+            'postRegisterUser',
+            'postRefreshAccessToken',
+            'postSendMailLinkResetUserPassword'
+        ]]);
+    }
+
     /**
-     * User Change Password
+     * Change User Password
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function changePassword (Request $request){
+    public function postChangeUserPassword (Request $request){
         try
         {
-            // --- validate inputs
+            /* --- Validate inputs --- */
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
             if($result !== true) return $result;
 
@@ -37,20 +56,24 @@ class UserController extends Controller
 
             $currentPwd = $request->current_password;
             $newPwd = $request->new_password;
+            /* --- Compare with current password --- */
             if(!Hash::check($currentPwd, $user->password)){
                 return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__CURRENT_PASSWORD_NOT_CORRECT');
             }
+            /* --- Compare with last three passwords --- */
             else if(Hash::check($newPwd, $user->password1) ||
                 Hash::check($newPwd, $user->password2) ||
                 Hash::check($newPwd, $user->password3)){
                 return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE');
             }
+            /* --- Update current and last three passwords accordingly --- */
             else{
                 $user->password3 = $user->password2;
                 $user->password2 = $user->password1;
                 $user->password1 = $user->password;
                 $user->password = $newPwd;
             }
+
             $user->save();
 
             return $this->standardJsonResponse(
@@ -66,14 +89,14 @@ class UserController extends Controller
     }
 
     /**
-     * User get information
+     * Retrieve Authenticated User
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getUser () {
+    public function getRetrieveAuthenticatedUser () {
         try
         {
-            // --- get authenticated user
+            /* --- get authenticated user --- */
             $user = auth()->user();
 
             return $this->standardJsonResponse(
@@ -90,28 +113,34 @@ class UserController extends Controller
     }
 
     /**
-     * User Login
+     * Login User
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login (Request $request)
+    public function postLoginUser (Request $request)
     {
         try
         {
-            // --- validate inputs
+            /* --- Validate inputs --- */
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_LOGIN);
             if($result !== true) return $result;
 
+            /* --- Retrieve user --- */
             $user = User::where('email', $request->email)->first();
+
+            /* --- Check if it is admin user, then abort login process --- */
             if($user->is_internal === true) {
                 return $this->standardLoginFailedResponse();
             }
 
-            // --- do login
+            /* --- Attempt to login the user --- */
+            /*
+             * If user is authenticated token is returned, otherwise false is given
+            */
             $credentials = request(['email', 'password']);
             $token = auth()->attempt($credentials);
-                // return token if user is authenticated, otherwise return false
+
             if(!$token){
                 return $this->standardLoginFailedResponse();
             }
@@ -134,15 +163,15 @@ class UserController extends Controller
     }
 
     /**
-     * User Logout
+     * Logout User
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout ()
+    public function postLogoutUser ()
     {
         try
         {
-            // --- do logout
+            /* --- Logout the user */
             auth()->logout();
 
             return $this->standardJsonResponse(
@@ -158,44 +187,44 @@ class UserController extends Controller
     }
 
     /**
-     * User Register
+     * Register User
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request)
+    public function postRegisterUser (Request $request)
     {
         try
         {
-            // --- validate inputs
+            DB::beginTransaction();
+
+            /* --- Validate inputs --- */
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
             if($result !== true) return $result;
 
-            DB::beginTransaction();
-
-            // --- create user
+            /* --- Create user --- */
             $user = User::create([
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => $request->password
             ]);
 
-            // --- create default user_avatar for the user
+            /* --- Create default user avatar for the user --- */
             $userAvatar = new UserAvatar();
             $defaultUserAvatar = $userAvatar->generateDefaultUserAvatar();
             $user->userAvatar()->save($defaultUserAvatar);
 
-            // --- create profile
+            /* --- Create user profile --- */
             $userProfile = new UserProfile();
             $user->userProfile()->save($userProfile);
 
-            // --- assign to role Normal User
+            /* --- Assign user to role "Normal User" --- */
             $normalRole = Role::where('name', 'Normal User')->first();
             $normalRole->users()->attach($user->id, ['created_by' => $user->id]);
 
             DB::commit();
 
-            // --- get token of the user
+            /* --- Get access token for the user --- */
             $token = auth()->login($user);
 
             return $this->standardJsonResponse(
@@ -216,13 +245,15 @@ class UserController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * Verify User Authentication
      *
      * We already have middleware outside to check the token whether it is valid or not
      * if it is not valid, exception will be thrown to exception handler, pass the JSON and do not get here
      * otherwise it gets through here and it means the token is valid.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function verifyAuthentication () {
+    public function getVerifyUserAuthentication () {
         return $this->standardJsonResponse(
             HttpStatusCode::SUCCESS_OK,
             true,
@@ -230,10 +261,17 @@ class UserController extends Controller
         );
     }
 
-    public function refreshToken () {
+    /**
+     * Refresh Access Token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postRefreshAccessToken () {
         try
         {
+            /* --- Refresh access token --- */
             $newToken = auth()->refresh();
+
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
@@ -251,9 +289,15 @@ class UserController extends Controller
         }
     }
 
-    public function getUserPermissions ()
+    /**
+     * Retrieve User Permissions
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveUserPermissions ()
     {
         try {
+            /* --- Query to get all permissions of the user --- */
             $permissions = DB::table('permissions AS p')
                 ->select(DB::raw('DISTINCT p.*'))
                 ->join('role_permission_mappings AS rpm', 'rpm.permission__id', '=', 'p.id')
@@ -285,25 +329,36 @@ class UserController extends Controller
         }
     }
 
-    public function postSendResetEmail (Request $request) {
+    /**
+     * Send Mail Link Reset User Password
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postSendMailLinkResetUserPassword (Request $request) {
         try {
             $email = $request->email;
             $route = $request->route;
 
+            /* --- Retrieve user which is not an admin user or social user --- */
             $user = User::where('email', $email)
                 ->where('is_internal', false)
                 ->whereNull('provider')
                 ->first();
 
             if(isset($user)) {
+                /* --- Set custom claim of access reset password to the token --- */
                 $token = auth()->claims([User::KEY_JWT_CLAIM_ACCESS => User::JWT_CLAIM_ACCESS_RESET])
                     ->setTTL(1440)
                     ->tokenById($user->id);
 
+                /* --- Attach the token to the UI link reset password provided by the client --- */
                 $linkTobeSent = $route . '?token=' . $token;
 
+                /* --- Attempt to send the mail link reset password --- */
                 $result = (new Supporter())->sendEmailResetPassword($email, $linkTobeSent);
                 if ($result === true) {
+                    /* --- If mail sent successfully, then records the reset password request --- */
                     PasswordReset::create([
                         'email' => $email,
                         'token' => $token
@@ -336,24 +391,36 @@ class UserController extends Controller
         }
     }
 
-    public function postResetPassword (Request $request)
+    /**
+     * Reset User Password
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postResetUserPassword (Request $request)
     {
         try {
+            /* --- Validate inputs --- */
             $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_RESET_PASSWORD);
             if($result !== true) return $result;
 
             $userId = auth()->user()->id;
-            $bearerToken = Supporter::getBearerToken($request->header('Authorization'));
             $user = User::find($userId);
 
-            $passwordReset = PasswordReset::where('email', $user->email)->where('token', $bearerToken)->first();
+            /* --- Get bearer token from the request header --- */
+            $bearerToken = Supporter::getBearerToken($request->header('Authorization'));
 
+            /* --- Check if reset password request is recorded. If so, then continue the reset password process --- */
+            $passwordReset = PasswordReset::where('email', $user->email)->where('token', $bearerToken)->first();
             if(isset($passwordReset)) {
+                /* --- Update user current password with the new password --- */
                 $user->password = $request->new_password;
                 $user->save();
 
+                /* --- Send mail successfully reset user password --- */
                 (new Supporter())->sendEmailSuccessfulResetPassword($user->email);
 
+                /* --- Logout current user, purpose to invalid the token for this reset password process --- */
                 auth()->logout();
 
                 return $this->standardJsonResponse(
