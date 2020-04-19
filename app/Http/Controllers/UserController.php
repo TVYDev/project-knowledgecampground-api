@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\KCValidationException;
 use App\Http\Support\Supporter;
 use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
@@ -22,6 +23,8 @@ class UserController extends Controller
 {
     use JsonResponse;
 
+    protected $inputsValidator;
+
     public function __construct()
     {
         $this->middleware(MiddlewareConst::JWT_AUTH, ['except' => [
@@ -37,6 +40,8 @@ class UserController extends Controller
             'postRefreshAccessToken',
             'postSendMailLinkResetUserPassword'
         ]]);
+
+        $this->inputsValidator = new KCValidate();
     }
 
     /**
@@ -49,8 +54,7 @@ class UserController extends Controller
         try
         {
             /* --- Validate inputs --- */
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
-            if($result !== true) return $result;
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_USER_CHANGE_PASSWORD);
 
             $user = auth()->user();
 
@@ -58,13 +62,13 @@ class UserController extends Controller
             $newPwd = $request->new_password;
             /* --- Compare with current password --- */
             if(!Hash::check($currentPwd, $user->password)){
-                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__CURRENT_PASSWORD_NOT_CORRECT');
+                throw new KCValidationException(MessageCode::msgError('user current password not correct'));
             }
             /* --- Compare with last three passwords --- */
             else if(Hash::check($newPwd, $user->password1) ||
                 Hash::check($newPwd, $user->password2) ||
                 Hash::check($newPwd, $user->password3)){
-                return $this->standardJsonValidationErrorResponse('KC_MSG_ERROR__NEW_PASSWORD_SAME_LAST_THREE');
+                throw new KCValidationException(MessageCode::msgError('user new password same last three'));
             }
             /* --- Update current and last three passwords accordingly --- */
             else{
@@ -79,7 +83,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'KC_MSG_SUCCESS__USER_CHANGE_PASSWORD'
+                MessageCode::msgSuccess('user change password')
             );
         }
         catch(\Exception $exception)
@@ -102,7 +106,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                null,
+                MessageCode::msgSuccess('retrieve authenticated user'),
                 $user
             );
         }
@@ -123,38 +127,40 @@ class UserController extends Controller
         try
         {
             /* --- Validate inputs --- */
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_LOGIN);
-            if($result !== true) return $result;
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_USER_LOGIN);
 
             /* --- Retrieve user --- */
             $user = User::where('email', $request->email)->first();
 
-            /* --- Check if it is admin user, then abort login process --- */
-            if($user->is_internal === true) {
-                return $this->standardLoginFailedResponse();
+            if(isset($user)) {
+                /* --- Check if it is admin user, then abort login process --- */
+                if($user->is_internal === true) {
+                    throw new KCValidationException(MessageCode::msgError('email or password not correct'));
+                }
+
+                /* --- Attempt to login the user --- */
+                /*
+                 * If user is authenticated token is returned, otherwise false is given
+                */
+                $credentials = request(['email', 'password']);
+                $token = auth()->attempt($credentials);
+
+                if(!$token){
+                    throw new KCValidationException(MessageCode::msgError('email or password not correct'));
+                }
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    MessageCode::msgSuccess('user login'),
+                    [
+                        'access_token'  => $token,
+                        'token_type'    => 'bearer',
+                        'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
+                    ]
+                );
             }
-
-            /* --- Attempt to login the user --- */
-            /*
-             * If user is authenticated token is returned, otherwise false is given
-            */
-            $credentials = request(['email', 'password']);
-            $token = auth()->attempt($credentials);
-
-            if(!$token){
-                return $this->standardLoginFailedResponse();
-            }
-
-            return $this->standardJsonResponse(
-                HttpStatusCode::SUCCESS_OK,
-                true,
-                'KC_MSG_SUCCESS__USER_LOGIN',
-                [
-                    'access_token'  => $token,
-                    'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
-                ]
-            );
+            throw new KCValidationException(MessageCode::msgError('email or password not correct'));
         }
         catch(\Exception $exception)
         {
@@ -177,7 +183,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                'KC_MSG_SUCCESS__USER_LOGOUT'
+                MessageCode::msgSuccess('user logout')
             );
         }
         catch(\Exception $exception)
@@ -199,8 +205,7 @@ class UserController extends Controller
             DB::beginTransaction();
 
             /* --- Validate inputs --- */
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
-            if($result !== true) return $result;
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
 
             /* --- Create user --- */
             $user = User::create([
@@ -230,7 +235,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'KC_MSG_SUCCESS__USER_REGISTER',
+                MessageCode::msgSuccess('user register'),
                 [
                     'access_token'  => $token,
                     'token_type'    => 'bearer',
@@ -257,7 +262,7 @@ class UserController extends Controller
         return $this->standardJsonResponse(
             HttpStatusCode::SUCCESS_OK,
             true,
-            'KC_MSG_SUCCESS__USER_IS_AUTHENTICATED'
+            MessageCode::msgSuccess('user authenticated')
         );
     }
 
@@ -275,7 +280,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                null,
+                MessageCode::msgSuccess('token refreshed'),
                 [
                     'access_token'  => $newToken,
                     'token_type'    => 'bearer',
@@ -320,7 +325,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                '',
+                MessageCode::msgSuccess('retrieve user permissions'),
                 $permissions
             );
         }
@@ -337,6 +342,9 @@ class UserController extends Controller
      */
     public function postSendMailLinkResetUserPassword (Request $request) {
         try {
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_USER_SEND_MAIL_LINK_RESET_PASSWORD);
+
             $email = $request->email;
             $route = $request->route;
 
@@ -367,13 +375,13 @@ class UserController extends Controller
                     return $this->standardJsonResponse(
                         HttpStatusCode::SUCCESS_OK,
                         true,
-                        MessageCode::msgSuccess('reset_mail_sent')
+                        MessageCode::msgSuccess('sent mail reset password')
                     );
                 }
                 return $this->standardJsonResponse(
                     HttpStatusCode::ERROR_REQUEST_TIMEOUT,
                     false,
-                    MessageCode::msgError('reset_mail_sent'),
+                    MessageCode::msgError('send mail reset password'),
                     ErrorCode::ERR_CODE_SEND_MAIL_FAILED
                 );
             }
@@ -381,7 +389,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                MessageCode::msgError('user_not_exist'),
+                MessageCode::msgError('user not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -426,14 +434,14 @@ class UserController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    MessageCode::msgSuccess('password_reset')
+                    MessageCode::msgSuccess('password reset')
                 );
             }
 
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                MessageCode::msgError('invalid_link'),
+                MessageCode::msgError('link invalid'),
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }

@@ -9,6 +9,7 @@
 namespace App\Libs;
 
 
+use App\Exceptions\KCValidationException;
 use App\SystemMessage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Input;
@@ -106,6 +107,18 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_EXPIRED
             );
         }
+        /* --- case when inputs validation fails --- */
+        else if($exception instanceof  KCValidationException)
+        {
+            DBLog::error($exception);
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_NOT_ACCEPTABLE,
+                false,
+                $exception->getMessage(),
+                null,
+                ErrorCode::ERR_CODE_VALIDATION
+            );
+        }
         // --- case when cannot find user in the database
         else if($exception instanceof ModelNotFoundException)
         {
@@ -139,54 +152,5 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_EXCEPTION
             );
         }
-    }
-
-    /**
-     * Standard JSON Response for user login failure
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardLoginFailedResponse ()
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_UNAUTHORIZED,
-            false,
-            'KC_MSG_ERROR__EMAIL_OR_PASSWORD_INCORRECT',
-            null,
-            ErrorCode::ERR_CODE_LOGIN_FAILED
-        );
-    }
-
-    /**
-     * Standard JSON Response for error when user is unauthorized to request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardJsonUnauthorizedResponse ()
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_UNAUTHORIZED,
-            false,
-            'KC_MSG_ERROR__UNAUTHORIZED_ACCESS',
-            null,
-            ErrorCode::ERR_CODE_UNAUTHORIZED
-        );
-    }
-
-    /**
-     * Standard JSON Response for error validation on inputs
-     *
-     * @param $errorMessage
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardJsonValidationErrorResponse ($messageCode)
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_NOT_ACCEPTABLE,
-            false,
-            $messageCode,
-            null,
-            ErrorCode::ERR_CODE_VALIDATION
-        );
     }
 }
