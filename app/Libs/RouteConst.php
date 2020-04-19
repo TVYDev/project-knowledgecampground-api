@@ -39,6 +39,17 @@ class RouteConst
     const PERMISSION_POST_REMOVE_USER_PERMISSIONS_FROM_USER_ROLE = 'permission.postRemoveUserPermissionsFromUserRole';
 
     /**
+     * SocialAuthController Routes
+     */
+    const SOCIAL_AUTH_POST_LOGIN_SOCIAL_USER = 'socialAuth.postLoginSocialUser';
+
+    /**
+     * UserProfileController Routes
+     */
+    const USER_PROFILE_POST_UPDATE_USER_PROFILE = 'userProfile.postUpdateUserProfile';
+    const USER_PROFILE_GET_VIEW_USER_PROFILE = 'userProfile.getViewUserProfile';
+
+    /**
      * "activity" routes
      */
     const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';

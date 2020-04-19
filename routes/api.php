@@ -36,7 +36,7 @@ Route::group([
             ->name(RouteConst::USER_POST_LOGOUT_USER);
         Route::post('change-password', 'UserController@postChangeUserPassword')
             ->name(RouteConst::USER_POST_CHANGE_USER_PASSWORD);
-        Route::post('/reset-password', 'UserController@postResetUserPassword')
+        Route::post('reset-password', 'UserController@postResetUserPassword')
             ->name(RouteConst::USER_POST_RESET_USER_PASSWORD);
 });
 
@@ -73,14 +73,17 @@ Route::group([
 Route::group([
     'prefix' => 'social-auth'
     ], function() {
-        Route::post('/login', 'SocialAuthController@postLogin')->name('socialAuth.postLogin');
+        Route::post('login', 'SocialAuthController@postLoginSocialUser')
+            ->name(RouteConst::SOCIAL_AUTH_POST_LOGIN_SOCIAL_USER);
 });
 
 Route::group([
     'prefix' => 'user-profile'
     ], function() {
-        Route::middleware(MiddlewareConst::JWT_AUTH)->post('update', 'UserProfileController@postUpdate')->name('userProfile.postUpdate');
-        Route::middleware(MiddlewareConst::JWT_AUTH)->get('view', 'UserProfileController@getView')->name('userProfile.getView');
+        Route::post('update', 'UserProfileController@postUpdateUserProfile')
+            ->name(RouteConst::USER_PROFILE_POST_UPDATE_USER_PROFILE);
+        Route::get('view', 'UserProfileController@getViewUserProfile')
+            ->name(RouteConst::USER_PROFILE_GET_VIEW_USER_PROFILE);
 });
 
 Route::group([
