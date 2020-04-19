@@ -84,7 +84,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                MessageCode::msgSuccess('user change password')
+                MessageCode::msgSuccess('user password changed')
             );
         }
         catch(\Exception $exception)
@@ -107,7 +107,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                MessageCode::msgSuccess('retrieve authenticated user'),
+                MessageCode::msgSuccess('authenticated user retrieved'),
                 $user
             );
         }
@@ -153,7 +153,7 @@ class UserController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    MessageCode::msgSuccess('user login'),
+                    MessageCode::msgSuccess('user logged in'),
                     StandardJsonFormat::getAccessTokenFormat([$token])
                 );
             }
@@ -180,7 +180,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                MessageCode::msgSuccess('user logout')
+                MessageCode::msgSuccess('user logged out')
             );
         }
         catch(\Exception $exception)
@@ -232,7 +232,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                MessageCode::msgSuccess('user register'),
+                MessageCode::msgSuccess('user registered'),
                 StandardJsonFormat::getAccessTokenFormat([$token])
             );
         }
@@ -315,7 +315,7 @@ class UserController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                MessageCode::msgSuccess('retrieve user permissions'),
+                MessageCode::msgSuccess('user permissions retrieved'),
                 $permissions
             );
         }
@@ -365,13 +365,13 @@ class UserController extends Controller
                     return $this->standardJsonResponse(
                         HttpStatusCode::SUCCESS_OK,
                         true,
-                        MessageCode::msgSuccess('sent mail reset password')
+                        MessageCode::msgSuccess('mail reset password sent')
                     );
                 }
                 return $this->standardJsonResponse(
                     HttpStatusCode::ERROR_REQUEST_TIMEOUT,
                     false,
-                    MessageCode::msgError('send mail reset password'),
+                    MessageCode::msgError('mail reset password not sent'),
                     null,
                     ErrorCode::ERR_CODE_SEND_MAIL_FAILED
                 );

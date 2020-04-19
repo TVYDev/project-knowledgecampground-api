@@ -21,6 +21,15 @@ class RouteConst
     const USER_POST_RESET_USER_PASSWORD = 'user.postResetUserPassword';
 
     /**
+     * RoleController Routes
+     */
+    const ROLE_POST_CREATE_USER_ROLE = 'role.postCreateUserRole';
+    const ROLE_GET_RETRIEVE_AVAILABLE_USER_ROLES = 'role.getRetrieveAvailableUserRoles';
+    const ROLE_GET_VIEW_USER_ROLE = 'role.getViewUserRole';
+    const ROLE_POST_ASSIGN_USER_ROLE_TO_USER = 'role.postAssignUserRoleToUser';
+    const ROLE_POST_REMOVE_USER_ROLE_FROM_USER = 'role.postRemoveUserRoleFromUser';
+
+    /**
      * "activity" routes
      */
     const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';

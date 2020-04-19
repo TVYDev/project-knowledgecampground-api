@@ -43,11 +43,16 @@ Route::group([
 Route::group([
     'prefix' => 'role'
     ], function() {
-        Route::post('create-role', 'RoleController@postCreateRole')->name('role.postCreateRole');
-        Route::get('available-roles', 'RoleController@getAvailableRoles')->name('role.getAvailableRoles');
-        Route::get('view/{roleId}', 'RoleController@getViewRole')->name('role.getViewRole');
-        Route::post('assign-role-to-user', 'RoleController@postAssignRoleToUser')->name('role.postAssignRoleToUser');
-        Route::post('remove-role-from-user', 'RoleController@postRemoveRoleFromUser')->name('role.postRemoveRoleFromUser');
+        Route::post('create-role', 'RoleController@postCreateUserRole')
+            ->name(RouteConst::ROLE_POST_CREATE_USER_ROLE);
+        Route::get('available-roles', 'RoleController@getRetrieveAvailableUserRoles')
+            ->name(RouteConst::ROLE_GET_RETRIEVE_AVAILABLE_USER_ROLES);
+        Route::get('view/{roleId}', 'RoleController@getViewUserRole')
+            ->name(RouteConst::ROLE_GET_VIEW_USER_ROLE);
+        Route::post('assign-role-to-user', 'RoleController@postAssignUserRoleToUser')
+            ->name(RouteConst::ROLE_POST_ASSIGN_USER_ROLE_TO_USER);
+        Route::post('remove-role-from-user', 'RoleController@postRemoveUserRoleFromUser')
+            ->name(RouteConst::ROLE_POST_REMOVE_USER_ROLE_FROM_USER);
 });
 
 Route::group([
