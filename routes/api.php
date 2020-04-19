@@ -58,11 +58,16 @@ Route::group([
 Route::group([
     'prefix' => 'permission'
     ], function() {
-        Route::post('create-permission', 'PermissionController@postCreatePermission')->name('permission.postCreatePermission');
-        Route::get('available-permissions', 'PermissionController@getAvailablePermissions')->name('permission.getAvailablePermissions');
-        Route::get('view/{permissionId}', 'PermissionController@getViewPermission')->name('permission.getViewPermission');
-        Route::post('assign-permissions-to-role', 'PermissionController@postAssignPermissionsToRole')->name('permission.postAssignPermissionsToRole');
-        Route::post('remove-permissions-from-role', 'PermissionController@postRemovePermissionsFromRole')->name('permission.postRemovePermissionsFromRole');
+        Route::post('create-permission', 'PermissionController@postCreateUserPermission')
+            ->name(RouteConst::PERMISSION_POST_CREATE_USER_PERMISSION);
+        Route::get('available-permissions', 'PermissionController@getRetrieveAvailableUserPermissions')
+            ->name(RouteConst::PERMISSION_GET_RETRIEVE_AVAILABLE_USER_PERMISSIONS);
+        Route::get('view/{permissionId}', 'PermissionController@getViewUserPermission')
+            ->name(RouteConst::PERMISSION_GET_VIEW_USER_PERMISSION);
+        Route::post('assign-permissions-to-role', 'PermissionController@postAssignUserPermissionsToUserRole')
+            ->name(RouteConst::PERMISSION_POST_ASSIGN_USER_PERMISSIONS_TO_USER_ROLE);
+        Route::post('remove-permissions-from-role', 'PermissionController@postRemoveUserPermissionsFromUserRole')
+            ->name(RouteConst::PERMISSION_POST_REMOVE_USER_PERMISSIONS_FROM_USER_ROLE);
 });
 
 Route::group([

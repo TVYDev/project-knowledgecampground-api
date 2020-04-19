@@ -30,6 +30,15 @@ class RouteConst
     const ROLE_POST_REMOVE_USER_ROLE_FROM_USER = 'role.postRemoveUserRoleFromUser';
 
     /**
+     * PermissionController Routes
+     */
+    const PERMISSION_POST_CREATE_USER_PERMISSION = 'permission.postCreateUserPermission';
+    const PERMISSION_GET_RETRIEVE_AVAILABLE_USER_PERMISSIONS = 'permission.getRetrieveAvailableUserPermissions';
+    const PERMISSION_GET_VIEW_USER_PERMISSION = 'permission.getViewUserPermission';
+    const PERMISSION_POST_ASSIGN_USER_PERMISSIONS_TO_USER_ROLE = 'permission.postAssignUserPermissionsToUserRole';
+    const PERMISSION_POST_REMOVE_USER_PERMISSIONS_FROM_USER_ROLE = 'permission.postRemoveUserPermissionsFromUserRole';
+
+    /**
      * "activity" routes
      */
     const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';
