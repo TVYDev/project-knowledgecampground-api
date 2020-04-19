@@ -10,6 +10,7 @@ use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
 use App\Libs\MessageCode;
 use App\Libs\MiddlewareConst;
+use App\Libs\StandardJsonFormat;
 use App\PasswordReset;
 use App\Role;
 use App\User;
@@ -153,11 +154,7 @@ class UserController extends Controller
                     HttpStatusCode::SUCCESS_OK,
                     true,
                     MessageCode::msgSuccess('user login'),
-                    [
-                        'access_token'  => $token,
-                        'token_type'    => 'bearer',
-                        'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
-                    ]
+                    StandardJsonFormat::getAccessTokenFormat([$token])
                 );
             }
             throw new KCValidationException(MessageCode::msgError('email or password not correct'));
@@ -236,11 +233,8 @@ class UserController extends Controller
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
                 MessageCode::msgSuccess('user register'),
-                [
-                    'access_token'  => $token,
-                    'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
-                ]);
+                StandardJsonFormat::getAccessTokenFormat([$token])
+            );
         }
         catch(\Exception $exception)
         {
@@ -281,11 +275,7 @@ class UserController extends Controller
                 HttpStatusCode::SUCCESS_OK,
                 true,
                 MessageCode::msgSuccess('token refreshed'),
-                [
-                    'access_token'  => $newToken,
-                    'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
-                ]
+                StandardJsonFormat::getAccessTokenFormat([$newToken])
             );
         }
         catch(\Exception $exception)
@@ -382,6 +372,7 @@ class UserController extends Controller
                     HttpStatusCode::ERROR_REQUEST_TIMEOUT,
                     false,
                     MessageCode::msgError('send mail reset password'),
+                    null,
                     ErrorCode::ERR_CODE_SEND_MAIL_FAILED
                 );
             }
@@ -442,6 +433,7 @@ class UserController extends Controller
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
                 MessageCode::msgError('link invalid'),
+                null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }
