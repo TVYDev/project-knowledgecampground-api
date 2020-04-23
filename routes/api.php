@@ -89,12 +89,18 @@ Route::group([
 Route::group([
     'prefix' => 'question'
     ], function (){
-        Route::post('/save-during-editing', 'QuestionController@postSaveDuringEditing')->name('question.postSaveDuringEditing');
-        Route::put('/save/{publicId}', 'QuestionController@putSave')->name('question.putSave');
-        Route::get('/view/{publicId}', 'QuestionController@getQuestion')->name('question.getQuestion');
-        Route::get('/description-of/{publicId}', 'QuestionController@getDescriptionOfQuestion')->name('question.getDescriptionOfQuestion');
-        Route::get('/list', 'QuestionController@getList')->name('question.getList');
-        Route::get('/get-subject-tags-of/{publicId}', 'QuestionController@getSubjectTagsOfQuestion')->name('question.getSubjectTagsOfQuestion');
+        Route::post('/save-during-editing', 'QuestionController@postSaveQuestionDuringEditing')
+            ->name(RouteConst::QUESTION_POST_SAVE_QUESTION_DURING_EDITING);
+        Route::put('/save/{publicId}', 'QuestionController@putSaveQuestion')
+            ->name(RouteConst::QUESTION_PUT_SAVE_QUESTION);
+        Route::get('/view/{publicId}', 'QuestionController@getViewQuestion')
+            ->name(RouteConst::QUESTION_GET_VIEW_QUESTION);
+        Route::get('/description-of/{publicId}', 'QuestionController@getRetrieveDescriptionOfQuestion')
+            ->name(RouteConst::QUESTION_GET_RETRIEVE_DESCRIPTION_OF_QUESTION);
+        Route::get('/list', 'QuestionController@getRetrieveListOfQuestions')
+            ->name(RouteConst::QUESTION_GET_RETRIEVE_LIST_OF_QUESTIONS);
+        Route::get('/get-subject-tags-of/{publicId}', 'QuestionController@getRetrieveSubjectTagsOfQuestion')
+            ->name(RouteConst::QUESTION_GET_RETRIEVE_SUBJECT_TAGS_OF_QUESTION);
 });
 
 Route::group([

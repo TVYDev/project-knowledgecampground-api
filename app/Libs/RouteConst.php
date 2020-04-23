@@ -50,6 +50,16 @@ class RouteConst
     const USER_PROFILE_GET_VIEW_USER_PROFILE = 'userProfile.getViewUserProfile';
 
     /**
+     * QuestionController Routes
+     */
+    const QUESTION_POST_SAVE_QUESTION_DURING_EDITING = 'question.postSaveQuestionDuringEditing';
+    const QUESTION_PUT_SAVE_QUESTION = 'question.putSaveQuestion';
+    const QUESTION_GET_VIEW_QUESTION = 'question.getViewQuestion';
+    const QUESTION_GET_RETRIEVE_DESCRIPTION_OF_QUESTION = 'question.getRetrieveDescriptionOfQuestion';
+    const QUESTION_GET_RETRIEVE_LIST_OF_QUESTIONS = 'question.getRetrieveListOfQuestions';
+    const QUESTION_GET_RETRIEVE_SUBJECT_TAGS_OF_QUESTION = 'question.getRetrieveSubjectTagsOfQuestion';
+
+    /**
      * "activity" routes
      */
     const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';

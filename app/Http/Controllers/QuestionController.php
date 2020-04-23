@@ -9,6 +9,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
 use App\Libs\MiddlewareConst;
 use App\Question;
 use App\Subject;
@@ -24,30 +25,46 @@ class QuestionController extends Controller
     use JsonResponse;
 
     protected $support;
+    protected $inputsValidator;
 
     public function __construct()
     {
         $this->middleware(MiddlewareConst::JWT_AUTH, [
             'except' => [
-                'getList',
-                'getSubjectTagsOfQuestion',
-                'getQuestion',
-                'getDescriptionOfQuestion'
+                'getRetrieveListOfQuestions',
+                'getRetrieveSubjectTagsOfQuestion',
+                'getViewQuestion',
+                'getRetrieveDescriptionOfQuestion'
+            ]
+        ]);
+
+        $this->middleware(MiddlewareConst::JWT_CLAIMS, [
+            'except' => [
+                'getRetrieveListOfQuestions',
+                'getRetrieveSubjectTagsOfQuestion',
+                'getViewQuestion',
+                'getRetrieveDescriptionOfQuestion'
             ]
         ]);
 
         $this->support = new Supporter();
+        $this->inputsValidator = new KCValidate();
     }
 
-    public function postSaveDuringEditing (Request $request)
+    /**
+     * Save Question During Editing
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postSaveQuestionDuringEditing (Request $request)
     {
         try
         {
             DB::beginTransaction();
 
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(),KCValidate::VALIDATION_QUESTION_SAVE_DURING_EDITING);
-            if($result !== true) return $result;
+            /* --- validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE_DURING_EDITING);
 
             $isDraft = ($request->is_draft === 'true' || $request->is_draft === true ) ? true : false;
 
@@ -82,7 +99,7 @@ class QuestionController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'KC_MSG_SUCCESS__QUESTION_SAVE',
+                MessageCode::msgSuccess('question saved'),
                 $question
             );
         }
@@ -93,15 +110,21 @@ class QuestionController extends Controller
         }
     }
 
-    public function putSave (Request $request, $publicId)
+    /**
+     * Save Question
+     *
+     * @param Request $request
+     * @param $publicId
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function putSaveQuestion (Request $request, $publicId)
     {
         try
         {
             DB::beginTransaction();
 
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
-            if($result !== true) return $result;
+            /* --- validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_QUESTION_SAVE);
 
             $isDraft = $request->is_draft;
             $tagPublicIds = $request->tag_public_ids;
@@ -144,7 +167,7 @@ class QuestionController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                $isDraft ? 'KC_MSG_SUCCESS__QUESTION_SAVE_DRAFT' : 'KC_MSG_SUCCESS__QUESTION_SAVE',
+                $isDraft ? MessageCode::msgSuccess('question saved draft') : MessageCode::msgSuccess('question saved'),
                 $question
             );
         }
@@ -155,7 +178,13 @@ class QuestionController extends Controller
         }
     }
 
-    public function getQuestion($publicId)
+    /**
+     * View Question
+     *
+     * @param $publicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getViewQuestion($publicId)
     {
         try
         {
@@ -173,18 +202,18 @@ class QuestionController extends Controller
                 $author = User::find($question['author_id']);
                 $question['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
-                // Get description of the question
+                /* --- Get description of the question --- */
                 $description = $question->questionDescription()->where('is_active', true)->first();
                 $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_QUESTION_IMAGE);
                 $question['description'] = $description;
 
-                // Get comments of the question
+                /* --- Get comments of the question --- */
                 $question['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_QUESTION, $publicId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    null,
+                    MessageCode::msgSuccess('question viewed'),
                     $question
                 );
             }
@@ -192,7 +221,7 @@ class QuestionController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                MessageCode::msgError('question not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -203,7 +232,13 @@ class QuestionController extends Controller
         }
     }
 
-    public function getSubjectTagsOfQuestion ($publicId)
+    /**
+     * Retrieve Subject and Tags of Question
+     *
+     * @param $publicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveSubjectTagsOfQuestion ($publicId)
     {
         try
         {
@@ -220,7 +255,7 @@ class QuestionController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    '',
+                    MessageCode::msgSuccess('subject tags retrieved'),
                     $question
                 );
             }
@@ -228,18 +263,24 @@ class QuestionController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                MessageCode::msgError('question not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
         }
         catch(\Exception $exception)
         {
-            return $this->standardJsonExceptionResponse();
+            return $this->standardJsonExceptionResponse($exception);
         }
     }
 
-    public function getDescriptionOfQuestion ($publicId)
+    /**
+     * Retrieve Description of Question
+     *
+     * @param $publicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveDescriptionOfQuestion ($publicId)
     {
         try
         {
@@ -255,14 +296,14 @@ class QuestionController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    null,
+                    MessageCode::msgSuccess('description question retrieved'),
                     $questionDescription
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                MessageCode::msgError('question not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -273,7 +314,13 @@ class QuestionController extends Controller
         }
     }
 
-    public function getList (Request $request)
+    /**
+     * Retrieve List of Questions
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveListOfQuestions (Request $request)
     {
         try
         {
@@ -329,7 +376,7 @@ class QuestionController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                '',
+                MessageCode::msgSuccess('list question retrieved'),
                 $dataResponse
             );
         }
