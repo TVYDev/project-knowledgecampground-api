@@ -89,68 +89,77 @@ Route::group([
 Route::group([
     'prefix' => 'question'
     ], function (){
-        Route::post('/save-during-editing', 'QuestionController@postSaveQuestionDuringEditing')
+        Route::post('save-during-editing', 'QuestionController@postSaveQuestionDuringEditing')
             ->name(RouteConst::QUESTION_POST_SAVE_QUESTION_DURING_EDITING);
-        Route::put('/save/{publicId}', 'QuestionController@putSaveQuestion')
+        Route::put('save/{publicId}', 'QuestionController@putSaveQuestion')
             ->name(RouteConst::QUESTION_PUT_SAVE_QUESTION);
-        Route::get('/view/{publicId}', 'QuestionController@getViewQuestion')
+        Route::get('view/{publicId}', 'QuestionController@getViewQuestion')
             ->name(RouteConst::QUESTION_GET_VIEW_QUESTION);
-        Route::get('/description-of/{publicId}', 'QuestionController@getRetrieveDescriptionOfQuestion')
+        Route::get('description-of/{publicId}', 'QuestionController@getRetrieveDescriptionOfQuestion')
             ->name(RouteConst::QUESTION_GET_RETRIEVE_DESCRIPTION_OF_QUESTION);
-        Route::get('/list', 'QuestionController@getRetrieveListOfQuestions')
+        Route::get('list', 'QuestionController@getRetrieveListOfQuestions')
             ->name(RouteConst::QUESTION_GET_RETRIEVE_LIST_OF_QUESTIONS);
-        Route::get('/get-subject-tags-of/{publicId}', 'QuestionController@getRetrieveSubjectTagsOfQuestion')
+        Route::get('get-subject-tags-of/{publicId}', 'QuestionController@getRetrieveSubjectTagsOfQuestion')
             ->name(RouteConst::QUESTION_GET_RETRIEVE_SUBJECT_TAGS_OF_QUESTION);
 });
 
 Route::group([
    'prefix' => 'answer'
     ], function() {
-        Route::post('/save-during-editing', 'AnswerController@postSaveDuringEditing')->name('answer.postSaveDuringEditing');
-        Route::put('/save/{publicId}', 'AnswerController@putSave')->name('answer.putSave');
-        Route::get('/view/{publicId}', 'AnswerController@getAnswer')->name('answer.getAnswer');
-        Route::get('/description-of/{publicId}', 'AnswerController@getDescriptionOfAnswer')->name('answer.getDescriptionOfAnswer');
-        Route::get('/list-posted-answers-of/{questionPublicId}', 'AnswerController@getListPostedAnswersOfQuestion')->name('answer.getListPostedAnswersOfQuestion');
+        Route::post('save-during-editing', 'AnswerController@postSaveAnswerDuringEditing')
+            ->name(RouteConst::ANSWER_POST_SAVE_ANSWER_DURING_EDITING);
+        Route::put('save/{publicId}', 'AnswerController@putSaveAnswer')
+            ->name(RouteConst::ANSWER_PUT_SAVE_ANSWER);
+        Route::get('view/{publicId}', 'AnswerController@getViewAnswer')
+            ->name(RouteConst::ANSWER_GET_VIEW_ANSWER);
+        Route::get('description-of/{publicId}', 'AnswerController@getRetrieveDescriptionOfAnswer')
+            ->name(RouteConst::ANSWER_GET_RETRIEVE_DESCRIPTION_OF_ANSWER);
+        Route::get('list-posted-answers-of/{questionPublicId}', 'AnswerController@getRetrieveListPostedAnswersOfQuestion')
+            ->name(RouteConst::ANSWER_GET_RETRIEVE_LIST_POSTED_ANSWERS_OF_QUESTION);
 });
 
 Route::group([
-    'prefix' => 'comment',
-    'middleware' => MiddlewareConst::JWT_AUTH
+    'prefix' => 'comment'
     ], function() {
-        Route::post('/save', 'CommentController@postSave')->name('comment.postSave');
-//        Route::get('/list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getListPostedCommentsOfCommentableModel')
-//            ->name('comment.getListPostedCommentsOfCommentableModel');
+        Route::post('save', 'CommentController@postSaveComment')
+            ->name(RouteConst::COMMENT_POST_SAVE_COMMENT);
+        Route::get('list-posted-comments-of/{commentableType}/{commentablePublicId}', 'CommentController@getRetrieveListPostedCommentsOfCommentableModel')
+            ->name(RouteConst::COMMENT_GET_RETRIEVE_LIST_POSTED_COMMENTS_OF_COMMENTABLE_MODEL);
 });
 
 Route::group([
-    'prefix' => 'reply',
-    'middleware' => MiddlewareConst::JWT_AUTH
+    'prefix' => 'reply'
     ], function() {
-        Route::post('/save', 'ReplyController@postSave')->name('reply.postSave');
+        Route::post('save', 'ReplyController@postSaveReply')
+            ->name(RouteConst::REPLY_POST_SAVE_REPLY);
 });
 
 Route::group([
     'prefix' => 'subject',
     ], function () {
-        Route::get('/all-subjects', 'SubjectController@getAllSubjects')->name('subject.getAllSubjects');
+        Route::get('all-subjects', 'SubjectController@getRetrieveAllSubjects')
+            ->name(RouteConst::SUBJECT_GET_RETRIEVE_ALL_SUBJECTS);
 });
 
 Route::group([
     'prefix' => 'tag',
     ], function () {
-        Route::get('/all-tags-of/{subjectPublicId}', 'TagController@getAllTagsOfSubject')->name('tag.getAllTagsOfSubject');
+        Route::get('all-tags-of/{subjectPublicId}', 'TagController@getRetrieveAllTagsOfSubject')
+            ->name(RouteConst::TAG_GET_RETRIEVE_ALL_TAGS_OF_SUBJECT);
 });
 
 Route::group([
     'prefix' => 'support'
     ], function (){
-        Route::get('/generate-public-id', 'SupportController@getGeneratePublicId')->name('support.getGeneratePublicId');
-        Route::get('/clear-cache-key-validation-rules', 'SupportController@clearCacheValidationRules')->name('support.clearCacheValidationRules');
+        Route::get('generate-public-id', 'SupportController@getGeneratePublicId')
+            ->name(RouteConst::SUPPORT_GET_GENERATE_PUBLIC_ID);
+        Route::get('clear-cache-key-validation-rules', 'SupportController@getClearCacheValidationRules')
+            ->name(RouteConst::SUPPORT_GET_CLEAR_CACHE_VALIDATION_RULES);
 });
 
 Route::group([
-    'prefix' => 'activity',
-    'middleware' => [MiddlewareConst::JWT_AUTH, MiddlewareConst::JWT_CLAIMS]
+    'prefix' => 'activity'
     ], function (){
-        Route::get('/my-posts', 'ActivityController@getMyPosts')->name(RouteConst::ACTIVITY_GET_MY_POSTS);
+        Route::get('my-posts', 'ActivityController@getRetrieveMyPosts')
+            ->name(RouteConst::ACTIVITY_GET_RETRIEVE_MY_POSTS);
 });

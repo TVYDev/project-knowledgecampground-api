@@ -13,12 +13,10 @@ use App\Libs\MessageCode;
 use App\Libs\MiddlewareConst;
 use App\Question;
 use App\Subject;
-use App\Tag;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 
 class QuestionController extends Controller
 {

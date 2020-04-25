@@ -60,7 +60,43 @@ class RouteConst
     const QUESTION_GET_RETRIEVE_SUBJECT_TAGS_OF_QUESTION = 'question.getRetrieveSubjectTagsOfQuestion';
 
     /**
+     * AnswerController Routes
+     */
+    const ANSWER_POST_SAVE_ANSWER_DURING_EDITING = 'answer.postSaveAnswerDuringEditing';
+    const ANSWER_PUT_SAVE_ANSWER = 'answer.putSaveAnswer';
+    const ANSWER_GET_VIEW_ANSWER = 'answer.getViewAnswer';
+    const ANSWER_GET_RETRIEVE_DESCRIPTION_OF_ANSWER = 'answer.getRetrieveDescriptionOfAnswer';
+    const ANSWER_GET_RETRIEVE_LIST_POSTED_ANSWERS_OF_QUESTION = 'answer.getRetrieveListPostedAnswersOfQuestion';
+
+    /**
+     * CommentController Routes
+     */
+    const COMMENT_POST_SAVE_COMMENT = 'comment.postSaveComment';
+    const COMMENT_GET_RETRIEVE_LIST_POSTED_COMMENTS_OF_COMMENTABLE_MODEL = 'comment.getRetrieveListPostedCommentsOfCommentableModel';
+
+    /**
+     * ReplyController Routes
+     */
+    const REPLY_POST_SAVE_REPLY = 'reply.postSaveReply';
+
+    /**
+     * SubjectController Routes
+     */
+    const SUBJECT_GET_RETRIEVE_ALL_SUBJECTS = 'subject.getRetrieveAllSubjects';
+
+    /**
+     * TagController Routes
+     */
+    const TAG_GET_RETRIEVE_ALL_TAGS_OF_SUBJECT = 'tag.getRetrieveAllTagsOfSubject';
+
+    /**
+     * SupportController Routes
+     */
+    const SUPPORT_GET_GENERATE_PUBLIC_ID = 'support.getGeneratePublicId';
+    const SUPPORT_GET_CLEAR_CACHE_VALIDATION_RULES = 'support.getClearCacheValidationRules';
+
+    /**
      * "activity" routes
      */
-    const ACTIVITY_GET_MY_POSTS = 'activity.getMyPosts';
+    const ACTIVITY_GET_RETRIEVE_MY_POSTS = 'activity.getRetrieveMyPosts';
 }
