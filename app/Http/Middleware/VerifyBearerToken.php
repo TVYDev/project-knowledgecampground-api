@@ -26,8 +26,8 @@ class VerifyBearerToken
             $payloads = auth()->payload();
             $access = $payloads[User::KEY_JWT_CLAIM_ACCESS];
             $routes = [
-                RouteConst::USER_POST_RESET_PASSWORD,
-                RouteConst::USER_VERIFY_AUTHENTICATION
+                RouteConst::USER_POST_RESET_USER_PASSWORD,
+                RouteConst::USER_GET_VERIFY_USER_AUTHENTICATION
             ];
 
             if(isset($access)) {

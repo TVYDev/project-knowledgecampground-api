@@ -9,6 +9,8 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
+use App\Libs\MiddlewareConst;
 use App\Question;
 use App\Reply;
 use App\User;
@@ -20,19 +22,38 @@ class CommentController extends Controller
     use JsonResponse;
 
     protected $supporter;
+    protected $inputsValidator;
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH, [
+            'except' => [
+                'getRetrieveListPostedCommentsOfCommentableModel'
+            ]
+        ]);
+
+        $this->middleware(MiddlewareConst::JWT_CLAIMS, [
+            'except' => [
+                'getRetrieveListPostedCommentsOfCommentableModel'
+            ]
+        ]);
+
         $this->supporter = new Supporter();
+        $this->inputsValidator = new KCValidate();
     }
 
-    public function postSave (Request $request)
+    /**
+     * Save Comment
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postSaveComment (Request $request)
     {
         try
         {
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_COMMENT_SAVE);
-            if($result !== true)    return $result;
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_COMMENT_SAVE);
 
             $commentableType = $request->commentable_type;
             $commentablePublicId = $request->commentable_public_id;
@@ -70,7 +91,7 @@ class CommentController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_CREATED,
                     true,
-                    'KC_MSG_SUCCESS__COMMENT_SAVE',
+                    MessageCode::msgSuccess('comment saved'),
                     $comment
                 );
             }
@@ -79,7 +100,7 @@ class CommentController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::ERROR_BAD_REQUEST,
                     false,
-                    'KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST',
+                    MessageCode::msgError('commentable model not exist'),
                     null,
                     ErrorCode::ERR_CODE_DATA_NOT_EXIST
                 );
@@ -91,56 +112,63 @@ class CommentController extends Controller
         }
     }
 
-//    public function getListPostedCommentsOfCommentableModel ($commentableType, $commentPublicId)
-//    {
-//        try
-//        {
-//            $commentable = null;
-//            if($commentableType == 'question')
-//            {
-//                $commentable = Question::where('public_id', $commentPublicId)->first();
-//            }
-//            elseif ($commentableType == 'answer')
-//            {
-//                $commentable = Answer::where('public_id', $commentPublicId)->first();
-//            }
-//
-//            if(isset($commentable))
-//            {
-//                $comments = $commentable->comments;
-//                foreach ($comments as $comment)
-//                {
-//                    $comment['readable_time_en'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
-//                    $comment['readable_time_kh'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
-//                    $comment['author_name'] = $comment->user()->pluck('name')->first();
-//                    $comment['author_id'] = $comment->user()->pluck('id')->first();
-//
-//                    $author = User::find($comment['author_id']);
-//                    $comment['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
-//
-//                    $comment['replies'] = (new Reply())->getListPostedRepliesOfComment($comment->public_id);
-//                }
-//                return $this->standardJsonResponse(
-//                    HttpStatusCode::SUCCESS_OK,
-//                    true,
-//                    '',
-//                    $comments
-//                );
-//            }
-//            else
-//            {
-//                return $this->standardJsonResponse(
-//                    HttpStatusCode::ERROR_BAD_REQUEST,
-//                    false,
-//                    'KC_MSG_ERROR__COMMENTABLE_MODEL_NOT_EXIST',
-//                    null,
-//                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
-//                );
-//            }
-//        }
-//        catch(\Exception $exception)
-//        {
-//            return $this->standardJsonExceptionResponse($exception);
-//        }
-//    }
+    /**
+     * Retrieve List Posted Comments of Commentable Model
+     *
+     * @param $commentableType
+     * @param $commentPublicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveListPostedCommentsOfCommentableModel ($commentableType, $commentPublicId)
+    {
+        try
+        {
+            $commentable = null;
+            if($commentableType == 'question')
+            {
+                $commentable = Question::where('public_id', $commentPublicId)->first();
+            }
+            elseif ($commentableType == 'answer')
+            {
+                $commentable = Answer::where('public_id', $commentPublicId)->first();
+            }
+
+            if(isset($commentable))
+            {
+                $comments = $commentable->comments;
+                foreach ($comments as $comment)
+                {
+                    $comment['readable_time_en'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
+                    $comment['readable_time_kh'] = $this->supporter->getHumanReadableActionDateAsString($comment->created_at, $comment->updated_at);
+                    $comment['author_name'] = $comment->user()->pluck('name')->first();
+                    $comment['author_id'] = $comment->user()->pluck('id')->first();
+
+                    $author = User::find($comment['author_id']);
+                    $comment['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
+
+                    $comment['replies'] = (new Reply())->getListPostedRepliesOfComment($comment->public_id);
+                }
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    MessageCode::msgSuccess('list posted comments retrieved'),
+                    $comments
+                );
+            }
+            else
+            {
+                return $this->standardJsonResponse(
+                    HttpStatusCode::ERROR_BAD_REQUEST,
+                    false,
+                    MessageCode::msgError('commentable model not exist'),
+                    null,
+                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
+                );
+            }
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }

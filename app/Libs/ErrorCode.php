@@ -39,6 +39,7 @@ class ErrorCode
     const ERR_CODE_TOKEN_TRASHED    = 'E230302';
     const ERR_CODE_TOKEN_BLACKLISTED= 'E230303';
     const ERR_CODE_TOKEN_NOT_PROVIDED = 'E230304';
+    const ERR_CODE_QUERY_EXCEPTION  = 'E230305';
     const ERR_CODE_JWT_EXCEPTION    = 'E230309';
     /******************************************/
 

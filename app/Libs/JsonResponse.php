@@ -9,11 +9,11 @@
 namespace App\Libs;
 
 
+use App\Exceptions\KCValidationException;
 use App\SystemMessage;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use App\Log AS DBLog;
+use Illuminate\Database\QueryException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -30,48 +30,21 @@ trait JsonResponse
      * @param null $errorCode
      * @return \Illuminate\Http\JsonResponse
      */
-    public function standardJsonResponse(int $httpCode,bool $success, $messageCode, $data = null, $errorCode = null){
-        // --- prepare data for using in the log
-        $inputs = Input::all(); // inputs of request
-        $filteredInputs = array_filter($inputs, function($key) { // exclude password from log data
-            return strpos($key, 'password') === false;
-        }, ARRAY_FILTER_USE_KEY);
-
-        // --- structure data for logging
-        $context = [
-            count($filteredInputs) > 0 ? json_encode($filteredInputs) : null
-        ];
-
-        // --- get message from message_code
+    public function standardJsonResponse(int $httpCode,bool $success, $messageCode, $data = null, $errorCode = null)
+    {
+        /* --- Get message from message code --- */
         $arraySysMsg = (new SystemMessage())->getArrayMessageSysEnKh($messageCode);
         $msgSys = $arraySysMsg['sys'];
         $msgEn = $arraySysMsg['en'];
         $msgKh = $arraySysMsg['kh'];
 
-        // --- do logging according to status of request
-        if($success){
-            Log::info($msgSys, $context);
-        }else{
-            if($httpCode === HttpStatusCode::ERROR_INTERNAL_SERVER_ERROR)
-                Log::critical($errorCode.':'.$msgSys, $context);
-            else
-                Log::error($errorCode.':'.$msgSys, $context);
-        }
+        /* --- Log request info to file --- */
+        FileLog::logRequest($messageCode, $success, $httpCode, $errorCode);
 
-        // --- do response JSON
-        return response()->json([
-            'success'       => $success,
-            'message_code'  => $messageCode,
-            'message_sys'   => $msgSys,
-            'message_en'    => $msgEn,
-            'message_kh'    => $msgKh,
-            'data'          => $data,
-            'error_code'     => $errorCode,
-            'meta'          => [
-                'program'   => 'KnowledgeCampground_API',
-                'version'   => '1.0.0'
-            ]
-        ],$httpCode);
+        /* --- Return JSON response --- */
+        return response()->json(StandardJsonFormat::getMainFormat(
+            [$success, $messageCode, $msgSys, $msgEn, $msgKh, $data, $errorCode]
+        ), $httpCode);
     }
 
     /**
@@ -82,7 +55,7 @@ trait JsonResponse
      */
     public function standardJsonExceptionResponse (\Exception $exception)
     {
-        // --- case when token is invalid or not found
+        /* --- case when token is invalid or not found --- */
         if($exception instanceof TokenInvalidException)
         {
             DBLog::error($exception);
@@ -94,7 +67,7 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_INVALID
             );
         }
-        // --- case when token is expired
+        /* --- case when token is expired --- */
         else if($exception instanceof TokenExpiredException)
         {
             DBLog::error($exception);
@@ -106,7 +79,19 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_TOKEN_EXPIRED
             );
         }
-        // --- case when cannot find user in the database
+        /* --- case when inputs validation fails --- */
+        else if($exception instanceof  KCValidationException)
+        {
+            DBLog::error($exception);
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_NOT_ACCEPTABLE,
+                false,
+                $exception->getMessage(),
+                null,
+                ErrorCode::ERR_CODE_VALIDATION
+            );
+        }
+        /* --- case when cannot find user in the database --- */
         else if($exception instanceof ModelNotFoundException)
         {
             DBLog::error($exception);
@@ -116,6 +101,17 @@ trait JsonResponse
                 'KC_MSG_ERROR__UNAUTHENTICATED_USER',
                 null,
                 ErrorCode::ERR_CODE_UNAUTHENTICATED
+            );
+        }
+        else if($exception instanceof QueryException)
+        {
+            DBLog::error($exception);
+            return $this->standardJsonResponse(
+                HttpStatusCode::ERROR_BAD_REQUEST,
+                false,
+                MessageCode::msgError('error unexpected'),
+                null,
+                ErrorCode::ERR_CODE_QUERY_EXCEPTION
             );
         }
         else if($exception instanceof JWTException)
@@ -139,54 +135,5 @@ trait JsonResponse
                 ErrorCode::ERR_CODE_EXCEPTION
             );
         }
-    }
-
-    /**
-     * Standard JSON Response for user login failure
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardLoginFailedResponse ()
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_UNAUTHORIZED,
-            false,
-            'KC_MSG_ERROR__EMAIL_OR_PASSWORD_INCORRECT',
-            null,
-            ErrorCode::ERR_CODE_LOGIN_FAILED
-        );
-    }
-
-    /**
-     * Standard JSON Response for error when user is unauthorized to request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardJsonUnauthorizedResponse ()
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_UNAUTHORIZED,
-            false,
-            'KC_MSG_ERROR__UNAUTHORIZED_ACCESS',
-            null,
-            ErrorCode::ERR_CODE_UNAUTHORIZED
-        );
-    }
-
-    /**
-     * Standard JSON Response for error validation on inputs
-     *
-     * @param $errorMessage
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function standardJsonValidationErrorResponse ($messageCode)
-    {
-        return $this->standardJsonResponse(
-            HttpStatusCode::ERROR_NOT_ACCEPTABLE,
-            false,
-            $messageCode,
-            null,
-            ErrorCode::ERR_CODE_VALIDATION
-        );
     }
 }

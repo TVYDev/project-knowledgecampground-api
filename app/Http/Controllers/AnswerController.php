@@ -10,6 +10,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
 use App\Libs\MiddlewareConst;
 use App\Question;
 use App\User;
@@ -22,29 +23,44 @@ class AnswerController extends Controller
     use JsonResponse;
 
     protected $support;
+    protected $inputsValidator;
 
     public function __construct()
     {
         $this->middleware(MiddlewareConst::JWT_AUTH, [
             'except' => [
-                'getListPostedAnswersOfQuestion',
-                'getAnswer',
-                'getDescriptionOfAnswer'
+                'getRetrieveListPostedAnswersOfQuestion',
+                'getViewAnswer',
+                'getRetrieveDescriptionOfAnswer'
+            ]
+        ]);
+
+        $this->middleware(MiddlewareConst::JWT_CLAIMS, [
+            'except' => [
+                'getRetrieveListPostedAnswersOfQuestion',
+                'getViewAnswer',
+                'getRetrieveDescriptionOfAnswer'
             ]
         ]);
 
         $this->support = new Supporter();
+        $this->inputsValidator = new KCValidate();
     }
 
-    public function postSaveDuringEditing (Request $request)
+    /**
+     * Save Answer During Editing
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postSaveAnswerDuringEditing (Request $request)
     {
         try
         {
             DB::beginTransaction();
 
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE_DURING_EDITING);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE_DURING_EDITING);
 
             $question = Question::where('public_id', $request->question_public_id)->first();
 
@@ -74,7 +90,7 @@ class AnswerController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'KC_MSG_SUCCESS__ANSWER_SAVE',
+                MessageCode::msgSuccess('answer saved'),
                 $answer
             );
         }
@@ -85,15 +101,21 @@ class AnswerController extends Controller
         }
     }
 
-    public function putSave (Request $request, $publicId)
+    /**
+     * Save Answer
+     *
+     * @param Request $request
+     * @param $publicId
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function putSaveAnswer (Request $request, $publicId)
     {
         try
         {
             DB::beginTransaction();
 
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_ANSWER_SAVE);
 
             $isDraft = $request->is_draft;
 
@@ -121,7 +143,7 @@ class AnswerController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                $isDraft ? 'KC_MSG_SUCCESS__ANSWER_SAVE_DRAFT' : 'KC_MSG_SUCCESS__ANSWER_SAVE',
+                $isDraft ? MessageCode::msgSuccess('answer saved draft') : MessageCode::msgSuccess('answer saved'),
                 $answer
             );
         }
@@ -132,7 +154,13 @@ class AnswerController extends Controller
         }
     }
 
-    public function getAnswer ($publicId)
+    /**
+     * View Answer
+     *
+     * @param $publicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getViewAnswer ($publicId)
     {
         try
         {
@@ -151,25 +179,25 @@ class AnswerController extends Controller
                 $author = User::find($answer['author_id']);
                 $answer['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
 
-                // Get description of the answer
+                /* --- Get description of the answer --- */
                 $description = $answer->answerDescription()->where('is_active', true)->first();
                 $description['relative_path_store_images'] = $this->support->getFileUrl(null,DirectoryStore::RELATIVE_PATH_STORE_ANSWER_IMAGE);
                 $answer['description'] = $description;
 
-                // Get comments of the question
+                /* --- Get comments of the question --- */
                 $answer['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_ANSWER, $publicId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    null,
+                    MessageCode::msgSuccess('answer viewed'),
                     $answer
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__ANSWER_NOT_EXIST',
+                MessageCode::msgError('answer not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -180,7 +208,13 @@ class AnswerController extends Controller
         }
     }
 
-    public function getDescriptionOfAnswer ($publicId)
+    /**
+     * Retrieve Description of Answer
+     *
+     * @param $publicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveDescriptionOfAnswer ($publicId)
     {
         try
         {
@@ -197,14 +231,14 @@ class AnswerController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    null,
+                    MessageCode::msgSuccess('description answer retrieved'),
                     $answerDescription
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__ANSWER_NOT_EXIST',
+                MessageCode::msgError('answer not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -215,7 +249,13 @@ class AnswerController extends Controller
         }
     }
 
-    public function getListPostedAnswersOfQuestion ($questionPublicId)
+    /**
+     * Retrieve List Posted Answers of Question
+     *
+     * @param $questionPublicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveListPostedAnswersOfQuestion ($questionPublicId)
     {
         try
         {
@@ -235,14 +275,14 @@ class AnswerController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    '',
+                    MessageCode::msgSuccess('list posted answers retrieved'),
                     $answers
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__QUESTION_NOT_EXIST',
+                MessageCode::msgError('question not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
