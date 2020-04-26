@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
+use App\Libs\MessageCode;
 use App\Subject;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,12 @@ class SubjectController extends Controller
 {
     use JsonResponse;
 
-    public function getAllSubjects ()
+    /**
+     * Retrieve All Subjects
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveAllSubjects ()
     {
         try
         {
@@ -21,7 +27,7 @@ class SubjectController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                null,
+                MessageCode::msgSuccess('all subjects retrieved'),
                 $subjects
             );
         }

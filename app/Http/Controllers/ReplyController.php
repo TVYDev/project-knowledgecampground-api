@@ -8,6 +8,8 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
+use App\Libs\MiddlewareConst;
 use App\Reply;
 use App\User;
 use App\UserAvatar;
@@ -18,19 +20,29 @@ class ReplyController extends Controller
     use JsonResponse;
 
     protected $supporter;
+    protected $inputsValidator;
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH);
+        $this->middleware(MiddlewareConst::JWT_CLAIMS);
+
         $this->supporter = new Supporter();
+        $this->inputsValidator = new KCValidate();
     }
 
-    public function postSave (Request $request)
+    /**
+     * Save Reply
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postSaveReply (Request $request)
     {
         try
         {
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_REPLY_SAVE);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_REPLY_SAVE);
 
             $commentPublicId = $request->comment_public_id;
             $body = $request->body;
@@ -62,7 +74,7 @@ class ReplyController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_CREATED,
                     true,
-                    'KC_MSG_SUCCESS__REPLY_SAVE',
+                    MessageCode::msgSuccess('reply saved'),
                     $reply
                 );
             }
@@ -71,7 +83,7 @@ class ReplyController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::ERROR_BAD_REQUEST,
                     false,
-                    'KC_MSG_ERROR__COMMENT_NOT_EXIST',
+                    MessageCode::msgError('comment not exist'),
                     null,
                     ErrorCode::ERR_CODE_DATA_NOT_EXIST
                 );

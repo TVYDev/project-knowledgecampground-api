@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
+use App\Libs\MessageCode;
 use App\Subject;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,13 @@ class TagController extends Controller
 {
     use JsonResponse;
 
-    public function getAllTagsOfSubject ($subjectPublicId)
+    /**
+     * Retrieve All Tags of Subject
+     *
+     * @param $subjectPublicId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveAllTagsOfSubject ($subjectPublicId)
     {
         try
         {
@@ -25,7 +32,7 @@ class TagController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    null,
+                    MessageCode::msgSuccess('all tags retrieved'),
                     $tags
                 );
             }
@@ -33,7 +40,7 @@ class TagController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                'KC_MSG_ERROR__SUBJECT_NOT_EXIST'
+                MessageCode::msgError('subject not exist')
             );
         }
         catch(\Exception $exception)

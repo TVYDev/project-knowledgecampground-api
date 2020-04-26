@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
+use App\Libs\StandardJsonFormat;
 use App\Role;
 use App\User;
 use App\UserAvatar;
@@ -16,13 +18,25 @@ class SocialAuthController extends Controller
 {
     use JsonResponse;
 
-    public function postLogin(Request $request) {
+    protected $inputsValidator;
+
+    public function __construct()
+    {
+        $this->inputsValidator = new KCValidate();
+    }
+
+    /**
+     * Login Social User
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postLoginSocialUser (Request $request) {
         try {
             DB::beginTransaction();
 
-            // --- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_SOCIAL_PROVIDER_LOGIN);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_SOCIAL_PROVIDER_LOGIN);
 
             $existingUser = User::where('email', $request->email)
                 ->where('provider', $request->provider)
@@ -30,7 +44,7 @@ class SocialAuthController extends Controller
 
             $user = null;
             if(!isset($existingUser)) {
-                // --- create user
+                /* --- Create user if it is not an existing user --- */
                 $user = User::create([
                     'name'      => $request->name,
                     'email'     => $request->email,
@@ -38,24 +52,27 @@ class SocialAuthController extends Controller
                     'provider_user_id' => $request->provider_user_id
                 ]);
 
-                // --- create default user_avatar for the user
+                /* --- Create default user avatar for the user --- */
                 $userAvatar = new UserAvatar();
                 $userAvatar['default_avatar_url'] = $request->picture;
                 $user->userAvatar()->save($userAvatar);
 
-                // --- create profile
+                /* --- Create user profile --- */
                 $userProfile = new UserProfile();
                 $user->userProfile()->save($userProfile);
 
-                // --- assign to role Normal User
+                /* --- Assign user to user role "Social User" --- */
                 $normalRole = Role::where('name', 'Social User')->first();
                 $normalRole->users()->attach($user->id, ['created_by' => $user->id]);
+
+                $messageCode = 'user registered';
             }
             else {
                 $user = $existingUser;
+                $messageCode = 'user logged in';
             }
 
-            // --- get token of the user
+            /* --- Get token for the user --- */
             $token = auth()->login($user);
 
             DB::commit();
@@ -63,12 +80,9 @@ class SocialAuthController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'KC_MSG_SUCCESS__USER_REGISTER',
-                [
-                    'access_token'  => $token,
-                    'token_type'    => 'bearer',
-                    'expire_in'     => auth()->factory()->getTTL() * 60 . ' seconds'
-                ]);
+                MessageCode::msgSuccess($messageCode),
+                StandardJsonFormat::getAccessTokenFormat([$token])
+            );
         }catch(\Exception $exception) {
             DB::rollBack();
             return $this->standardJsonExceptionResponse($exception);

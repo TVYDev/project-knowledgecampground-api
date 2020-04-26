@@ -7,6 +7,7 @@ use App\Http\Support\Supporter;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\MessageCode;
+use App\Libs\MiddlewareConst;
 use App\ViewModels\ActivityViewModel;
 use Illuminate\Http\Request;
 
@@ -20,12 +21,21 @@ class ActivityController extends Controller
 
     public function __construct()
     {
+        $this->middleware(MiddlewareConst::JWT_AUTH);
+        $this->middleware(MiddlewareConst::JWT_CLAIMS);
+
         $this->supporter = new Supporter();
         $this->activityViewModel = new ActivityViewModel();
         $this->databaseSupporter = new DatabaseSupporter();
     }
 
-    public function getMyPosts(Request $request)
+    /**
+     * Retrieve My Posts
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveMyPosts(Request $request)
     {
         try
         {
@@ -41,7 +51,7 @@ class ActivityController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                MessageCode::msgSuccess('my_posts'),
+                MessageCode::msgSuccess('my posts retrieved'),
                 $dataResponse
             );
         }

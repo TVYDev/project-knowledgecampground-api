@@ -6,6 +6,8 @@ use App\Country;
 use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
+use App\Libs\MessageCode;
+use App\Libs\MiddlewareConst;
 use App\User;
 use App\UserAvatar;
 use Illuminate\Http\Request;
@@ -15,17 +17,29 @@ class UserProfileController extends Controller
 {
     use JsonResponse;
 
-    public function postUpdate (Request $request)
+    public function __construct()
+    {
+        $this->middleware(MiddlewareConst::JWT_AUTH);
+        $this->middleware(MiddlewareConst::JWT_CLAIMS);
+    }
+
+    /**
+     * Update User Profile
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postUpdateUserProfile (Request $request)
     {
         try
         {
+            DB::beginTransaction();
+
             $user = User::find(auth()->user()->id);
             $userProfile = $user->userProfile()->where('is_active', true)->where('is_deleted', false)->first();
 
             if(isset($userProfile))
             {
-                DB::beginTransaction();
-
                 $country = Country::where('code', $request->country_code)->where('is_active', true)->first();
                 $countryId = null;
                 if(isset($country)) {
@@ -69,14 +83,14 @@ class UserProfileController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    '',
+                    MessageCode::msgSuccess('user profile updated'),
                     $userProfile
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                '',
+                MessageCode::msgError('user profile not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -88,7 +102,12 @@ class UserProfileController extends Controller
         }
     }
 
-    public function getView ()
+    /**
+     * View User Profile
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getViewUserProfile ()
     {
         try
         {
@@ -104,7 +123,7 @@ class UserProfileController extends Controller
                     return $this->standardJsonResponse(
                         HttpStatusCode::SUCCESS_OK,
                         true,
-                        '',
+                        MessageCode::msgSuccess('user profile viewed'),
                         $userProfile
                     );
                 }
@@ -113,7 +132,7 @@ class UserProfileController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                '',
+                MessageCode::msgError('user profile not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );

@@ -6,6 +6,7 @@ use App\Http\Support\Supporter;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,6 +21,11 @@ class SupportController extends Controller
         $this->supporter = new Supporter();
     }
 
+    /**
+     * Generate Public Id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getGeneratePublicId()
     {
         try
@@ -29,7 +35,7 @@ class SupportController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                null,
+                MessageCode::msgSuccess('public id generated'),
                 ['public_id' => $randomString]
             );
         }
@@ -39,7 +45,12 @@ class SupportController extends Controller
         }
     }
 
-    public function clearCacheValidationRules()
+    /**
+     * Clear Cache Validation Rules
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getClearCacheValidationRules()
     {
         try
         {
@@ -51,7 +62,7 @@ class SupportController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                null
+                MessageCode::msgSuccess('cache validation rules cleared')
             );
         }
         catch(\Exception $exception)

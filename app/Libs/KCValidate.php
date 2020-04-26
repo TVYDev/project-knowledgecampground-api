@@ -8,6 +8,7 @@
 
 namespace App\Libs;
 
+use App\Exceptions\KCValidationException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,6 +21,7 @@ class KCValidate
     const VALIDATION_USER_CHANGE_PASSWORD = 'valid_user_change_password';
     const VALIDATION_USER_LOGIN = 'valid_user_login';
     const VALIDATION_USER_REGISTER = 'valid_user_register';
+    const VALIDATION_USER_SEND_MAIL_LINK_RESET_PASSWORD = 'valid_user_send_mail_link_reset_password';
     const VALIDATION_QUESTION_SAVE = 'valid_question_save';
     const VALIDATION_QUESTION_SAVE_DURING_EDITING = 'valid_question_save_during_editing';
     const VALIDATION_ANSWER_SAVE = 'valid_answer_save';
@@ -46,6 +48,10 @@ class KCValidate
             'name'      => 'required|string|max:50',
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|min:8'
+        ],
+        self::VALIDATION_USER_SEND_MAIL_LINK_RESET_PASSWORD => [
+            'email'     => 'required|email',
+            'route'     => 'required'
         ],
         self::VALIDATION_QUESTION_SAVE_DURING_EDITING => [
             'title'             => 'string|max:250',
@@ -144,7 +150,7 @@ class KCValidate
 
         if($validator->fails()) {
             $messageCode = $validator->errors()->first();
-            return $this->standardJsonValidationErrorResponse($messageCode);
+            throw new KCValidationException($messageCode);
         }
 
         return true;

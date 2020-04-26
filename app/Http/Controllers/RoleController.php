@@ -6,6 +6,7 @@ use App\Libs\ErrorCode;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
+use App\Libs\MessageCode;
 use App\Libs\MiddlewareConst;
 use App\Role;
 use App\User;
@@ -15,17 +16,27 @@ class RoleController extends Controller
 {
     use JsonResponse;
 
+    protected $inputValidator;
+
     public function __construct()
     {
         $this->middleware(MiddlewareConst::JWT_AUTH);
+        $this->middleware(MiddlewareConst::JWT_CLAIMS);
+
+        $this->inputValidator = new KCValidate();
     }
 
-    public function postCreateRole (Request $request)
+    /**
+     * Create User Role
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postCreateUserRole (Request $request)
     {
         try {
-            // -- validate inputs
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ROLE);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputValidator->doValidate($request->all(), KCValidate::VALIDATION_ROLE);
 
             $role = Role::create([
                 'name' => $request->name,
@@ -35,7 +46,7 @@ class RoleController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_CREATED,
                 true,
-                'KC_MSG_SUCCESS__ROLE_SAVE',
+                MessageCode::msgSuccess('role created'),
                 $role
             );
         }
@@ -44,7 +55,12 @@ class RoleController extends Controller
         }
     }
 
-    public function getAvailableRoles ()
+    /**
+     * Retrieve Available User Roles
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRetrieveAvailableUserRoles ()
     {
         try {
             $roles = Role::where('is_active', true)->where('is_deleted', false)->get();
@@ -52,7 +68,7 @@ class RoleController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
-                '',
+                MessageCode::msgSuccess('user roles retrieved'),
                 $roles
             );
         }
@@ -61,7 +77,13 @@ class RoleController extends Controller
         }
     }
 
-    public function getViewRole ($roleId)
+    /**
+     * View User Role
+     *
+     * @param $roleId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getViewUserRole ($roleId)
     {
         try {
             $role = Role::find($roleId);
@@ -70,7 +92,7 @@ class RoleController extends Controller
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    '',
+                    MessageCode::msgSuccess('user role viewed'),
                     $role
                 );
             }
@@ -78,7 +100,7 @@ class RoleController extends Controller
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                '',
+                MessageCode::msgError('user role not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -88,28 +110,34 @@ class RoleController extends Controller
         }
     }
 
-    public function postAssignRoleToUser (Request $request)
+    /**
+     * Assign User Role to User
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postAssignUserRoleToUser (Request $request)
     {
         try {
-            // -- validate input
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ROLE_ASSIGN);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputValidator->doValidate($request->all(), KCValidate::VALIDATION_ROLE_ASSIGN);
 
             $role = Role::where('id', $request->role_id)->where('is_active', true)->where('is_deleted', false)->first();
             $user = User::where('id', $request->user_id)->where('is_deleted', false)->first();
             if(isset($role) && isset($user)) {
+                /* --- Assign role to the user --- */
                 $role->users()->attach($user->id, ['created_by' => auth()->user()->id]);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_CREATED,
                     true,
-                    ''
+                    MessageCode::msgSuccess('user role assigned to user')
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                '',
+                MessageCode::msgError('user role or user not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
@@ -119,29 +147,35 @@ class RoleController extends Controller
         }
     }
 
-    public function postRemoveRoleFromUser (Request $request)
+    /**
+     * Remove User Role from User
+     *
+     * @param Request $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function postRemoveUserRoleFromUser (Request $request)
     {
         try {
-            // -- validate input
-            $result = (new KCValidate())->doValidate($request->all(), KCValidate::VALIDATION_ROLE_ASSIGN);
-            if($result !== true) return $result;
+            /* --- Validate inputs --- */
+            $this->inputValidator->doValidate($request->all(), KCValidate::VALIDATION_ROLE_ASSIGN);
 
             $role = Role::where('id', $request->role_id)->where('is_active', true)->where('is_deleted', false)->first();
             $user = User::where('id', $request->user_id)->where('is_deleted', false)->first();
             if(isset($role) && isset($user)) {
+                /* --- Remove user role from user --- */
                 $userId = $user->id;
                 $role->users()->detach($userId);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
-                    ''
+                    MessageCode::msgSuccess('user role removed from user')
                 );
             }
             return $this->standardJsonResponse(
                 HttpStatusCode::ERROR_BAD_REQUEST,
                 false,
-                '',
+                MessageCode::msgError('user role or user not exist'),
                 null,
                 ErrorCode::ERR_CODE_DATA_NOT_EXIST
             );
