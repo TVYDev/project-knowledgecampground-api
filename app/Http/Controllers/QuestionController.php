@@ -208,6 +208,9 @@ class QuestionController extends Controller
                 /* --- Get comments of the question --- */
                 $question['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_QUESTION, $publicId);
 
+                /* --- Get number of votes of the question --- */
+                $question['vote'] = intval($question->userVotes()->sum('vote'));
+
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
                     true,
