@@ -182,10 +182,12 @@ class QuestionController extends Controller
      * @param $publicId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getViewQuestion($publicId)
+    public function getViewQuestion($publicId, Request $request)
     {
         try
         {
+            $viewerPublicId = $request->has('viewer') ? $request->viewer : null;
+
             $question = Question::where('public_id', $publicId)
                         ->where('is_deleted', false)
                         ->first();
@@ -209,6 +211,15 @@ class QuestionController extends Controller
                 $question['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_QUESTION, $publicId);
 
                 /* --- Get number of votes of the question --- */
+                $viewer = User::where('public_id', $viewerPublicId)->first();
+                $voteByViewer = 0;
+                if(isset($viewer)) {
+                    $selectVoteByViewer = $question->userVotes()->wherePivot('user__id', $viewer->id)->pluck('vote')->first();
+                    if(isset($selectVoteByViewer)) {
+                        $voteByViewer = $selectVoteByViewer;
+                    }
+                }
+                $question['vote_by_viewer'] = $voteByViewer;
                 $question['vote'] = intval($question->userVotes()->sum('vote'));
 
                 return $this->standardJsonResponse(

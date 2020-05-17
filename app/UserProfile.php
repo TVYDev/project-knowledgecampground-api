@@ -24,7 +24,7 @@ class UserProfile extends Model
     ];
 
     protected $hidden = [
-        'id'
+        'id', 'user__id'
     ];
 
     /**

@@ -25,6 +25,7 @@ class UserController extends Controller
     use JsonResponse;
 
     protected $inputsValidator;
+    protected $supporter;
 
     public function __construct()
     {
@@ -43,6 +44,7 @@ class UserController extends Controller
         ]]);
 
         $this->inputsValidator = new KCValidate();
+        $this->supporter = new Supporter();
     }
 
     /**
@@ -205,10 +207,12 @@ class UserController extends Controller
             $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_USER_REGISTER);
 
             /* --- Create user --- */
+            $generatedPublicId = $this->supporter->generatePublicId();
             $user = User::create([
                 'name'      => $request->name,
                 'email'     => $request->email,
-                'password'  => $request->password
+                'password'  => $request->password,
+                'public_id' => $generatedPublicId
             ]);
 
             /* --- Create default user avatar for the user --- */
