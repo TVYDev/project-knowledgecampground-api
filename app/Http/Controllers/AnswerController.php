@@ -160,10 +160,12 @@ class AnswerController extends Controller
      * @param $publicId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getViewAnswer ($publicId)
+    public function getViewAnswer ($publicId, Request $request)
     {
         try
         {
+            $viewerPublicId = $request->has('viewer') ? $request->viewer : null;
+
             $answer = Answer::where('public_id', $publicId)
                         ->where('is_active', true)
                         ->where('is_deleted', false)
@@ -186,6 +188,18 @@ class AnswerController extends Controller
 
                 /* --- Get comments of the question --- */
                 $answer['comments'] = Comment::getCommentsOfCommentable(Comment::COMMENTABLE_ANSWER, $publicId);
+
+                /* --- Get number of votes of the question --- */
+                $viewer = User::where('public_id', $viewerPublicId)->first();
+                $voteByViewer = 0;
+                if(isset($viewer)) {
+                    $selectVoteByViewer = $answer->userVotes()->wherePivot('user__id', $viewer->id)->pluck('vote')->first();
+                    if(isset($selectVoteByViewer)) {
+                        $voteByViewer = $selectVoteByViewer;
+                    }
+                }
+                $answer['vote_by_viewer'] = $voteByViewer;
+                $answer['vote'] = intval($answer->userVotes()->sum('vote'));
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,

@@ -120,6 +120,7 @@ class UserProfileController extends Controller
                     $userProfile['avatar_url'] = $userAvatar->getActiveUserAvatarUrl($user);
                     $userProfile['avatar_url_jdenticon'] = $userAvatar->getActiveUserAvatarUrl($user, true);
                     $userProfile['username'] = $userProfile->user()->pluck('name')->first();
+                    $userProfile['public_id'] = $user->public_id;
                     return $this->standardJsonResponse(
                         HttpStatusCode::SUCCESS_OK,
                         true,

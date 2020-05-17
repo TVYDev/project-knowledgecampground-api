@@ -72,4 +72,15 @@ class Question extends Model
     {
         return $this->morphMany('App\Comment', 'commentable');
     }
+
+    /**
+     * Relationship Many-to-Many with User (Immediate table = user_question_votes)
+     * Get one or more user_vote that vote this question
+     */
+    public function userVotes()
+    {
+        return $this->belongsToMany('App\User', 'user_question_votes', 'question__id', 'user__id')
+            ->withPivot('vote', 'created_by', 'updated_by')
+            ->withTimestamps();
+    }
 }
