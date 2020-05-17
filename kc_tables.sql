@@ -453,3 +453,31 @@ CREATE TABLE password_resets (
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id)
 );
+CREATE TABLE user_question_votes (
+    user__id int4 NOT NULL,
+    question__id int4 NOT NULL,
+    vote int4 NOT NULL,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user__id, question__id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (question__id) REFERENCES  questions(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+);
+CREATE TABLE user_answer_votes (
+    user__id int4 NOT NULL,
+    answer__id int4 NOT NULL,
+    vote int4 NOT NULL,
+    created_by int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_by int4 NULL,
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user__id, answer__id),
+    FOREIGN KEY (user__id) REFERENCES users(id),
+    FOREIGN KEY (answer__id) REFERENCES answers(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+);

@@ -54,6 +54,17 @@ class Answer extends Model
     }
 
     /**
+     * Relationship Many-to-Many with User (Immediate table = user_answer_votes)
+     * Get one or more user_vote that vote this answer
+     */
+    public function userVotes()
+    {
+        return $this->belongsToMany('App\User', 'user_answer_votes', 'answer__id', 'user__id')
+            ->withPivot('vote', 'created_by', 'updated_by')
+            ->withTimestamps();
+    }
+
+    /**
      * Helpers
      */
     public static function getAnswerInfo ($answer)

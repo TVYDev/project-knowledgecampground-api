@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Support\Supporter;
 use App\Libs\HttpStatusCode;
 use App\Libs\JsonResponse;
 use App\Libs\KCValidate;
@@ -19,10 +20,12 @@ class SocialAuthController extends Controller
     use JsonResponse;
 
     protected $inputsValidator;
+    protected $supporter;
 
     public function __construct()
     {
         $this->inputsValidator = new KCValidate();
+        $this->supporter = new Supporter();
     }
 
     /**
@@ -45,11 +48,13 @@ class SocialAuthController extends Controller
             $user = null;
             if(!isset($existingUser)) {
                 /* --- Create user if it is not an existing user --- */
+                $generatedPublicId = $this->supporter->generatePublicId();
                 $user = User::create([
                     'name'      => $request->name,
                     'email'     => $request->email,
                     'provider'  => $request->provider,
-                    'provider_user_id' => $request->provider_user_id
+                    'provider_user_id' => $request->provider_user_id,
+                    'public_id' => $generatedPublicId
                 ]);
 
                 /* --- Create default user avatar for the user --- */
