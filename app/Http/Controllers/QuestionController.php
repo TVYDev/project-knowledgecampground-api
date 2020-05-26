@@ -213,14 +213,17 @@ class QuestionController extends Controller
                 /* --- Get number of votes of the question --- */
                 $viewer = User::where('public_id', $viewerPublicId)->first();
                 $voteByViewer = 0;
+                $isFavoriteByViewer = false;
                 if(isset($viewer)) {
                     $selectVoteByViewer = $question->userVotes()->wherePivot('user__id', $viewer->id)->pluck('vote')->first();
                     if(isset($selectVoteByViewer)) {
                         $voteByViewer = $selectVoteByViewer;
                     }
+                    $isFavoriteByViewer = $question->userFavorites()->wherePivot('user__id', $viewer->id)->exists();
                 }
                 $question['vote_by_viewer'] = $voteByViewer;
                 $question['vote'] = intval($question->userVotes()->sum('vote'));
+                $question['is_favorite_by_viewer'] = $isFavoriteByViewer;
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
