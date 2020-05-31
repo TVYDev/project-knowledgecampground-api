@@ -6,6 +6,7 @@ namespace App\ViewModels;
 
 use App\Http\Support\Supporter;
 use App\Log;
+use App\Question;
 use App\Subject;
 use App\Tag;
 use Illuminate\Support\Collection;
@@ -96,6 +97,8 @@ class ActivityViewModel
                     ->where('tags.is_active', true)
                     ->where('qtm.question__id', '=', $question->id)
                     ->get();
+
+                $question->vote = intval(Question::where('public_id', $question->question_public_id)->first()->userVotes()->sum('vote'));
             }
 
             return $questions;

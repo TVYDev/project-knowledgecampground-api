@@ -379,6 +379,7 @@ class QuestionController extends Controller
                 $user = User::find($author['id']);
                 $author['avatar_url'] = $this->support->getFileUrl((new UserAvatar())->getActiveUserAvatarUrl($user));
                 $question['author'] = $author;
+                $question['vote'] = intval($question->userVotes()->sum('vote'));
             }
 
             $total = 0;
