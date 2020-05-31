@@ -492,3 +492,14 @@ CREATE TABLE user_question_favorites (
     FOREIGN KEY (user__id) REFERENCES users(id),
     FOREIGN KEY (question__id) REFERENCES questions(id)
 );
+CREATE TABLE user_model_activities (
+    id SERIAL NOT NULL,
+    user__id int4 NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    model_class VARCHAR(500) NOT NULL,
+    model_id int4 NOT NULL,
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user__id) REFERENCES users(id)
+);

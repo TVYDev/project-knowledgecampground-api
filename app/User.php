@@ -151,4 +151,13 @@ class User extends Authenticatable implements JWTSubject
             ->withPivot('created_by', 'updated_by')
             ->withTimestamps();
     }
+
+    /**
+     * Relationship One-to-Many with UserModelActivity
+     * Get User model-activity of this user
+     */
+    public function modelActivities()
+    {
+        return $this->hasMany('App\UserModelActivity', 'user__id');
+    }
 }
