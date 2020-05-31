@@ -164,4 +164,6 @@ Route::group([
             ->name(RouteConst::ACTIVITY_GET_RETRIEVE_MY_POSTS);
         Route::post('vote-post', 'ActivityController@postVotePost')
             ->name(RouteConst::ACTIVITY_POST_VOTE_POST);
+        Route::post('manage-favorite-question', 'ActivityController@postManageFavoriteQuestion')
+            ->name(RouteConst::ACTIVITY_POST_MANAGE_FAVORITE_QUESTION);
 });

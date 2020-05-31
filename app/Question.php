@@ -83,4 +83,15 @@ class Question extends Model
             ->withPivot('vote', 'created_by', 'updated_by')
             ->withTimestamps();
     }
+
+    /**
+     * Relationship Many-to-Many with User (Immediate table = user_question_favorites)
+     * Get one or more user_favorites of this question
+     */
+    public function userFavorites()
+    {
+        return $this->belongsToMany('App\User', 'user_question_favorites', 'question__id', 'user__id')
+            ->withPivot('created_by', 'updated_by')
+            ->withTimestamps();
+    }
 }
