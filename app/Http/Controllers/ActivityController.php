@@ -141,4 +141,63 @@ class ActivityController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    /**
+     * Manage Favorite Question
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postManageFavoriteQuestion (Request $request)
+    {
+        try
+        {
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_MANAGE_FAVORITE_QUESTION);
+
+            $questionPublicId = $request->question_public_id;
+            $isFavorite = $request->is_favorite;
+
+            $question = Question::where('public_id', $questionPublicId)
+                ->where('is_active', true)
+                ->where('is_draft', false)
+                ->where('is_deleted', false)
+                ->first();
+            if(isset($question)) {
+                $userId = auth()->user()->id;
+
+                if($isFavorite) {
+                    $isAlreadyAttached = $question->userFavorites()->wherePivot('user__id', $userId)->exists();
+                    if(!$isAlreadyAttached) {
+                        $question->userFavorites()->attach($userId, [
+                            'created_by' => $userId
+                        ]);
+                    }
+                    $messageCode = MessageCode::msgSuccess('favorite question marked');
+                }
+                else {
+                    $question->userFavorites()->detach($userId);
+                    $messageCode = MessageCode::msgSuccess('favorite question unmarked');
+                }
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    $messageCode
+                );
+            }
+            else {
+                return $this->standardJsonResponse(
+                    HttpStatusCode::ERROR_BAD_REQUEST,
+                    false,
+                    MessageCode::msgError('question not found'),
+                    null,
+                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
+                );
+            }
+        }
+        catch(\Exception $exception)
+        {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }

@@ -15,6 +15,8 @@ use App\Question;
 use App\Subject;
 use App\User;
 use App\UserAvatar;
+use App\UserModelActivity;
+use App\ViewModels\QuestionViewModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +26,8 @@ class QuestionController extends Controller
 
     protected $support;
     protected $inputsValidator;
+    protected $userModelActivity;
+    protected $questionViewModel;
 
     public function __construct()
     {
@@ -47,6 +51,8 @@ class QuestionController extends Controller
 
         $this->support = new Supporter();
         $this->inputsValidator = new KCValidate();
+        $this->userModelActivity = new UserModelActivity();
+        $this->questionViewModel = new QuestionViewModel();
     }
 
     /**
@@ -162,6 +168,14 @@ class QuestionController extends Controller
 
             DB::commit();
 
+            /* --- Record user model activity --- */
+            $this->userModelActivity->recordUserModelActivity(
+                auth()->user()->id,
+                UserModelActivity::ACTION_ASK,
+                Question::class,
+                $question->id
+            );
+
             return $this->standardJsonResponse(
                 HttpStatusCode::SUCCESS_OK,
                 true,
@@ -186,7 +200,7 @@ class QuestionController extends Controller
     {
         try
         {
-            $viewerPublicId = $request->has('viewer') ? $request->viewer : null;
+            $viewerPublicId = $request->has('viewer') ? $request->viewer : 'N/A';
 
             $question = Question::where('public_id', $publicId)
                         ->where('is_deleted', false)
@@ -213,14 +227,21 @@ class QuestionController extends Controller
                 /* --- Get number of votes of the question --- */
                 $viewer = User::where('public_id', $viewerPublicId)->first();
                 $voteByViewer = 0;
+                $isFavoriteByViewer = false;
                 if(isset($viewer)) {
                     $selectVoteByViewer = $question->userVotes()->wherePivot('user__id', $viewer->id)->pluck('vote')->first();
                     if(isset($selectVoteByViewer)) {
                         $voteByViewer = $selectVoteByViewer;
                     }
+                    $isFavoriteByViewer = $question->userFavorites()->wherePivot('user__id', $viewer->id)->exists();
+
+                    /* --- Record user model activity --- */
+                    $this->userModelActivity->recordUserModelActivity($viewer->id, UserModelActivity::ACTION_VIEW, Question::class, $question->id);
                 }
                 $question['vote_by_viewer'] = $voteByViewer;
                 $question['vote'] = intval($question->userVotes()->sum('vote'));
+                $question['is_favorite_by_viewer'] = $isFavoriteByViewer;
+                $question['summary_info'] = $this->questionViewModel->getSummaryInfo($question->id);
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
@@ -376,6 +397,7 @@ class QuestionController extends Controller
                 $user = User::find($author['id']);
                 $author['avatar_url'] = $this->support->getFileUrl((new UserAvatar())->getActiveUserAvatarUrl($user));
                 $question['author'] = $author;
+                $question['vote'] = intval($question->userVotes()->sum('vote'));
             }
 
             $total = 0;

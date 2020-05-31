@@ -100,4 +100,5 @@ class RouteConst
      */
     const ACTIVITY_GET_RETRIEVE_MY_POSTS = 'activity.getRetrieveMyPosts';
     const ACTIVITY_POST_VOTE_POST = 'activity.postVotePost';
+    const ACTIVITY_POST_MANAGE_FAVORITE_QUESTION = 'activity.postManageFavoriteQuestion';
 }

@@ -140,4 +140,24 @@ class User extends Authenticatable implements JWTSubject
             ->withPivot('vote', 'created_by', 'updated_by')
             ->withTimestamps();
     }
+
+    /**
+     * Relationship Many-to-Many with Question (Immediate table = user_question_favorites)
+     * Get one or more question_favorites of this user
+     */
+    public function questionFavorites()
+    {
+        return $this->belongsToMany('App\Question', 'user_question_favorites', 'user__id', 'question__id')
+            ->withPivot('created_by', 'updated_by')
+            ->withTimestamps();
+    }
+
+    /**
+     * Relationship One-to-Many with UserModelActivity
+     * Get User model-activity of this user
+     */
+    public function modelActivities()
+    {
+        return $this->hasMany('App\UserModelActivity', 'user__id');
+    }
 }

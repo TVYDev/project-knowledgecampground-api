@@ -35,6 +35,7 @@ class KCValidate
     const VALIDATION_PERMISSION_ASSIGN = 'valid_permission_assign';
     const VALIDATION_RESET_PASSWORD = 'valid_reset_password';
     const VALIDATION_VOTE_POST = 'valid_vote_post';
+    const VALIDATION_MANAGE_FAVORITE_QUESTION = 'valid_manage_favorite_question';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -111,6 +112,10 @@ class KCValidate
             'post_type' => 'required|string|in:question,answer',
             'post_public_id' => 'required|string',
             'vote' => 'required|numeric|in:-1,0,1'
+        ],
+        self::VALIDATION_MANAGE_FAVORITE_QUESTION => [
+            'question_public_id' => 'required|string',
+            'is_favorite' => 'required|boolean'
         ]
     ];
 
