@@ -177,6 +177,7 @@ class AnswerController extends Controller
                 $answer['readable_time_kh'] = $this->support->getHumanReadableActionDateAsString($answer->posted_at, $answer->updated_at, Supporter::ANSWER_ACTION);
                 $answer['author_name'] = $answer->user()->pluck('name')->first();
                 $answer['author_id'] = $answer->user()->pluck('id')->first();
+                $answer['author_public_id'] = $answer->user()->pluck('public_id')->first();
 
                 $author = User::find($answer['author_id']);
                 $answer['avatar_url'] = (new UserAvatar())->getActiveUserAvatarUrl($author);
@@ -200,6 +201,9 @@ class AnswerController extends Controller
                 }
                 $answer['vote_by_viewer'] = $voteByViewer;
                 $answer['vote'] = intval($answer->userVotes()->sum('vote'));
+                if($answer->public_id === 'NgPkdybwen') {
+                    $answer['is_best_answer'] = true;
+                }
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,

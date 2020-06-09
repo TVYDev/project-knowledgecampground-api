@@ -166,4 +166,6 @@ Route::group([
             ->name(RouteConst::ACTIVITY_POST_VOTE_POST);
         Route::post('manage-favorite-question', 'ActivityController@postManageFavoriteQuestion')
             ->name(RouteConst::ACTIVITY_POST_MANAGE_FAVORITE_QUESTION);
+        Route::post('choose-best-answer', 'ActivityController@postChooseBestAnswer')
+            ->name(RouteConst::ACTIVITY_POST_CHOOSE_BEST_ANSWER);
 });
