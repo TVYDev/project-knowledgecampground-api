@@ -200,4 +200,74 @@ class ActivityController extends Controller
             return $this->standardJsonExceptionResponse($exception);
         }
     }
+
+    public function postChooseBestAnswer (Request $request) {
+        try {
+            /* --- Validate inputs --- */
+            $this->inputsValidator->doValidate($request->all(), KCValidate::VALIDATION_CHOOSE_BEST_ANSWER);
+
+            $questionPublicId = $request->question_public_id;
+            $answerPublicId = $request->answer_public_id;
+
+            $question = Question::where('public_id', $questionPublicId)
+                ->where('is_draft', false)
+                ->where('is_active', true)
+                ->where('is_deleted', false)
+                ->first();
+
+            if(isset($question)) {
+                $answer = null;
+                if(isset($answerPublicId)) {
+                    $answer = Answer::where('public_id', $answerPublicId)
+                        ->where('is_draft', false)
+                        ->where('is_active', true)
+                        ->where('is_deleted', false)
+                        ->first();
+
+                    if(isset($answer)) {
+                        $question->best_answer__id = $answer->id;
+                    }
+                    else {
+                        return $this->standardJsonResponse(
+                            HttpStatusCode::ERROR_BAD_REQUEST,
+                            false,
+                            MessageCode::msgError('answer not found'),
+                            null,
+                            ErrorCode::ERR_CODE_DATA_NOT_EXIST
+                        );
+                    }
+                }
+                else {
+                    $question->best_answer__id = null;
+                }
+
+                if(isset($question->best_answer_created_at)) {
+                    $question->best_answer_updated_at = new \DateTime();
+                }else {
+                    $question->best_answer_created_at = new \DateTime();
+                }
+
+                $question->save();
+
+                return $this->standardJsonResponse(
+                    HttpStatusCode::SUCCESS_OK,
+                    true,
+                    MessageCode::msgSuccess('best answer chosen')
+                );
+            }
+            else {
+                return $this->standardJsonResponse(
+                    HttpStatusCode::ERROR_BAD_REQUEST,
+                    false,
+                    MessageCode::msgError('question not found'),
+                    null,
+                    ErrorCode::ERR_CODE_DATA_NOT_EXIST
+                );
+            }
+
+        }
+        catch(\Exception $exception) {
+            return $this->standardJsonExceptionResponse($exception);
+        }
+    }
 }

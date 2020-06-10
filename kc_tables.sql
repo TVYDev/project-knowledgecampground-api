@@ -117,9 +117,13 @@ CREATE TABLE questions
     posted_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
+    best_answer__id int4 NULL,
+    best_answer_created_at TIMESTAMP(0) NULL,
+    best_answer_updated_at TIMESTAMP(0) NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user__id) REFERENCES users(id),
     FOREIGN KEY (subject__id) REFERENCES subjects(id),
+    FOREIGN KEY (best_answer__id) REFERENCES answers(id),
     UNIQUE (public_id)
 );
 

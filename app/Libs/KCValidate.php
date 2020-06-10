@@ -36,6 +36,7 @@ class KCValidate
     const VALIDATION_RESET_PASSWORD = 'valid_reset_password';
     const VALIDATION_VOTE_POST = 'valid_vote_post';
     const VALIDATION_MANAGE_FAVORITE_QUESTION = 'valid_manage_favorite_question';
+    const VALIDATION_CHOOSE_BEST_ANSWER = 'valid_choose_best_answer';
 
     private $validationRules = [
         self::VALIDATION_USER_CHANGE_PASSWORD => [
@@ -116,7 +117,11 @@ class KCValidate
         self::VALIDATION_MANAGE_FAVORITE_QUESTION => [
             'question_public_id' => 'required|string',
             'is_favorite' => 'required|boolean'
-        ]
+        ],
+        self::VALIDATION_CHOOSE_BEST_ANSWER => [
+            'question_public_id' => 'required|string',
+            'answer_public_id' => 'nullable'
+        ],
     ];
 
     /**

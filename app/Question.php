@@ -17,7 +17,10 @@ class Question extends Model
         'is_deleted',
         'user__id',
         'subject__id',
-        'posted_at'
+        'posted_at',
+        'best_answer__id',
+        'best_answer_created_at',
+        'best_answer_updated_at'
     ];
 
     protected $hidden = [
