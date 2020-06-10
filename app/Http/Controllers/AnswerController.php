@@ -201,9 +201,9 @@ class AnswerController extends Controller
                 }
                 $answer['vote_by_viewer'] = $voteByViewer;
                 $answer['vote'] = intval($answer->userVotes()->sum('vote'));
-                if($answer->public_id === 'NgPkdybwen') {
-                    $answer['is_best_answer'] = true;
-                }
+
+                $question = Question::find($answer->question__id);
+                $answer['is_best_answer'] = isset($question) && $answer->id === $question->best_answer__id;
 
                 return $this->standardJsonResponse(
                     HttpStatusCode::SUCCESS_OK,
